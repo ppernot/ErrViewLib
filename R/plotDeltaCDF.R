@@ -1,0 +1,165 @@
+#' Title
+#'
+#' @param err
+#' @param meth1
+#' @param meth2
+#' @param eps
+#' @param xmax
+#' @param xlab
+#' @param units
+#' @param main
+#' @param nboot
+#' @param label
+#' @param gPars
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotDeltaCDF <- function(err,
+                         meth1,
+                         meth2,
+                         eps   = NULL,
+                         xmax  = NULL,
+                         xlab  = NULL,
+                         units = 'a.u.',
+                         main  = '',
+                         nboot = 1000,
+                         label = 0,
+                         gPars) {
+  # Expose gPars list
+  for (n in names(gPars))
+    assign(n, rlist::list.extract(gPars, n))
+
+  par(
+    mfrow = c(1, 1),
+    mar = mar,
+    mgp = mgp,
+    pty = pty,
+    tcl = tcl,
+    cex = cex,
+    lwd = lwd,
+    lend = 2,
+    xaxs = 'i',
+    yaxs = 'i'
+  )
+
+  # Stats of SIP and DeltaMUE indicatots
+  if(class(err)=='matrix' | class(err)=='data.frame') {
+    X = abs(err[,meth1]) - abs(err[,meth2])
+    bsSip = boot::boot(
+      cbind(err[,meth1],err[,meth2]),
+      statistic = fsi,
+      R=nboot)
+    bsDmue = boot::boot(
+      cbind(err[,meth1],err[,meth2]),
+      statistic = dmue,
+      R=nboot)
+  }
+  else {
+    X = abs(err[[meth1]]) - abs(err[[meth2]])
+    bsSip = boot::boot(
+      cbind(err[[meth1]],err[[meth2]]),
+      statistic = fsi,
+      R=nboot)
+    bsDmue = boot::boot(
+      cbind(err[[meth1]],err[[meth2]]),
+      statistic = dmue,
+      R=nboot)
+  }
+
+  if(is.null(xmax)) {
+    xmax = max(abs(range(X)))
+    xlim = range(X)
+  }
+  else
+    xlim = xmax * c(-1, 1)
+
+  if(is.null(xlab))
+    xlab = substitute(
+      abs(Error[meth1])-abs(Error[meth2])~~group("[",units,"]"),
+      list(meth1 = meth1, meth2 = meth2, units = units))
+
+  x = sort(X,na.last = NA)
+  y = (1:length(x))/length(x)
+  plot(
+    x, y,
+    type = 'l',
+    col  = cols[5],
+    xlab = xlab,
+    xlim = xlim,
+    ylab = 'Probability'
+  )
+  title(main=main,cex.main=0.9,adj=0,line=1)
+  grid()
+  sigp = sqrt(y * (1 - y) / length(y))
+  polygon(c(x, rev(x)),
+          c(y - 1.96 * sigp, rev(y + 1.96 * sigp)),
+          col = cols_tr2[5],
+          border = NA)
+  if (!is.null(eps))
+    polygon(
+      x = c(-eps, -eps, eps, eps),
+      y = c(0, 1, 1, 0),
+      col = cols_tr2[3],
+      border = NA
+    )
+  abline(v = 0,col=1,lty=1)
+
+  #SIP
+  mval = bsSip$t0
+  q025 = apply(bsSip$t,2,hd,q=0.025)
+  q975 = apply(bsSip$t,2,hd,q=0.975)
+  for(i in 2:3)
+    polygon(
+      c(q025[i],q975[i],q975[i],q025[i]),
+      c(0,0,1,1),
+      col = cols_tr2[4],
+      border = NA)
+  abline(v = mval[2:3], col = cols[6], lty=2)
+  mtext(text = c('MG','ML'),
+        side = 3,
+        at   = mval[2:3],
+        col  = cols[6],
+        cex  = 0.75*cex)
+  polygon(
+    c(min(c(X,-xmax)),min(c(X,-xmax)),
+      max(c(X,xmax)),max(c(X,xmax))),
+    c(q025[1],q975[1],q975[1],q025[1]),
+    col = cols_tr2[4],
+    border = NA)
+  abline(h = mval[1], col = cols[6], lty=2)
+  mtext(text = c('SIP'),
+        side = 4,
+        at   = mval[1],
+        col  = cols[6],
+        cex  = 0.75*cex)
+
+  # Delta MUE
+  mval = bsDmue$t0
+  q025 = apply(bsDmue$t,2,hd,q=0.025)
+  q975 = apply(bsDmue$t,2,hd,q=0.975)
+  polygon(
+    c(q025,q975,q975,q025),
+    c(0,0,1,1),
+    col = cols_tr2[2],
+    border = NA)
+  abline(v = mval, col=cols[2], lty=2)
+  mtext(text = expression(Delta[MUE]),
+        side = 3,
+        line = 0.6,
+        at   = mval,
+        col  = cols[2],
+        cex  = 0.75*cex)
+
+  box()
+
+  if(label > 0)
+    mtext(
+      text = paste0('(', letters[label], ')'),
+      side = 3,
+      adj = 1,
+      cex = cex,
+      line = 0.3)
+
+}
