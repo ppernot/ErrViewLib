@@ -1,6 +1,4 @@
-<!--
-[![DOI](https://zenodo.org/badge/155345091.svg)](https://zenodo.org/badge/latestdoi/155345091)
--->
+[![DOI](https://zenodo.org/badge/235801923.svg)](https://zenodo.org/badge/latestdoi/235801923)
 
 # ErrViewLib
 Library for [ErrView](https://github.com/ppernot/ErrView) code.
