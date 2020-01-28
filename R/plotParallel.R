@@ -230,6 +230,8 @@ paraPlot = function (x,
       dq = qlim[,2]-qlim[,1]
       qlim[,1] = qlim[,1] - 1.5*dq
       qlim[,2] = qlim[,2] + 1.5*dq
+    } else if (outliers == 'ci90') {
+      qlim = t(apply(x,2,quantile,probs=c(0.05,0.95)))
     } else {
       qlim = t(apply(x,2,quantile,probs=c(0.025,0.975)))
     }
