@@ -48,6 +48,9 @@ plotDistHist = function(
   gPars
 ) {
 
+  if (length(x)*length(y) == 0)
+    return()
+
   # Expose gPars list
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
@@ -213,7 +216,7 @@ plotDistHist = function(
       p = predict(reg, interval = 'conf')
       matlines(x[indx],
                p[indx, ],
-               col = cols[5],
+               col = cols[1],
                lwd = gPars$lwd,
                lty = c(1, 2, 2))
     } else {
@@ -221,7 +224,7 @@ plotDistHist = function(
       p = predict(reg)
       matlines(x[indx],
                p[indx],
-               col = cols[5],
+               col = cols[1],
                lwd = gPars$lwd,
                lty = 1)
     }

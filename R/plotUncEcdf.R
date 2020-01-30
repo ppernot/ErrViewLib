@@ -45,6 +45,9 @@ plotUncEcdf = function(X,
     xaxs = 'i'
   )
 
+  if (length(X) == 0)
+    return()
+
   if (class(X) == 'numeric')
     X = as.matrix(X, ncol = 1)
 

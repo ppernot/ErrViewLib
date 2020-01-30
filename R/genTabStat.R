@@ -51,7 +51,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
         compt[j] = 2*(1-pnorm(diff/udiff))
       }
       names(compt) = methods
-      df = cbind(df, punc = c('',round(compt,3)))
+      df = cbind(df, punc = c('',round(compt,2)))
 
       # t-test for paired values
       compt = c()
@@ -63,7 +63,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
         compt[j] = genpval(diff)
       }
       names(compt) = methods
-      df = cbind(df, pg = c('',round(compt,3)))
+      df = cbind(df, pg = c('',round(compt,2)))
 
       # Pinv
       compt = c()
@@ -76,7 +76,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
         compt[j] = pinv(diff,d0)
       }
       names(compt) = methods
-      df = cbind(df, Pinv = c('',round(compt,3)))
+      df = cbind(df, Pinv = c('',round(compt,2)))
     }
   }
 

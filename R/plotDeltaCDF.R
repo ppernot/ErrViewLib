@@ -163,3 +163,56 @@ plotDeltaCDF <- function(err,
       line = 0.3)
 
 }
+#' Title
+#'
+#' @param X
+#' @param index
+#' @param uX
+#' @param ...
+#'
+#' @return
+#'
+#' @examples
+fsi = function(X, index=1:nrow(X), uX = 0,...){
+  # SIP
+  v1 = abs(X[index,1])
+  v2 = abs(X[index,2])
+  N  = length(index)
+  if(uX != 0) {
+    pert = rnorm(N,0,uX) # Paired datasets
+    v1 = v1 + pert
+    v2 = v2 + pert
+  }
+  diff = v1 - v2
+  gain = diff < 0 # 1 has smaller errors than 2
+  loss = diff > 0
+  # How to deal with ties ?
+  # eq   = diff == 0
+  mg = ifelse(sum(gain) == 0, 0, mean(diff[gain]))
+  ml = ifelse(sum(loss) == 0, 0, mean(diff[loss]))
+  p  = sum(gain) / N
+  # p  = (sum(gain)+0.5*sum(eq)) / N
+
+  return(c(p,mg,ml))
+}
+#' Title
+#'
+#' @param X
+#' @param index
+#' @param uX
+#' @param ...
+#'
+#' @return
+#'
+#' @examples
+dmue = function(X, index=1:nrow(X), uX = 0,...){
+  v1 = abs(X[index,1])
+  v2 = abs(X[index,2])
+  N  = length(index)
+  if(uX != 0) {
+    pert = rnorm(N,0,uX) # Paired datasets
+    v1 = v1 + pert
+    v2 = v2 + pert
+  }
+  return(mean(v1)-mean(v2) )
+}
