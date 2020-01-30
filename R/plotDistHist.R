@@ -169,7 +169,7 @@ plotDistHist = function(
     ylim = ylim,
     xlab = xlab,
     yaxt = 'n',
-    cex = 0.5,
+    cex = 0.75*cex,
     main = NULL
   )
   grid()
