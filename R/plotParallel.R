@@ -22,7 +22,8 @@ plotParallel = function (X, maxPoints = nrow(X),
                          rescale = TRUE,
                          scramble = FALSE,
                          outliers = FALSE,
-                         ylab = "",
+                         units = 'a.u.',
+                         ylab = "Errors",
                          gPars) {
   # Driver for paraPlot
 
@@ -34,11 +35,7 @@ plotParallel = function (X, maxPoints = nrow(X),
   }
 
   ## Leave zero-variance colums out
-  ## and subsample if necessary
   sdX = apply(X, 2, sd)
-  # nP = min(maxPoints, nrow(X))
-  # nP = nrow(X)
-  # iSamp = seq.int(1, nrow(X), length.out = nP)
   X1 = X[, sdX != 0]
 
   ## Expose graphical params
@@ -66,18 +63,21 @@ plotParallel = function (X, maxPoints = nrow(X),
     X1 = X
   }
 
-  io = 1:nrow(X1) #order(abs(X1[,ncol(X1)])) ???
   out = paraPlot(
-    X1[io,],
-    col = colors[io],
+    X1,
+    col = colors,
     lwd = lwd,
     las = 2,
-    var.label = labels[io],
+    var.label = labels,
     lab.thresh = lab.thresh,
     rescale = rescale,
     scramble = scramble,
     outliers = outliers,
-    ylab = ylab,
+    ylab = ifelse(
+      rescale,
+      'Centered-Scaled Errors',
+      paste0('Errors [',units,']')
+    ),
     cols_tr2 = cols_tr2
   )
   return(invisible(out))
@@ -129,12 +129,6 @@ paraPlot = function (x,
                      ...) {
   # Parallel plot (adapted from MASS::parcoord)
 
-  # ylab = "Errors"
-  # if (rescale) {
-  #   x <-  apply(x, 2, scale)
-  #   ylab = "Errors (arb. units)"
-  # }
-
   # Perturbation to horizontal positions
   rx = matrix(rep(1:ncol(x)),nrow=ncol(x),ncol=nrow(x))
   if(scramble)
@@ -159,8 +153,7 @@ paraPlot = function (x,
     las = las)
 
   if(rescale) {
-    axis(
-      2,
+    axis(2,
       at = seq(-5, 5, by = 1),
       labels = seq(-5, 5, by = 1),
       pos = 1,
@@ -170,8 +163,7 @@ paraPlot = function (x,
     abline(h=-5:5, col = "grey90", lty=2)
   } else {
     ticks = pretty(as.matrix(x))
-    axis(
-      2,
+    axis(2,
       at = ticks,
       labels = ticks,
       pos = 1,
@@ -188,37 +180,36 @@ paraPlot = function (x,
     cex = 0.8)
 
   # Threshold-based Labels
-  if(!is.null(var.label)) {
-    at = x[,ncol(x)]
-    sel = abs(at) > lab.thresh
-    if(sum(sel)>0) {
-      at = at[sel]
-      lab1 = var.label[sel]
-      mtext(lab1,
-            cex  = 1,
-            col  = 4,
-            side = 4,
-            las  = 2,
-            line = -0.2,
-            at   = at
-      )
-    }
-    at = x[,1]
-    sel = abs(at) > lab.thresh
-    if(sum(sel)>0) {
-      at = at[sel]
-      lab2 = var.label[sel]
-      # sel2 = ! lab2 %in% lab1
-      # if(sum(sel2)>0) {
-      mtext(lab2[sel],
-            cex  = 1,
-            col  = 4,
-            side = 2,
-            las  = 2,
-            line = -0.2,
-            at   = at[sel]
-      )
-      # }
+  if(rescale) {
+    if(!is.null(var.label)) {
+      at = x[,ncol(x)]
+      sel = abs(at) > lab.thresh
+      if(sum(sel)>0) {
+        at = at[sel]
+        lab1 = var.label[sel]
+        mtext(lab1,
+              cex  = 1,
+              col  = 4,
+              side = 4,
+              las  = 2,
+              line = -0.2,
+              at   = at
+        )
+      }
+      at = x[,1]
+      sel = abs(at) > lab.thresh
+      if(sum(sel)>0) {
+        at = at[sel]
+        lab2 = var.label[sel]
+        mtext(lab2[sel],
+              cex  = 1,
+              col  = 4,
+              side = 2,
+              las  = 2,
+              line = -0.2,
+              at   = at[sel]
+        )
+      }
     }
   }
 
@@ -238,7 +229,7 @@ paraPlot = function (x,
     polygon(
       c(1:ncol(x),rev(1:ncol(x))),
       c(qlim[,1],rev(qlim[,2])),
-      border = NA, col=cols_tr2[5])
+      border = NA, col=cols_tr2[4])
     if(!is.null(var.label)) {
       ql1  = matrix(qlim[,1],ncol=ncol(x),nrow=nrow(x),byrow = TRUE)
       ql2  = matrix(qlim[,2],ncol=ncol(x),nrow=nrow(x),byrow = TRUE)
