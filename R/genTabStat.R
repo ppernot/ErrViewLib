@@ -9,19 +9,26 @@
 #' @export
 #'
 #' @examples
-genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
+genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
   methods = names(S[[S[['props']][1]]]$val)
   nm = length(methods)
 
-  df = data.frame(Methods = methods)
+  df = data.frame(Methods = c('',methods)) # Leave 1rst row for units
   for (prop in S[['props']]) {
+
+    un = units
+    if((prop %in% c('P1','W')))
+      un = ''
+
     v = S[[prop]]$val
     vu = matrix(
       apply(cbind(v,S[[prop]]$unc),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
+    vu = matrix(c(un,vu),ncol=1)
     colnames(vu) = prop
     df = cbind(df, vu)
+
     if (comp & (prop %in% c('mue','wmue','rmsd','q95hd')) ) {
       if(ref != 0){
         # compare with specified method
@@ -44,7 +51,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
         compt[j] = 2*(1-pnorm(diff/udiff))
       }
       names(compt) = methods
-      df = cbind(df, punc = round(compt,3))
+      df = cbind(df, punc = c('',round(compt,3)))
 
       # t-test for paired values
       compt = c()
@@ -56,7 +63,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
         compt[j] = genpval(diff)
       }
       names(compt) = methods
-      df = cbind(df, pg = round(compt,3))
+      df = cbind(df, pg = c('',round(compt,3)))
 
       # Pinv
       compt = c()
@@ -69,7 +76,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
         compt[j] = pinv(diff,d0)
       }
       names(compt) = methods
-      df = cbind(df, Pinv = round(compt,3))
+      df = cbind(df, Pinv = c('',round(compt,3)))
     }
   }
 
@@ -81,9 +88,11 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
       apply(cbind(msip,umsip),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    colnames(vu) = 'MSIP'
-    rownames(vu) = methods
-    df = cbind(df, vu)
+    # vu = c(un,vu)
+    # colnames(vu) = 'MSIP'
+    # rownames(vu) = methods
+    # df = cbind(df, vu)
+    df = cbind(df, MSIP = c('',vu))
 
     # SIP for best MUE
     v = S[['mue']]$val
@@ -95,9 +104,11 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
       apply(cbind(sip,usip),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    colnames(vu) = 'SIP'
-    rownames(vu) = methods
-    df = cbind(df, vu)
+    # vu = c(un,vu)
+    # colnames(vu) = 'SIP'
+    # rownames(vu) = methods
+    # df = cbind(df, vu)
+    df = cbind(df, SIP = c('',vu))
 
     # Mean gain
     mg  = S[['mg']][mi,]
@@ -106,9 +117,11 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
       apply(cbind(mg,umg),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    colnames(vu) = 'MG'
-    rownames(vu) = methods
-    df = cbind(df, vu)
+    # vu = c(un,vu)
+    # colnames(vu) = 'MG'
+    # rownames(vu) = methods
+    # df = cbind(df, vu)
+    df = cbind(df, MG = c(un,vu))
 
     # Mean loss
     mg = -S[['mg']][,mi]
@@ -117,9 +130,10 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1) {
       apply(cbind(mg,umg),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    colnames(vu) = 'ML'
-    rownames(vu) = methods
-    df = cbind(df, vu)
+    # vu = as.matrixc(un,vu)
+    # colnames(vu) = 'ML'
+    # rownames(vu) = methods
+    df = cbind(df, ML = c(un,vu))
 
   }
 
