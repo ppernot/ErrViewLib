@@ -33,12 +33,8 @@ plotCorMat = function(X,
     lwd = lwd
   )
 
-  # res1 = corrplot::cor.mtest(X, conf.level = 0.99)
-
   M = corrplot::corrplot(
     X,
-    # p.mat = res1$p,
-    # insig = "blank",
     method = method,
     order = order,
     tl.col = 'black',
