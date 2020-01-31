@@ -182,3 +182,68 @@ my5num = function(X) {
     hd(X, 0.95)
   )
 }
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+muF = function(x) {
+  mu=x[1]; sig=x[2]
+  sig*sqrt(2/pi)*exp(-mu^2/(2*sig^2)) -mu*erf(-mu/(sqrt(2)*sig))
+}
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cdfF = function(x) {
+  u = x[1]; mu = x[2]; sig = x[3]
+  (erf((u+mu)/(sqrt(2)*sig))+erf((u-mu)/(sqrt(2)*sig)))/2
+}
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+q95F = function(x) {
+  mu=x[1]; sig=x[2]
+  fz = function(x,mu,sig,prob) {
+    cdfF(c(x,mu,sig)) - prob
+  }
+  mueF = muF(c(mu,sig))
+  uniroot(f = fz, interval=c(mueF,mueF+6*sig),check.conv = TRUE,
+          mu = mu, sig = sig, prob = 0.95)$root
+}
+#' Title
+#'
+#' @param X
+#' @param n
+#'
+#' @return
+#' @export
+#'
+#' @examples
+agrestiCoull = function(X,n) {
+  p=(X+1/2)/(n+1)
+  return(sqrt(p*(1-p)/(n+1)))
+}
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+erf = function(x) {
+  2 * pnorm(x * sqrt(2)) - 1
+}

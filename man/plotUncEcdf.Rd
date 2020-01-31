@@ -11,6 +11,8 @@ plotUncEcdf(
   title = "",
   show.leg = TRUE,
   show.MAE = FALSE,
+  show.Q95 = TRUE,
+  Q.algo = "HD",
   col.index = 1:ncol(X),
   weights = NULL,
   units = "a.u.",

@@ -144,6 +144,7 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
 #' @param X
 #'
 #' @return
+#' @export
 #'
 #' @examples
 genpval = function(X) {
@@ -153,10 +154,22 @@ genpval = function(X) {
 }
 #' Title
 #'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+pval = function(x) {
+  2*pnorm(x, lower.tail = FALSE)
+}
+#' Title
+#'
 #' @param X
 #' @param d0
 #'
 #' @return
+#' @export
 #'
 #' @examples
 pinv = function (X,d0) {
@@ -173,6 +186,7 @@ pinv = function (X,d0) {
 #' @param numDig
 #'
 #' @return
+#' @export
 #'
 #' @examples
 prettyUnc = function(y, uy, numDig = 2) {
