@@ -23,6 +23,8 @@ plotUncEcdf = function(X,
                        title = '',
                        show.leg = TRUE,
                        show.MAE = FALSE,
+                       show.Q95 = TRUE,
+                       Q.algo = 'HD',
                        col.index = 1:ncol(X),
                        weights = NULL,
                        units = 'a.u.',
@@ -94,9 +96,17 @@ plotUncEcdf = function(X,
             col = cols_tr2[col.index[icol]],
             border = NA)
 
-    Q95 = hd(x, 0.95)
-    segments(Q95, 0, Q95, 0.95,
-             col = cols[col.index[icol]], lty = 2)
+    if(show.Q95) {
+
+      if(Q.algo == 'HD')
+        Q95 = hd(x, 0.95)
+      else
+        Q95 = quantile(x,0.95)
+
+      segments(Q95, 0, Q95, 0.95,
+               col = cols[col.index[icol]], lty = 2)
+    }
+
 
     if (show.MAE) {
       MAE = mean(abs(x))
@@ -108,15 +118,17 @@ plotUncEcdf = function(X,
     }
   }
 
-  abline(h = 0.95, col = 2, lty = 2)
-  mtext(
-    text = '0.95 ',
-    at = 0.95,
-    side = 2,
-    col = 2,
-    cex = cex,
-    las = 2
-  )
+  if(show.Q95) {
+    abline(h = 0.95, col = 2, lty = 2)
+    mtext(
+      text = '0.95 ',
+      at = 0.95,
+      side = 2,
+      col = 2,
+      cex = cex,
+      las = 2
+    )
+  }
 
   box()
 
