@@ -116,3 +116,60 @@ fRankMSIP = function(data, index=1:nrow(data), ...){
   msip = rowMeans(sip, na.rm=TRUE)
   order(msip, decreasing = TRUE)
 }
+#' Title
+#'
+#' @param X
+#' @param index
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fcor = function(X, index=1:length(X),...){
+  cor(X[index,1],X[index,2])
+}
+#' Title
+#'
+#' @param X
+#' @param index
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fcov = function(X, index=1:length(X),...){
+  cov(X[index,1],X[index,2])
+}
+#' Title
+#'
+#' @param X
+#' @param index
+#' @param fscore
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+fdif = function(X, index=1:nrow(X),fscore,...){
+  fscore(X[,1],index,...) - fscore(X[,2],index,...)
+}
+#' Title
+#'
+#' @param X
+#'
+#' @return
+#' @export
+#'
+#' @examples
+my5num = function(X) {
+  c(
+    hd(X, 0.05),
+    hd(X, 0.25),
+    hd(X, 0.5),
+    hd(X, 0.75),
+    hd(X, 0.95)
+  )
+}
