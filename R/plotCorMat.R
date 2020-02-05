@@ -26,19 +26,24 @@ plotCorMat = function(X,
 
   par(
     mfrow = c(1, 1),
-    mar = mar,
+    # mar = mar,
     mgp = mgp,
     tcl = tcl,
     cex = cex,
     lwd = lwd
   )
 
+  if(main == '')
+    mar = c(0,0,0,0)
+
   M = corrplot::corrplot(
     X,
     method = method,
     order = order,
     tl.col = 'black',
-    tl.cex = cex.lab)
+    tl.cex = cex.lab,
+    cl.cex = cex.lab,
+    mar = mar)
 
   mtext(main, line=0.5, cex = 1.25*cex, adj = 0.025)
 

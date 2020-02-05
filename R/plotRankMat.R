@@ -69,6 +69,7 @@ plotRankMat = function (E, score='mue',
       tl.srt = 0,
       tl.offset = offset,
       tl.cex = cex.lab,
+      cl.cex = cex.lab,
       win.asp = 1,
       mar = mar
     )
