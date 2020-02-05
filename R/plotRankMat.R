@@ -32,7 +32,7 @@ plotRankMat = function (E, score='mue',
   par(
     mfrow = c(1, 1),
     pty = pty,
-    mar = mar,
+    # mar = mar,
     mgp = mgp,
     tcl = tcl,
     cex = cex,
@@ -52,7 +52,10 @@ plotRankMat = function (E, score='mue',
       c("#67001F", "#B2182B", "#D6604D", "#F4A582",
         "#FDDBC7", "#FFFFFF", "#D1E5F0", "#92C5DE",
         "#4393C3", "#2166AC", "#053061"))
-    colors = col2(200) # Bypass bug in corrplot
+    colors = col2(200)
+
+    if(!show.main)
+      mar = c(0,0,0,0) # else mar is provided by gPars
 
     corrplot::corrplot(
       tab$pRank[tab$mRank,],
@@ -65,10 +68,12 @@ plotRankMat = function (E, score='mue',
       tl.col = 'black',
       tl.srt = 0,
       tl.offset = offset,
-      tl.cex = cex.lab
+      tl.cex = cex.lab,
+      win.asp = 1,
+      mar = mar
     )
     if(show.main)
-      title(main,line=0.75)
+      title(main,line = 0.75)
 
   } else {
     par(mar = c(3.5,7,3.5,1),
@@ -94,7 +99,7 @@ plotRankMat = function (E, score='mue',
           at = 1:ncol(E), las=1, cex = cex*cex.lab)
     box()
     if(show.main)
-      title(main,line=2.7)
+      title(main,line = 2.7)
   }
 
 
