@@ -23,6 +23,7 @@ plotRankMat = function (E, score='mue',
                         show.main = TRUE,
                         offset = 0.7,
                         M = nrow(E),
+                        label  = 0,
                         gPars) {
 
   # Expose gPars list
@@ -74,7 +75,19 @@ plotRankMat = function (E, score='mue',
       mar = mar
     )
     if(show.main)
-      title(main,line = 0.75)
+      mtext(main,
+            line=0.70,
+            cex = 1.5*cex.lab*cex,
+            font = 2,
+            adj = 0.2)
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj  = 0.975,
+        # las  = 1,
+        cex  = 1.5*cex.lab*cex,
+        line = 0.70)
 
   } else {
     par(mar = c(3.5,7,3.5,1),
@@ -100,8 +113,21 @@ plotRankMat = function (E, score='mue',
           at = 1:ncol(E), las=1, cex = cex*cex.lab)
     box()
     if(show.main)
-      title(main,line = 2.7)
+      mtext(main,
+            line = 2.7,
+            cex = 1.5*cex.lab*cex,
+            font = 2,
+            adj = 0.2)
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj  = 0.975,
+        # las  = 1,
+        cex  = 1.5*cex.lab*cex,
+        line = 2.7)
   }
+
 
 
 }

@@ -15,7 +15,7 @@
 plotCorMat = function(X,
                       method = "ellipse",
                       order  = "original",
-                      main  = '',
+                      main  = NULL,
                       label  = 0,
                       cex.lab = 1,
                       gPars){
@@ -33,7 +33,7 @@ plotCorMat = function(X,
     lwd = lwd
   )
 
-  if(main == '')
+  if(is.null(main))
     mar = c(0,0,0,0)
 
   M = corrplot::corrplot(
@@ -42,10 +42,14 @@ plotCorMat = function(X,
     order = order,
     tl.col = 'black',
     tl.cex = cex.lab,
-    cl.cex = cex.lab,
+    cl.cex = 0.75*cex.lab,
     mar = mar)
 
-  mtext(main, line=0.5, cex = 1.25*cex, adj = 0.025)
+  if(!is.null(main))
+    mtext(main, line=2.7,
+          cex = 1.5*cex.lab*cex,
+          font = 2,
+          adj = 0.2)
 
   if(label > 0)
     mtext(
@@ -53,8 +57,9 @@ plotCorMat = function(X,
       side = 3,
       adj  = 0.975,
       # las  = 1,
-      cex  = cex,
-      line = 0.15)
+      cex  = 1.5*cex.lab*cex,
+      line = ifelse(is.null(main),0.5,2.7)
+      )
 
   orderedNames = colnames(M)
   invisible(orderedNames)
