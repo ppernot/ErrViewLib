@@ -2,7 +2,7 @@
 % Please edit documentation in R/estBS.R
 \name{estBS1}
 \alias{estBS1}
-\title{Title}
+\title{Estimate benchmarking statistics and their uncertainty by bootstrap}
 \usage{
 estBS1(
   error,
@@ -11,7 +11,7 @@ estBS1(
   do.sip = TRUE,
   eps = 1,
   seed = 123,
-  silent = FALSE
+  silent = TRUE
 )
 }
 \arguments{
@@ -21,5 +21,5 @@ estBS1(
 
 }
 \description{
-Title
+Estimate benchmarking statistics and their uncertainty by bootstrap
 }

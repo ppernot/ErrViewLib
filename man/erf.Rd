@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{erf}
 \alias{erf}
-\title{Title}
+\title{Erf function}
 \usage{
 erf(x)
 }
@@ -13,5 +13,5 @@ erf(x)
 
 }
 \description{
-Title
+Erf function
 }

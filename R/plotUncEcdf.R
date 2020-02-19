@@ -1,4 +1,4 @@
-#' Title
+#' Plot of a set of ECDFs
 #'
 #' @param X
 #' @param xlab

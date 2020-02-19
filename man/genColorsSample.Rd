@@ -2,7 +2,7 @@
 % Please edit documentation in R/genColors.R
 \name{genColorsSample}
 \alias{genColorsSample}
-\title{Title}
+\title{Color palette for parallel plots}
 \usage{
 genColorsSample(sample)
 }
@@ -13,5 +13,5 @@ genColorsSample(sample)
 
 }
 \description{
-Title
+Color palette for parallel plots
 }

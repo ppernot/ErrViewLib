@@ -1,4 +1,4 @@
-#' Title
+#' Parallel plot of datasets with outliers detection features
 #'
 #' @param X
 #' @param maxPoints

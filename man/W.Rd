@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{W}
 \alias{W}
-\title{Title}
+\title{Normality index of a sample by the Shapiro test}
 \usage{
 W(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ W(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

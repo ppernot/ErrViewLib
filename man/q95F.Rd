@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{q95F}
 \alias{q95F}
-\title{Title}
+\title{Q95 statistics of the Folded Normal distribution}
 \usage{
 q95F(x)
 }
@@ -13,5 +13,5 @@ q95F(x)
 
 }
 \description{
-Title
+Q95 statistics of the Folded Normal distribution
 }

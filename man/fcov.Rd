@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{fcov}
 \alias{fcov}
-\title{Title}
+\title{Covariance}
 \usage{
 fcov(X, index = 1:length(X), ...)
 }
@@ -13,5 +13,5 @@ fcov(X, index = 1:length(X), ...)
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

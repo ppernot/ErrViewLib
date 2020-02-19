@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{rmsd}
 \alias{rmsd}
-\title{Title}
+\title{Root-Mean Squared Deviation (RMSD)}
 \usage{
 rmsd(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ rmsd(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

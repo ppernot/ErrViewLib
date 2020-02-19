@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdQuantiles.R
 \name{elimna}
 \alias{elimna}
-\title{Title}
+\title{Eliminate NA's}
 \usage{
 elimna(m)
 }
@@ -13,5 +13,5 @@ elimna(m)
 
 }
 \description{
-Title
+Eliminate NA's
 }

@@ -1,4 +1,4 @@
-#' Title
+#' Bland-Altman-type plot of error samples
 #'
 #' @param data1
 #' @param data2

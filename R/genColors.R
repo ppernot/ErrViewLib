@@ -1,4 +1,4 @@
-#' Title
+#' Color palette for parallel plots
 #'
 #' @param sample
 #'
@@ -14,7 +14,7 @@ genColors = function(sample) {
   cols = inlmisc:: GetColors(ncols,scheme = 'sunset', alpha=0.8)[indx]
   return(cols)
 }
-#' Title
+#' Color palette for parallel plots
 #'
 #' @param sample
 #'

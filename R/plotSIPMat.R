@@ -1,4 +1,6 @@
-#' Title
+#' Plot of Systematic Improvement Probability matrix
+#'
+#' Interface to \code{corrplot::corrplot()}
 #'
 #' @param X
 #' @param method

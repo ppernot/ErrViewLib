@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotRankMat.R
 \name{plotRankMat}
 \alias{plotRankMat}
-\title{Title}
+\title{Plots of Ranking Probability matrix Pr}
 \usage{
 plotRankMat(
   E,
@@ -14,6 +14,7 @@ plotRankMat(
   show.main = TRUE,
   offset = 0.7,
   M = nrow(E),
+  label = 0,
   gPars
 )
 }
@@ -24,5 +25,5 @@ plotRankMat(
 
 }
 \description{
-Title
+Interface to \code{corrplot::corrplot()} or mode/CI graph
 }

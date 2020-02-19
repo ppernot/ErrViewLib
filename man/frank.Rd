@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{frank}
 \alias{frank}
-\title{Title}
+\title{Ranks of a series of statistics}
 \usage{
 frank(data, index = 1:nrow(data), fscore, ...)
 }
@@ -13,5 +13,5 @@ frank(data, index = 1:nrow(data), fscore, ...)
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

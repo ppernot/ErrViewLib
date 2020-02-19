@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotParallel.R
 \name{plotParallel}
 \alias{plotParallel}
-\title{Title}
+\title{Parallel plot of datasets with outliers detection features}
 \usage{
 plotParallel(
   X,
@@ -25,5 +25,5 @@ plotParallel(
 
 }
 \description{
-Title
+Parallel plot of datasets with outliers detection features
 }

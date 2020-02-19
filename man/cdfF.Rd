@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{cdfF}
 \alias{cdfF}
-\title{Title}
+\title{CDF of the Folded Normal distribution}
 \usage{
 cdfF(x)
 }
@@ -13,5 +13,5 @@ cdfF(x)
 
 }
 \description{
-Title
+CDF of the Folded Normal distribution
 }

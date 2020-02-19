@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdQuantiles.R
 \name{hd}
 \alias{hd}
-\title{Title}
+\title{Quantiles estimation by the Harrell & Davis method}
 \usage{
 hd(x, q = 0.5, na.rm = TRUE)
 }
@@ -13,5 +13,5 @@ hd(x, q = 0.5, na.rm = TRUE)
 
 }
 \description{
-Title
+Quantiles estimation by the Harrell & Davis method
 }

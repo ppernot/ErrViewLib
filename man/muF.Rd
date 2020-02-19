@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{muF}
 \alias{muF}
-\title{Title}
+\title{Mean of the Folded Normal distribution}
 \usage{
 muF(x)
 }
@@ -13,5 +13,5 @@ muF(x)
 
 }
 \description{
-Title
+Mean of the Folded Normal distribution
 }

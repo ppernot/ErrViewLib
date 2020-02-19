@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{q95}
 \alias{q95}
-\title{Title}
+\title{95th Quantile of absolute errors (Q95)}
 \usage{
 q95(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ q95(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

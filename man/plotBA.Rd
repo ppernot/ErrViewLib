@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotBA.R
 \name{plotBA}
 \alias{plotBA}
-\title{Title}
+\title{Bland-Altman-type plot of error samples}
 \usage{
 plotBA(data1, data2, ylim = NULL, title = "", gPars)
 }
@@ -13,5 +13,5 @@ plotBA(data1, data2, ylim = NULL, title = "", gPars)
 
 }
 \description{
-Title
+Bland-Altman-type plot of error samples
 }

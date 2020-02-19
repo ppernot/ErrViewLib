@@ -1,4 +1,6 @@
-#' Title
+#' Plots of Ranking Probability matrix Pr
+#'
+#' Interface to \code{corrplot::corrplot()} or mode/CI graph
 #'
 #' @param E
 #' @param score

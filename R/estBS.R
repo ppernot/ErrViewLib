@@ -1,4 +1,4 @@
-#' Title
+#' Estimate benchmarking statistics and their uncertainty by bootstrap
 #'
 #' @param error
 #' @param props
@@ -21,10 +21,10 @@ estBS1 = function(error,
                             'P1',
                             'W'),
                   nboot = 1000,
-                  do.sip = TRUE,
-                  eps = 1,
+                  do.sip = TRUE,  # Generate SIP stats
+                  eps = 1,        # Threshold for P1
                   seed = 123,
-                  silent = FALSE) {
+                  silent = TRUE) {
 
   # Process data
   results = list()
@@ -40,7 +40,7 @@ estBS1 = function(error,
     bsl = list()
     for (i in 1:nm) {
       m = methods[i]
-      set.seed(seed) # correlate bs for corr. estim.
+      set.seed(seed) # Correlate bs for correl. estim.
       bs = boot::boot(error[[m]], statistic, R=nboot)
       bsl[[m]] = bs
       results[[prop]][['val']][[m]] = bs$t0

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotDeltaCDF.R
 \name{plotDeltaCDF}
 \alias{plotDeltaCDF}
-\title{Title}
+\title{Plot of the CDF of the differences of a pair of absolute errors samples}
 \usage{
 plotDeltaCDF(
   err,
@@ -25,5 +25,5 @@ plotDeltaCDF(
 
 }
 \description{
-Title
+Plots also auxiliary statistics (SIP, MG, ML) with bootstrapped CIs.
 }

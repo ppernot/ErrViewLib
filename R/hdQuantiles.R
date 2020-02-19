@@ -1,4 +1,4 @@
-#' Title
+#' Quantiles estimation by the Harrell & Davis method
 #'
 #' @param x
 #' @param q
@@ -10,7 +10,9 @@
 #' @examples
 hd = function (x, q = 0.5, na.rm = TRUE){
   # Estimate quantiles by Harrell & Davis 1982
-  # Extracted from package WRS2 which does not export it
+  # Extracted for consistency from package WRS2 which does not export it.
+  # Mair, P., & Wilcox, R. R. (2019). "Robust Statistical Methods
+  # in R Using the WRS2", Behavior Research Methods, Forthcoming...
   if (na.rm)
     x = elimna(x)
   n <- length(x)
@@ -22,7 +24,7 @@ hd = function (x, q = 0.5, na.rm = TRUE){
   hd <- sum(w * y)
   hd
 }
-#' Title
+#' Eliminate NA's
 #'
 #' @param m
 #'
@@ -30,6 +32,10 @@ hd = function (x, q = 0.5, na.rm = TRUE){
 #'
 #' @examples
 elimna = function (m){
+  # Used by hd().
+  # Extracted for consistency from package WRS2 which does not export it.
+  # Mair, P., & Wilcox, R. R. (2019). "Robust Statistical Methods
+  # in R Using the WRS2", Behavior Research Methods, Forthcoming...
   if (is.null(dim(m)))
     m <- as.matrix(m)
   ikeep <- c(1:nrow(m))

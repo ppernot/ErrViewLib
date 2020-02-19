@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{fcor}
 \alias{fcor}
-\title{Title}
+\title{Correlation}
 \usage{
 fcor(X, index = 1:length(X), ...)
 }
@@ -13,5 +13,5 @@ fcor(X, index = 1:length(X), ...)
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

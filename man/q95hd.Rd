@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{q95hd}
 \alias{q95hd}
-\title{Title}
+\title{95th Quantile of absolute errors using the HD algorithm (Q95HD)}
 \usage{
 q95hd(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ q95hd(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

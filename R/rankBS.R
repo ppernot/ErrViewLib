@@ -1,4 +1,4 @@
-#' Title
+#' N-out of-N Bootstrap of order statistics
 #'
 #' @param E
 #' @param score
@@ -45,7 +45,7 @@ rankBS = function(E, score = 'mue', nMC = 1000) {
   return(list(mRank = mRank, pRank=pRank))
 
 }
-#' Title
+#' M-out of-N Bootstrap of order statistics
 #'
 #' @param E
 #' @param score
@@ -95,7 +95,7 @@ rankBS2 = function(E, score = 'mue', nMC = 1000, M = nrow(E)) {
   return(list(mRank = mRank, pRank=pRank))
 
 }
-#' Title
+#' Results table for ranking probabilities
 #'
 #' @param E
 #' @param scores

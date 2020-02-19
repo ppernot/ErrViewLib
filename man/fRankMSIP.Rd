@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{fRankMSIP}
 \alias{fRankMSIP}
-\title{Title}
+\title{Ranks of a series of MSIP statistics}
 \usage{
 fRankMSIP(data, index = 1:nrow(data), ...)
 }
@@ -13,5 +13,5 @@ fRankMSIP(data, index = 1:nrow(data), ...)
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{agrestiCoull}
 \alias{agrestiCoull}
-\title{Title}
+\title{Agresti-Coull estimation of uncertainty on CDF}
 \usage{
 agrestiCoull(X, n)
 }
@@ -13,5 +13,5 @@ agrestiCoull(X, n)
 
 }
 \description{
-Title
+Agresti-Coull estimation of uncertainty on CDF
 }

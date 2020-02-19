@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSIPMat.R
 \name{plotSIPMat}
 \alias{plotSIPMat}
-\title{Title}
+\title{Plot of Systematic Improvement Probability matrix}
 \usage{
 plotSIPMat(
   X,
@@ -21,5 +21,5 @@ plotSIPMat(
 
 }
 \description{
-Title
+Interface to \code{corrplot::corrplot()}
 }

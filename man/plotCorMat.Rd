@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotCorMat.R
 \name{plotCorMat}
 \alias{plotCorMat}
-\title{Title}
+\title{Plot of correlation matrix}
 \usage{
 plotCorMat(
   X,
   method = "ellipse",
   order = "original",
-  main = "",
+  main = NULL,
   label = 0,
   cex.lab = 1,
   gPars
@@ -21,5 +21,5 @@ plotCorMat(
 
 }
 \description{
-Title
+Interface to \code{corrplot::corrplot()}
 }

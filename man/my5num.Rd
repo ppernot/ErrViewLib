@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{my5num}
 \alias{my5num}
-\title{Title}
+\title{5-numbers summary of sample}
 \usage{
 my5num(X)
 }
@@ -13,5 +13,5 @@ my5num(X)
 
 }
 \description{
-Title
+5-numbers summary of sample
 }

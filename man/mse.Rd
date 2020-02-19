@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{mse}
 \alias{mse}
-\title{Title}
+\title{Mean Signed Error (MSE)}
 \usage{
 mse(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ mse(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

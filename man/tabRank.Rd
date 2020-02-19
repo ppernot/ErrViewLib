@@ -2,7 +2,7 @@
 % Please edit documentation in R/rankBS.R
 \name{tabRank}
 \alias{tabRank}
-\title{Title}
+\title{Results table for ranking probabilities}
 \usage{
 tabRank(E, scores = c("mue", "q95hd"), nMC = 1000)
 }
@@ -13,5 +13,5 @@ tabRank(E, scores = c("mue", "q95hd"), nMC = 1000)
 
 }
 \description{
-Title
+Results table for ranking probabilities
 }

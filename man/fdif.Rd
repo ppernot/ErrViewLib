@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{fdif}
 \alias{fdif}
-\title{Title}
+\title{Difference of statistics}
 \usage{
 fdif(X, index = 1:nrow(X), fscore, ...)
 }
@@ -13,5 +13,5 @@ fdif(X, index = 1:nrow(X), fscore, ...)
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

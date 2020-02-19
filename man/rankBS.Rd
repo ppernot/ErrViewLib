@@ -2,7 +2,7 @@
 % Please edit documentation in R/rankBS.R
 \name{rankBS}
 \alias{rankBS}
-\title{Title}
+\title{N-out of-N Bootstrap of order statistics}
 \usage{
 rankBS(E, score = "mue", nMC = 1000)
 }
@@ -13,5 +13,5 @@ rankBS(E, score = "mue", nMC = 1000)
 
 }
 \description{
-Title
+N-out of-N Bootstrap of order statistics
 }

@@ -2,7 +2,8 @@
 % Please edit documentation in R/genTabStat.R
 \name{genTabStat}
 \alias{genTabStat}
-\title{Title}
+\title{Generate results table from benchmarking statistics generated
+by 'estBS()'}
 \usage{
 genTabStat(S, comp = TRUE, ref = 0, numDig = 1, units = "a.u.")
 }
@@ -13,5 +14,6 @@ genTabStat(S, comp = TRUE, ref = 0, numDig = 1, units = "a.u.")
 
 }
 \description{
-Title
+Generate results table from benchmarking statistics generated
+by 'estBS()'
 }

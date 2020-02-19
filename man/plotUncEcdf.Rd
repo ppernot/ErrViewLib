@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotUncEcdf.R
 \name{plotUncEcdf}
 \alias{plotUncEcdf}
-\title{Title}
+\title{Plot of a set of ECDFs}
 \usage{
 plotUncEcdf(
   X,
@@ -28,5 +28,5 @@ plotUncEcdf(
 
 }
 \description{
-Title
+Plot of a set of ECDFs
 }

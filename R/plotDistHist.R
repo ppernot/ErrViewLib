@@ -1,4 +1,4 @@
-#' Title
+#' Scatter plot of an error set with marginal histogram
 #'
 #' @param x
 #' @param y

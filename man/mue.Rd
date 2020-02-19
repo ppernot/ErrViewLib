@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{mue}
 \alias{mue}
-\title{Title}
+\title{Mean Unsigned Error (MUE)}
 \usage{
 mue(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ mue(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }

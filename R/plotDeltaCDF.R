@@ -1,4 +1,6 @@
-#' Title
+#' Plot of the CDF of the differences of a pair of absolute errors samples
+#'
+#'Plots also auxiliary statistics (SIP, MG, ML) with bootstrapped CIs.
 #'
 #' @param err
 #' @param meth1

@@ -1,4 +1,5 @@
-#' Title
+#' Generate results table from benchmarking statistics generated
+#' by 'estBS()'
 #'
 #' @param S
 #' @param comp
@@ -88,10 +89,6 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
       apply(cbind(msip,umsip),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    # vu = c(un,vu)
-    # colnames(vu) = 'MSIP'
-    # rownames(vu) = methods
-    # df = cbind(df, vu)
     df = cbind(df, MSIP = c('',vu))
 
     # SIP for best MUE
@@ -104,39 +101,27 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
       apply(cbind(sip,usip),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    # vu = c(un,vu)
-    # colnames(vu) = 'SIP'
-    # rownames(vu) = methods
-    # df = cbind(df, vu)
     df = cbind(df, SIP = c('',vu))
 
     # Mean gain
-    mg  = S[['mg']][mi,]
-    umg = S[['umg']][mi,]
+    mg  = S[['mg']][ mi, ]
+    umg = S[['umg']][ mi, ]
     vu = matrix(
       apply(cbind(mg,umg),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    # vu = c(un,vu)
-    # colnames(vu) = 'MG'
-    # rownames(vu) = methods
-    # df = cbind(df, vu)
     df = cbind(df, MG = c(un,vu))
 
     # Mean loss
-    mg = -S[['mg']][,mi]
-    umg = S[['umg']][,mi]
+    mg = -S[['mg']][ , mi ]
+    umg = S[['umg']][ , mi ]
     vu = matrix(
       apply(cbind(mg,umg),1,
             function(x) prettyUnc(x[1],x[2],numDig = numDig)),
       ncol=1)
-    # vu = as.matrixc(un,vu)
-    # colnames(vu) = 'ML'
-    # rownames(vu) = methods
     df = cbind(df, ML = c(un,vu))
 
   }
-
   return(df)
 }
 #' Title
@@ -174,7 +159,7 @@ pval = function(x) {
 #' @examples
 pinv = function (X,d0) {
   # Probability to have a sign different from d0's
-  # The zeros (sign = 0) are excluded
+  # The zeros (sign = 0) are subtracted
   A = sum( sign(X) != sign(d0) )
   C = sum( X == 0 )
   (A - C)/length(X)

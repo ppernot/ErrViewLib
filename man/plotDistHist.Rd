@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotDistHist.R
 \name{plotDistHist}
 \alias{plotDistHist}
-\title{Title}
+\title{Scatter plot of an error set with marginal histogram}
 \usage{
 plotDistHist(
   x,
@@ -34,5 +34,5 @@ plotDistHist(
 
 }
 \description{
-Title
+Scatter plot of an error set with marginal histogram
 }

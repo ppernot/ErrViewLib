@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{P1}
 \alias{P1}
-\title{Title}
+\title{Probability for the absolute errors to be below a threshold}
 \usage{
 P1(X, index = 1:length(X))
 }
@@ -13,5 +13,5 @@ P1(X, index = 1:length(X))
 
 }
 \description{
-Title
+Auxillary function for bootstrap by 'boot::boot()'
 }
