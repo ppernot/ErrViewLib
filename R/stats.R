@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-mse = function(X, index = 1:length(X)) {
+mse = function(X, index = 1:length(X),...) {
   mean(X[index])
 }
 #' Root-Mean Squared Deviation (RMSD)
@@ -23,8 +23,36 @@ mse = function(X, index = 1:length(X)) {
 #' @export
 #'
 #' @examples
-rmsd = function(X, index = 1:length(X)) {
+rmsd = function(X, index = 1:length(X),...) {
   sd(X[index])
+}
+#' Skewness (Skew)
+#'
+#' Auxillary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+skew = function(X, index = 1:length(X),...) {
+  moments::skewness(X[index])
+}
+#' Kurtosis (Kurt)
+#'
+#' Auxillary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kurt = function(X, index = 1:length(X),...) {
+  moments::kurtosis(X[index])
 }
 #' Mean Unsigned Error (MUE)
 #'
@@ -37,7 +65,7 @@ rmsd = function(X, index = 1:length(X)) {
 #' @export
 #'
 #' @examples
-mue = function(X, index = 1:length(X)) {
+mue = function(X, index = 1:length(X),...) {
   mean(abs(X[index]))
 }
 #' 95th Quantile of absolute errors (Q95)
@@ -51,7 +79,7 @@ mue = function(X, index = 1:length(X)) {
 #' @export
 #'
 #' @examples
-q95 = function(X, index = 1:length(X)) {
+q95 = function(X, index = 1:length(X),...) {
   quantile(abs(X[index]), 0.95)
 }
 #' 95th Quantile of absolute errors using the HD algorithm (Q95HD)
@@ -65,7 +93,7 @@ q95 = function(X, index = 1:length(X)) {
 #' @export
 #'
 #' @examples
-q95hd = function(X, index = 1:length(X)){
+q95hd = function(X, index = 1:length(X),...){
   # Quantile estimate by Harrell & Davis 1982
   hd(abs(X[index]), 0.95)
 }
@@ -80,7 +108,7 @@ q95hd = function(X, index = 1:length(X)){
 #' @export
 #'
 #' @examples
-P1 = function(X, index = 1:length(X)) {
+P1 = function(X, index = 1:length(X), eps) {
   sum(abs(X[index]) < eps) / length(index)
 }
 #' Normality index of a sample by the Shapiro test
@@ -94,12 +122,12 @@ P1 = function(X, index = 1:length(X)) {
 #' @export
 #'
 #' @examples
-W = function(X, index = 1:length(X)) {
+W = function(X, index = 1:length(X),...) {
   if (length(index) > 5000)
     index = sample(index, 5000)
   shapiro.test(X[index])$statistic
 }
-#' Ranks of a series of statistics
+#' Order of a series of statistics
 #'
 #' Auxillary function for bootstrap by 'boot::boot()'
 #'
@@ -112,11 +140,13 @@ W = function(X, index = 1:length(X)) {
 #' @export
 #'
 #' @examples
-frank = function(data,index=1:nrow(data),fscore,...){
+forder = function(data,index=1:nrow(data),fscore,...){
   S = apply(data[index,],2, fscore)
+  # Rq: might use rank instead of order, but the pRank matrix
+  # would need to be transposed in rankBS...
   order(S, decreasing = FALSE)
 }
-#' Ranks of a series of MSIP statistics
+#' Order of a series of MSIP statistics
 #'
 #' Auxillary function for bootstrap by 'boot::boot()'
 #'
@@ -128,7 +158,7 @@ frank = function(data,index=1:nrow(data),fscore,...){
 #' @export
 #'
 #' @examples
-fRankMSIP = function(data, index=1:nrow(data), ...){
+fOrderMSIP = function(data, index=1:nrow(data), ...){
   nm  = ncol(data)
   N   = nrow(data)
   sip = matrix(NA, nrow = nm, ncol = nm)

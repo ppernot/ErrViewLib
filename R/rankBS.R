@@ -15,13 +15,13 @@ rankBS = function(E, score = 'mue', nMC = 1000) {
   if(score == 'msip') {
     bs = boot::boot(
       E,
-      statistic = fRankMSIP,
+      statistic = fOrderMSIP,
       R = nMC
     )
   } else {
     bs = boot::boot(
       E,
-      statistic = frank,
+      statistic = forder,
       R = nMC,
       fscore = get(score)
     )
@@ -63,14 +63,14 @@ rankBS2 = function(E, score = 'mue', nMC = 1000, M = nrow(E)) {
   if(score == 'msip') {
     bs = distillery::booter(
       x = E,
-      statistic = fRankMSIP,
+      statistic = fOrderMSIP,
       B = nMC,
       rsize = M
     )
   } else {
     bs = distillery::booter(
       x = E,
-      statistic = frank,
+      statistic = forder,
       B = nMC,
       rsize = M,
       fscore = get(score)

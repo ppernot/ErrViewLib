@@ -4,7 +4,7 @@
 \alias{P1}
 \title{Probability for the absolute errors to be below a threshold}
 \usage{
-P1(X, index = 1:length(X))
+P1(X, index = 1:length(X), eps)
 }
 \arguments{
 \item{index}{}

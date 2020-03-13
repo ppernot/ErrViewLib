@@ -6,7 +6,7 @@
 \usage{
 estBS1(
   error,
-  props = c("mue", "mse", "rmsd", "q95", "q95hd", "P1", "W"),
+  props = c("mue", "mse", "rmsd", "skew", "kurt", "q95", "q95hd", "P1", "W"),
   nboot = 1000,
   do.sip = TRUE,
   eps = 1,

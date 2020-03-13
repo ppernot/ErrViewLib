@@ -16,14 +16,16 @@ estBS1 = function(error,
                   props = c('mue',
                             'mse',
                             'rmsd',
+                            'skew',
+                            'kurt',
                             'q95',
                             'q95hd',
                             'P1',
                             'W'),
-                  nboot = 1000,
+                  nboot  = 1000,
                   do.sip = TRUE,  # Generate SIP stats
-                  eps = 1,        # Threshold for P1
-                  seed = 123,
+                  eps    = 1,     # Threshold for P1
+                  seed   = 123,
                   silent = TRUE) {
 
   # Process data
@@ -41,7 +43,7 @@ estBS1 = function(error,
     for (i in 1:nm) {
       m = methods[i]
       set.seed(seed) # Correlate bs for correl. estim.
-      bs = boot::boot(error[[m]], statistic, R=nboot)
+      bs = boot::boot(error[[m]], statistic, R=nboot, eps = eps)
       bsl[[m]] = bs
       results[[prop]][['val']][[m]] = bs$t0
       results[[prop]][['unc']][[m]] = sd(bs$t)
@@ -79,11 +81,11 @@ estBS1 = function(error,
       # How to deal with ties ?
       # eq   = diff == 0
       mg = ifelse(sum(gain) == 0, 0, mean(diff[gain]))
-      ml = ifelse(sum(loss) == 0, 0, mean(diff[loss]))
+      # ml = ifelse(sum(loss) == 0, 0, mean(diff[loss]))
       p  = sum(gain) / N
       # p  = (sum(gain)+0.5*sum(eq)) / N
 
-      return(c(p,mg,ml))
+      return(c(p,mg))
     }
     sip = usip = mg = umg = matrix(NA, nrow = nm, ncol = nm)
     for (i in 1:nm) {

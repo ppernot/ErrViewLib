@@ -4,7 +4,7 @@
 \alias{rmsd}
 \title{Root-Mean Squared Deviation (RMSD)}
 \usage{
-rmsd(X, index = 1:length(X))
+rmsd(X, index = 1:length(X), ...)
 }
 \arguments{
 \item{index}{}

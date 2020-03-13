@@ -4,7 +4,7 @@
 \alias{mue}
 \title{Mean Unsigned Error (MUE)}
 \usage{
-mue(X, index = 1:length(X))
+mue(X, index = 1:length(X), ...)
 }
 \arguments{
 \item{index}{}

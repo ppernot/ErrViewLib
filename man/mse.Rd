@@ -4,7 +4,7 @@
 \alias{mse}
 \title{Mean Signed Error (MSE)}
 \usage{
-mse(X, index = 1:length(X))
+mse(X, index = 1:length(X), ...)
 }
 \arguments{
 \item{index}{}

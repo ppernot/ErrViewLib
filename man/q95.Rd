@@ -4,7 +4,7 @@
 \alias{q95}
 \title{95th Quantile of absolute errors (Q95)}
 \usage{
-q95(X, index = 1:length(X))
+q95(X, index = 1:length(X), ...)
 }
 \arguments{
 \item{index}{}

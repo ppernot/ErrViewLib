@@ -4,7 +4,7 @@
 \alias{W}
 \title{Normality index of a sample by the Shapiro test}
 \usage{
-W(X, index = 1:length(X))
+W(X, index = 1:length(X), ...)
 }
 \arguments{
 \item{index}{}
