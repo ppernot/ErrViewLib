@@ -30,7 +30,9 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
     colnames(vu) = prop
     df = cbind(df, vu)
 
-    if (comp & (prop %in% c('mue','wmue','rmsd','q95hd')) ) {
+    if (comp &
+        (prop %in% c('mue','wmue','rmsd','q95hd')) &
+        nm > 1) {
       if(ref != 0){
         # compare with specified method
         im = ref

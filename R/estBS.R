@@ -50,22 +50,24 @@ estBS1 = function(error,
       results[[prop]][['bs' ]][[m]] = bs$t
     }
 
-    # Correlation of scores
-    C = matrix(1, nrow = nm, ncol = nm)
-    colnames(C) = rownames(C) = methods
-    for (i in 1:(nm - 1)) {
-      mi = methods[i]
-      for (j in (i + 1):nm) {
-        mj = methods[j]
-        C[i, j] = cor(bsl[[mi]]$t, bsl[[mj]]$t)
-        C[j, i] = C[i, j]
+    if(nm > 1) {
+      # Correlation of scores
+      C = matrix(1, nrow = nm, ncol = nm)
+      colnames(C) = rownames(C) = methods
+      for (i in 1:(nm - 1)) {
+        mi = methods[i]
+        for (j in (i + 1):nm) {
+          mj = methods[j]
+          C[i, j] = cor(bsl[[mi]]$t, bsl[[mj]]$t)
+          C[j, i] = C[i, j]
+        }
       }
+      results[[prop]][['corr']] = C
     }
-    results[[prop]][['corr']] = C
   }
 
   # Systematic improvement probability
-  if(do.sip) {
+  if(do.sip & nm > 1) {
     fsi = function(X, index=1:nrow(X), uX = 0,...){
       v1 = abs(X[index,1])
       v2 = abs(X[index,2])
