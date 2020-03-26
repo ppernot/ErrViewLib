@@ -44,7 +44,8 @@ plotDistHist = function(
   plotBAci  = FALSE, # 95% CI on Bland-Altman LOAs
   xlim      = range(x),
   ylim      = range(y),
-  scaleLegBA= 0.75,
+  scaleLegBA = 0.75,
+  scalePoints = 0.75,
   gPars
 ) {
 
@@ -172,7 +173,7 @@ plotDistHist = function(
     ylim = ylim,
     xlab = xlab,
     yaxt = 'n',
-    cex = 0.75*cex,
+    cex = scalePoints*cex,
     main = NULL
   )
   grid()
@@ -195,7 +196,8 @@ plotDistHist = function(
         x = x[lab],
         y = y[lab],
         pch = 16,
-        col = cols[5]
+        col = cols[5],
+        cex = scalePoints*cex
       )
       text(
         x = x[lab],
@@ -216,7 +218,7 @@ plotDistHist = function(
       p = predict(reg, interval = 'conf')
       matlines(x[indx],
                p[indx, ],
-               col = cols[1],
+               col = cols[2],
                lwd = gPars$lwd,
                lty = c(1, 2, 2))
     } else {
@@ -224,7 +226,7 @@ plotDistHist = function(
       p = predict(reg)
       matlines(x[indx],
                p[indx],
-               col = cols[1],
+               col = cols[2],
                lwd = gPars$lwd,
                lty = 1)
     }

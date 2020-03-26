@@ -60,16 +60,19 @@ plotUncEcdf = function(X,
   }
 
   if (is.null(xmax))
-    xmax = max(X)
+    xmax = max(X, na.rm = TRUE)
 
   if(is.null(xlab))
     xlab = paste0('|Errors| [',units,']')
 
   for (icol in 1:ncol(X)) {
-    io = order(X[, icol])
-    x = X[io, icol]
+    x = X[, icol]
+    sel = !is.na(x)
+    x = x[sel]
+    io = order(x)
+    x = x[io]
     if(!is.null(weights)) {
-      prob = cumsum(weights[io])/sum(weights)
+      prob = cumsum(weights[sel][io])/sum(weights[sel])
     } else {
       prob = (1:length(x)) / length(x)
     }
@@ -101,7 +104,7 @@ plotUncEcdf = function(X,
       if(Q.algo == 'HD')
         Q95 = hd(x, 0.95)
       else
-        Q95 = quantile(x,0.95)
+        Q95 = quantile(x,0.95,na.rm=TRUE)
 
       segments(Q95, 0, Q95, 0.95,
                col = cols[col.index[icol]], lty = 2)

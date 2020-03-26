@@ -24,6 +24,7 @@ plotDistHist(
   xlim = range(x),
   ylim = range(y),
   scaleLegBA = 0.75,
+  scalePoints = 0.75,
   gPars
 )
 }
