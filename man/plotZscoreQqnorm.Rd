@@ -9,14 +9,15 @@ plotZscoreQqnorm(
   sig,
   lim = NULL,
   plotCI = FALSE,
-  plorReg = FALSE,
+  plotReg = FALSE,
   markOutliers = FALSE,
+  labels = 1:length(R),
   title = "",
   gPars
 )
 }
 \arguments{
-\item{markOutliers}{}
+\item{labels}{}
 }
 \value{
 

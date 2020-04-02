@@ -22,6 +22,7 @@ plotParallel = function (X, maxPoints = nrow(X),
                          rescale = TRUE,
                          scramble = FALSE,
                          outliers = FALSE,
+                         outLabCex = 1,
                          units = 'a.u.',
                          ylab = "Errors",
                          gPars) {
@@ -73,6 +74,7 @@ plotParallel = function (X, maxPoints = nrow(X),
     rescale = rescale,
     scramble = scramble,
     outliers = outliers,
+    outLabCex = outLabCex,
     ylab = ifelse(
       rescale,
       'Centered-Scaled Errors',
@@ -124,6 +126,7 @@ paraPlot = function (x,
                      rescale = FALSE,
                      scramble = FALSE,
                      outliers = "no",
+                     outLabCex = 1,
                      ylab = "",
                      cols_tr2 = NULL,
                      ...) {
@@ -188,7 +191,7 @@ paraPlot = function (x,
         at = at[sel]
         lab1 = var.label[sel]
         mtext(lab1,
-              cex  = 1,
+              cex  = outLabCex,
               col  = 4,
               side = 4,
               las  = 2,
@@ -202,7 +205,7 @@ paraPlot = function (x,
         at = at[sel]
         lab2 = var.label[sel]
         mtext(lab2[sel],
-              cex  = 1,
+              cex  = outLabCex,
               col  = 4,
               side = 2,
               las  = 2,
@@ -238,7 +241,7 @@ paraPlot = function (x,
       if(sum(sel)>0) {
         lab1 = var.label[sel]
         mtext(lab1,
-              cex  = 1,
+              cex  = outLabCex,
               col  = 2,
               side = 4,
               las  = 2,
@@ -246,10 +249,10 @@ paraPlot = function (x,
               at   = x[sel,ncol(x)]
         )
         mtext(lab1,
-              cex  = 1,
+              cex  = outLabCex,
               col  = 2,
               side = 2,
-              adj =  1,
+              adj  =  1,
               las  = 2,
               line = -0.2,
               at   = x[sel,1]

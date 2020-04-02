@@ -15,6 +15,7 @@ paraPlot(
   rescale = FALSE,
   scramble = FALSE,
   outliers = "no",
+  outLabCex = 1,
   ylab = "",
   cols_tr2 = NULL,
   ...

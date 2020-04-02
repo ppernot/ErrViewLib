@@ -13,6 +13,7 @@ plotParallel(
   rescale = TRUE,
   scramble = FALSE,
   outliers = FALSE,
+  outLabCex = 1,
   units = "a.u.",
   ylab = "Errors",
   gPars
