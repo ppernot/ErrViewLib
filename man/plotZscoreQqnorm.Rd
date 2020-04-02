@@ -4,10 +4,19 @@
 \alias{plotZscoreQqnorm}
 \title{plotZscoreQqnorm}
 \usage{
-plotZscoreQqnorm(R, sig, lim = NULL, title = "", gPars)
+plotZscoreQqnorm(
+  R,
+  sig,
+  lim = NULL,
+  plotCI = FALSE,
+  plorReg = FALSE,
+  markOutliers = FALSE,
+  title = "",
+  gPars
+)
 }
 \arguments{
-\item{gPars}{}
+\item{markOutliers}{}
 }
 \value{
 

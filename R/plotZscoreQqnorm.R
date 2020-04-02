@@ -6,8 +6,9 @@
 #' @param title
 #' @param gPars
 #' @param plotCI
-#' @param plorReg
+#' @param plotReg
 #' @param markOutliers
+#' @param labels
 #'
 #' @return
 #' @export
@@ -18,8 +19,9 @@ plotZscoreQqnorm = function(
   sig,
   lim = NULL,
   plotCI = FALSE,
-  plorReg = FALSE,
+  plotReg = FALSE,
   markOutliers = FALSE,
+  labels = 1:length(R),
   title = '',
   gPars
 ) {
@@ -92,7 +94,7 @@ plotZscoreQqnorm = function(
     out = (Zs - q95[, 1]) * (Zs - q95[, 2]) > 0
     text(x = ulx[out],
          y = Zs[out],
-         labels = names(R)[out])
+         labels = labels[out])
   }
 
   legend(
@@ -107,7 +109,7 @@ plotZscoreQqnorm = function(
     pch = c(16, -1, -1),
     col = c(cols[5], cols_tr2[3], 2),
     lty = c(NA, 1, 1),
-    lwd = c(0, 30, lwd)
+    lwd = c(0, 25, lwd)
   )
   box()
 }
