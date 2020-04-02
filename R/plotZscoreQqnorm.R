@@ -109,7 +109,7 @@ plotZscoreQqnorm = function(
     pch = c(16, -1, -1),
     col = c(cols[5], cols_tr2[3], 2),
     lty = c(NA, 1, 1),
-    lwd = c(0, 25, lwd)
+    lwd = c(0, 10*lwd, lwd)
   )
   box()
 }
