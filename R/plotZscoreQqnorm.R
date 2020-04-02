@@ -5,6 +5,9 @@
 #' @param lim
 #' @param title
 #' @param gPars
+#' @param plotCI
+#' @param plorReg
+#' @param markOutliers
 #'
 #' @return
 #' @export
@@ -14,24 +17,29 @@ plotZscoreQqnorm = function(
   R,
   sig,
   lim = NULL,
+  plotCI = FALSE,
+  plorReg = FALSE,
+  markOutliers = FALSE,
   title = '',
   gPars
 ) {
 
-  # Monte Carlo estimation of 95% CI of qqnorm
-  # for a given sample size N
-  N   = length(R)
-  nMC = 1000
-  uly = matrix(0, ncol = N, nrow = nMC)
-  for (i in 1:nMC) {
-    t = sort(rnorm(N))
-    qt = qqnorm(t, plot.it = FALSE)
-    uly[i, ] = qt$y
+  if(plotCI) {
+    # Monte Carlo estimation of 95% CI of qqnorm
+    # for a given sample size N
+    N   = length(R)
+    nMC = 1000
+    uly = matrix(0, ncol = N, nrow = nMC)
+    for (i in 1:nMC) {
+      t = sort(rnorm(N))
+      qt = qqnorm(t, plot.it = FALSE)
+      uly[i, ] = qt$y
+    }
+    q95 = t(apply(uly, 2, function(x)
+      quantile(x, probs = c(0.025, 0.975))))
+    rm(uly)
+    ulx = sort(qt$x) # Set of quantiles for N points
   }
-  q95 = t(apply(uly, 2, function(x)
-    quantile(x, probs = c(0.025, 0.975))))
-  rm(uly)
-  ulx = sort(qt$x) # Set of quantiles for N points
 
   # Z-scores
   Zs = R / sig
@@ -63,21 +71,30 @@ plotZscoreQqnorm = function(
     ylim = lim * c(-1, 1)
   )
   grid()
-  polygon(c(ulx, rev(ulx)),
-          c(q95[, 1], rev(q95[, 2])),
-          border = NA,
-          col = cols_tr2[3])
+  abline(a = 0, b = 1)
+
+  if(plotCI)
+    polygon(c(ulx, rev(ulx)),
+            c(q95[, 1], rev(q95[, 2])),
+            border = NA,
+            col = cols_tr2[3])
+
   points(q$x,
          q$y,
          pch = 16,
          cex = 0.8,
          col = cols[5])
-  qqline(Zs, col = 2)
-  abline(a = 0, b = 1)
-  out = (Zs - q95[, 1]) * (Zs - q95[, 2]) > 0
-  text(x = ulx[out],
-       y = Zs[out],
-       labels = names(R)[out])
+
+  if(plotReg)
+    qqline(Zs, col = 2)
+
+  if(markOutliers & plotCI) {
+    out = (Zs - q95[, 1]) * (Zs - q95[, 2]) > 0
+    text(x = ulx[out],
+         y = Zs[out],
+         labels = names(R)[out])
+  }
+
   legend(
     'topleft',
     inset = 0.025,
@@ -85,11 +102,12 @@ plotZscoreQqnorm = function(
     title.adj = 0,
     bty = 'n',
     legend = c('Data',
-               '95% CI'),
-    pch = c(16, -1),
-    col = c(cols[5], cols_tr2[3]),
-    lty = c(NA, 1),
-    lwd = c(0, 30)
+               '95% CI',
+               'QQ line'),
+    pch = c(16, -1, -1),
+    col = c(cols[5], cols_tr2[3], 2),
+    lty = c(NA, 1, 1),
+    lwd = c(0, 30, lwd)
   )
   box()
 }
