@@ -18,7 +18,8 @@
 #' @export
 #'
 #' @examples
-plotRankMat = function (E, tab,
+plotRankMat = function (E,
+                        tab = NULL,
                         score='mue',
                         type = 'levels',
                         method = 'square',
@@ -44,10 +45,12 @@ plotRankMat = function (E, tab,
     lwd = lwd
   )
 
-  # if( M == nrow(E) )
-  #   tab = rankBS(E, score, nMC)
-  # else
-  #   tab = rankBS2(E, score, nMC, M)
+  if(is.null(tab)) {
+    if( M == nrow(E) )
+      tab = rankBS(E, score, nMC)
+    else
+      tab = rankBS2(E, score, nMC, M)
+  }
 
   x = 1:ncol(E)
   main = paste0(toupper(score),' ranks (N = ',nrow(E),')')

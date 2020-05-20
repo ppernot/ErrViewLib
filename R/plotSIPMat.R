@@ -56,7 +56,8 @@ plotSIPMat = function(X,
     method = method,
     order = 'original',
     tl.col = 'black',
-    tl.cex = cex.lab)
+    tl.cex = cex.lab,
+    cl.cex = cex.lab)
 
   title(main,line=0)
 
