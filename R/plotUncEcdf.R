@@ -19,6 +19,7 @@
 #' @examples
 plotUncEcdf = function(X,
                        xlab = NULL,
+                       xmin = 0,
                        xmax = NULL,
                        title = '',
                        show.leg = TRUE,
@@ -59,6 +60,9 @@ plotUncEcdf = function(X,
     colnames(X) = n
   }
 
+  if (is.null(xmin))
+    xmin = min(X, na.rm = TRUE)
+
   if (is.null(xmax))
     xmax = max(X, na.rm = TRUE)
 
@@ -83,7 +87,7 @@ plotUncEcdf = function(X,
         type = 'l',
         col  = cols[col.index[icol]],
         xlab = xlab,
-        xlim = c(0, xmax),
+        xlim = c(xmin, xmax),
         main = '',
         yaxs = 'i',
         ylab = 'Probability'

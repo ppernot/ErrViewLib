@@ -182,7 +182,7 @@ prettyUnc = function(y, uy, numDig = 2) {
   if (!is.finite(y))
     return(y)
 
-  if (!is.finite(uy) | uy<=0)
+  if (!is.finite(uy) | uy <= 0)
     return(y)
 
   # Get scales

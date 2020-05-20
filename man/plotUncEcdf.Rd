@@ -7,6 +7,7 @@
 plotUncEcdf(
   X,
   xlab = NULL,
+  xmin = 0,
   xmax = NULL,
   title = "",
   show.leg = TRUE,
