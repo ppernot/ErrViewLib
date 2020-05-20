@@ -6,6 +6,7 @@
 \usage{
 plotRankMat(
   E,
+  tab,
   score = "mue",
   type = "levels",
   method = "square",

@@ -3,6 +3,7 @@
 #' Interface to \code{corrplot::corrplot()} or mode/CI graph
 #'
 #' @param E
+#' @param tab
 #' @param score
 #' @param type
 #' @param method
@@ -17,7 +18,8 @@
 #' @export
 #'
 #' @examples
-plotRankMat = function (E, score='mue',
+plotRankMat = function (E, tab,
+                        score='mue',
                         type = 'levels',
                         method = 'square',
                         nMC = 1000,
@@ -42,10 +44,10 @@ plotRankMat = function (E, score='mue',
     lwd = lwd
   )
 
-  if( M == nrow(E) )
-    tab = rankBS(E, score, nMC)
-  else
-    tab = rankBS2(E, score, nMC, M)
+  # if( M == nrow(E) )
+  #   tab = rankBS(E, score, nMC)
+  # else
+  #   tab = rankBS2(E, score, nMC, M)
 
   x = 1:ncol(E)
   main = paste0(toupper(score),' ranks (N = ',nrow(E),')')
