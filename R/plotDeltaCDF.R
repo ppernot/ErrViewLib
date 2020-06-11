@@ -22,6 +22,7 @@ plotDeltaCDF <- function(err,
                          meth1,
                          meth2,
                          eps   = NULL,
+                         xmin  = NULL,
                          xmax  = NULL,
                          xlab  = NULL,
                          units = 'a.u.',
@@ -70,12 +71,11 @@ plotDeltaCDF <- function(err,
       R=nboot)
   }
 
-  if(is.null(xmax)) {
-    xmax = max(abs(range(X)))
-    xlim = range(X)
-  }
-  else
-    xlim = xmax * c(-1, 1)
+  if(is.null(xmin))
+    xmin = min(X)
+  if(is.null(xmax))
+    xmax = max(X)
+  xlim = c(xmin,xmax)
 
   if(is.null(xlab))
     xlab = substitute(

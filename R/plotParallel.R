@@ -23,6 +23,8 @@ plotParallel = function (X, maxPoints = nrow(X),
                          scramble = FALSE,
                          outliers = FALSE,
                          outLabCex = 1,
+                         xlim = c(1, ncol(X)),
+                         ylim = NULL,
                          units = 'a.u.',
                          ylab = "Errors",
                          gPars) {
@@ -75,6 +77,8 @@ plotParallel = function (X, maxPoints = nrow(X),
     scramble = scramble,
     outliers = outliers,
     outLabCex = outLabCex,
+    xlim = xlim,
+    ylim = ylim,
     ylab = ifelse(
       rescale,
       'Centered-Scaled Errors',
@@ -127,6 +131,8 @@ paraPlot = function (x,
                      scramble = FALSE,
                      outliers = "no",
                      outLabCex = 1,
+                     xlim = c(1, ncol(x)),
+                     ylim = NULL,
                      ylab = "",
                      cols_tr2 = NULL,
                      ...) {
@@ -136,16 +142,17 @@ paraPlot = function (x,
   rx = matrix(rep(1:ncol(x)),nrow=ncol(x),ncol=nrow(x))
   if(scramble)
     rx = rx + rnorm(length(rx),0,0.1)
-
+print(xlim)
   matplot(
     rx,
     t(x),
     type = "l",
     col  = col,
     lty  = lty,
+    xlim = xlim,
     xlab = "",
+    ylim = ylim,
     ylab = ylab,
-    xlim = c(1, ncol(x)),
     axes = FALSE,
     ...)
 
