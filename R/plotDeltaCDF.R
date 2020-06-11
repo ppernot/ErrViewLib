@@ -47,29 +47,21 @@ plotDeltaCDF <- function(err,
     yaxs = 'i'
   )
 
-  # Stats of SIP and DeltaMUE indicatots
   if(class(err)=='matrix' | class(err)=='data.frame') {
     X = abs(err[,meth1]) - abs(err[,meth2])
-    bsSip = boot::boot(
-      cbind(err[,meth1],err[,meth2]),
-      statistic = fsi,
-      R=nboot)
-    bsDmue = boot::boot(
-      cbind(err[,meth1],err[,meth2]),
-      statistic = dmue,
-      R=nboot)
-  }
-  else {
+    Y = cbind(err[,meth1],err[,meth2])
+  } else {
     X = abs(err[[meth1]]) - abs(err[[meth2]])
-    bsSip = boot::boot(
-      cbind(err[[meth1]],err[[meth2]]),
-      statistic = fsi,
-      R=nboot)
-    bsDmue = boot::boot(
-      cbind(err[[meth1]],err[[meth2]]),
-      statistic = dmue,
-      R=nboot)
+    Y = cbind(err[[meth1]],err[[meth2]])
   }
+
+  # Stats of SIP and DeltaMUE indicators
+  bsSip     = boot::boot(Y, statistic = fsi, R = nboot)
+  bsSip.ci  = boot::boot.ci(bsSip, index = 1, conf = 0.95, type = "bca")
+  bsMG.ci   = boot::boot.ci(bsSip, index = 2, conf = 0.95, type = "bca")
+  bsML.ci   = boot::boot.ci(bsSip, index = 3, conf = 0.95, type = "bca")
+  bsDmue    = boot::boot(Y, statistic = dmue, R = nboot)
+  bsDmue.ci = boot::boot.ci(bsDmue, conf = 0.95, type = "bca")
 
   if(is.null(xmin))
     xmin = min(X)
@@ -110,8 +102,15 @@ plotDeltaCDF <- function(err,
 
   #SIP
   mval = bsSip$t0
-  q025 = apply(bsSip$t,2,hd,q=0.025)
-  q975 = apply(bsSip$t,2,hd,q=0.975)
+  q025 = q975 = c()
+  q025[1] = bsSip.ci$bca[,4]
+  q975[1] = bsSip.ci$bca[,5]
+  q025[2] = bsMG.ci$bca[,4]
+  q975[2] = bsMG.ci$bca[,5]
+  q025[3] = bsML.ci$bca[,4]
+  q975[3] = bsML.ci$bca[,5]
+  # q025 = apply(bsSip$t,2,hd,q=0.025)
+  # q975 = apply(bsSip$t,2,hd,q=0.975)
   for(i in 2:3)
     polygon(
       c(q025[i],q975[i],q975[i],q025[i]),
@@ -139,8 +138,10 @@ plotDeltaCDF <- function(err,
 
   # Delta MUE
   mval = bsDmue$t0
-  q025 = apply(bsDmue$t,2,hd,q=0.025)
-  q975 = apply(bsDmue$t,2,hd,q=0.975)
+  q025 = bsDmue.ci$bca[,4]
+  q975 = bsDmue.ci$bca[,5]
+  # q025 = apply(bsDmue$t,2,hd,q=0.025)
+  # q975 = apply(bsDmue$t,2,hd,q=0.975)
   polygon(
     c(q025,q975,q975,q025),
     c(0,0,1,1),
