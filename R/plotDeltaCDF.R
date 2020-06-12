@@ -29,6 +29,10 @@ plotDeltaCDF <- function(err,
                          main  = '',
                          nboot = 1000,
                          label = 0,
+                         showSIP  = TRUE,
+                         showMLG  = TRUE,
+                         showDmue = TRUE,
+                         showCI   = TRUE,
                          gPars) {
   # Expose gPars list
   for (n in names(gPars))
@@ -56,12 +60,31 @@ plotDeltaCDF <- function(err,
   }
 
   # Stats of SIP and DeltaMUE indicators
-  bsSip     = boot::boot(Y, statistic = fsi, R = nboot)
-  bsSip.ci  = boot::boot.ci(bsSip, index = 1, conf = 0.95, type = "bca")
-  bsMG.ci   = boot::boot.ci(bsSip, index = 2, conf = 0.95, type = "bca")
-  bsML.ci   = boot::boot.ci(bsSip, index = 3, conf = 0.95, type = "bca")
-  bsDmue    = boot::boot(Y, statistic = dmue, R = nboot)
-  bsDmue.ci = boot::boot.ci(bsDmue, conf = 0.95, type = "bca")
+  if (showSIP | showMLG) {
+    bsSip     = boot::boot(Y, statistic = fsi, R = nboot)
+    if (showCI) {
+      bsSip.ci  = boot::boot.ci(bsSip,
+                                index = 1,
+                                conf = 0.95,
+                                type = "bca")
+      bsMG.ci   = boot::boot.ci(bsSip,
+                                index = 2,
+                                conf = 0.95,
+                                type = "bca")
+      bsML.ci   = boot::boot.ci(bsSip,
+                                index = 3,
+                                conf = 0.95,
+                                type = "bca")
+    }
+  }
+  if (showDmue) {
+    bsDmue    = boot::boot(Y, statistic = dmue, R = nboot)
+    if (showCI) {
+      bsDmue.ci = boot::boot.ci(bsDmue,
+                                conf = 0.95,
+                                type = "bca")
+    }
+  }
 
   if(is.null(xmin))
     xmin = min(X)
@@ -86,11 +109,14 @@ plotDeltaCDF <- function(err,
   )
   title(main=main,cex.main=0.9,adj=0,line=1)
   grid()
-  sigp = sqrt(y * (1 - y) / length(y))
-  polygon(c(x, rev(x)),
-          c(y - 1.96 * sigp, rev(y + 1.96 * sigp)),
-          col = cols_tr2[5],
-          border = NA)
+  if(showCI) {
+    # Approx. CI on ECDF
+    sigp = sqrt(y * (1 - y) / length(y))
+    polygon(c(x, rev(x)),
+            c(y - 1.96 * sigp, rev(y + 1.96 * sigp)),
+            col = cols_tr2[5],
+            border = NA)
+  }
   if (!is.null(eps))
     polygon(
       x = c(-eps, -eps, eps, eps),
@@ -100,60 +126,71 @@ plotDeltaCDF <- function(err,
     )
   abline(v = 0,col=1,lty=1)
 
-  #SIP
-  mval = bsSip$t0
-  q025 = q975 = c()
-  q025[1] = bsSip.ci$bca[,4]
-  q975[1] = bsSip.ci$bca[,5]
-  q025[2] = bsMG.ci$bca[,4]
-  q975[2] = bsMG.ci$bca[,5]
-  q025[3] = bsML.ci$bca[,4]
-  q975[3] = bsML.ci$bca[,5]
-  # q025 = apply(bsSip$t,2,hd,q=0.025)
-  # q975 = apply(bsSip$t,2,hd,q=0.975)
-  for(i in 2:3)
-    polygon(
-      c(q025[i],q975[i],q975[i],q025[i]),
-      c(0,0,1,1),
-      col = cols_tr2[4],
-      border = NA)
-  abline(v = mval[2:3], col = cols[6], lty=2)
-  mtext(text = c('MG','ML'),
-        side = 3,
-        at   = mval[2:3],
-        col  = cols[6],
-        cex  = 0.75*cex)
-  polygon(
-    c(min(c(X,-xmax)),min(c(X,-xmax)),
-      max(c(X,xmax)),max(c(X,xmax))),
-    c(q025[1],q975[1],q975[1],q025[1]),
-    col = cols_tr2[4],
-    border = NA)
-  abline(h = mval[1], col = cols[6], lty=2)
-  mtext(text = c('SIP'),
-        side = 4,
-        at   = mval[1],
-        col  = cols[6],
-        cex  = 0.75*cex)
+  # MG / ML
+  if(showMLG) {
+    mval = bsSip$t0
+    if(showCI) {
+      q025 = q975 = c()
+      q025[2] = bsMG.ci$bca[,4]
+      q975[2] = bsMG.ci$bca[,5]
+      q025[3] = bsML.ci$bca[,4]
+      q975[3] = bsML.ci$bca[,5]
+      for(i in 2:3)
+        polygon(
+          c(q025[i],q975[i],q975[i],q025[i]),
+          c(0,0,1,1),
+          col = cols_tr2[4],
+          border = NA)
+    }
+    abline(v = mval[2:3], col = cols[6], lty=2)
+    mtext(text = c('MG','ML'),
+          side = 3,
+          at   = mval[2:3],
+          col  = cols[6],
+          cex  = 0.75*cex)
+
+  }
+  if(showSIP) {
+    mval = bsSip$t0
+    if(showCI) {
+      q025 = q975 = c()
+      q025[1] = bsSip.ci$bca[,4]
+      q975[1] = bsSip.ci$bca[,5]
+      polygon(
+        c(min(c(X,-xmax)),min(c(X,-xmax)),
+          max(c(X,xmax)),max(c(X,xmax))),
+        c(q025[1],q975[1],q975[1],q025[1]),
+        col = cols_tr2[4],
+        border = NA)
+    }
+    abline(h = mval[1], col = cols[6], lty=2)
+    mtext(text = c('SIP'),
+          side = 4,
+          at   = mval[1],
+          col  = cols[6],
+          cex  = 0.75*cex)
+  }
 
   # Delta MUE
-  mval = bsDmue$t0
-  q025 = bsDmue.ci$bca[,4]
-  q975 = bsDmue.ci$bca[,5]
-  # q025 = apply(bsDmue$t,2,hd,q=0.025)
-  # q975 = apply(bsDmue$t,2,hd,q=0.975)
-  polygon(
-    c(q025,q975,q975,q025),
-    c(0,0,1,1),
-    col = cols_tr2[2],
-    border = NA)
-  abline(v = mval, col=cols[2], lty=2)
-  mtext(text = expression(Delta[MUE]),
-        side = 3,
-        line = 0.6,
-        at   = mval,
-        col  = cols[2],
-        cex  = 0.75*cex)
+  if(showDmue) {
+    mval = bsDmue$t0
+    if(showCI) {
+      q025 = bsDmue.ci$bca[,4]
+      q975 = bsDmue.ci$bca[,5]
+      polygon(
+        c(q025,q975,q975,q025),
+        c(0,0,1,1),
+        col = cols_tr2[2],
+        border = NA)
+    }
+    abline(v = mval, col=cols[2], lty=2)
+    mtext(text = expression(Delta[MUE]),
+          side = 3,
+          line = 0.6,
+          at   = mval,
+          col  = cols[2],
+          cex  = 0.75*cex)
+  }
 
   box()
 
