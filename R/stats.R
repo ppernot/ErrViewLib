@@ -1,6 +1,6 @@
 #' Mean Signed Error (MSE)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -14,7 +14,7 @@ mse = function(X, index = 1:length(X),...) {
 }
 #' Root-Mean Squared Deviation (RMSD)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -26,9 +26,23 @@ mse = function(X, index = 1:length(X),...) {
 rmsd = function(X, index = 1:length(X),...) {
   sd(X[index])
 }
+#' Median Absolute Deviation (MAD-SD)
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+mad_sd = function(X, index = 1:length(X),...) {
+  mad(X[index])
+}
 #' Skewness (Skew)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -42,7 +56,7 @@ skew = function(X, index = 1:length(X),...) {
 }
 #' Kurtosis (Kurt)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -56,7 +70,7 @@ kurt = function(X, index = 1:length(X),...) {
 }
 #' Mean Unsigned Error (MUE)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -70,7 +84,7 @@ mue = function(X, index = 1:length(X),...) {
 }
 #' 95th Quantile of absolute errors (Q95)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -84,7 +98,7 @@ q95 = function(X, index = 1:length(X),...) {
 }
 #' 95th Quantile of absolute errors using the HD algorithm (Q95HD)
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -99,7 +113,7 @@ q95hd = function(X, index = 1:length(X),...){
 }
 #' Probability for the absolute errors to be below a threshold
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -113,7 +127,7 @@ P1 = function(X, index = 1:length(X), eps) {
 }
 #' Normality index of a sample by the Shapiro test
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -129,7 +143,7 @@ W = function(X, index = 1:length(X),...) {
 }
 #' Order of a series of statistics
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param data
 #' @param index
@@ -148,7 +162,7 @@ forder = function(data,index=1:nrow(data),fscore,...){
 }
 #' Order of a series of MSIP statistics
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param data
 #' @param index
@@ -175,7 +189,7 @@ fOrderMSIP = function(data, index=1:nrow(data), ...){
 }
 #' Correlation
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -190,7 +204,7 @@ fcor = function(X, index=1:length(X),...){
 }
 #' Covariance
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
@@ -205,7 +219,7 @@ fcov = function(X, index=1:length(X),...){
 }
 #' Difference of statistics
 #'
-#' Auxillary function for bootstrap by 'boot::boot()'
+#' Auxiliary function for bootstrap by 'boot::boot()'
 #'
 #' @param X
 #' @param index
