@@ -257,6 +257,10 @@ estBS2 = function(error, uX = 0,
       x = x + rnorm(length(index),0,uX[index])
     t(apply(x,2,sd,na.rm=TRUE))
   }
+  mad_sd = function(X, index = 1:length(X), uX=0) {
+    x = X[index,]
+    t(apply(x,2,mad,na.rm=TRUE))
+  }
   mue = function(X, index = 1:length(X), uX=0) {
     x = abs(X[index,])
     t(apply(x,2,mean,na.rm=TRUE))
@@ -500,14 +504,14 @@ estPower = function(X1, X2, score = 'mse', nMC = 1000) {
 
 }
 
-
-
-
 mse = function(X, index = 1:length(X)) {
   mean(X[index])
 }
 rmsd = function(X, index = 1:length(X)) {
   sd(X[index])
+}
+mad_sd = function(X, index = 1:length(X)) {
+  mad(X[index])
 }
 mue = function(X, index = 1:length(X)) {
   mean(abs(X[index]))
