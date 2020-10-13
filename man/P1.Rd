@@ -13,5 +13,5 @@ P1(X, index = 1:length(X), eps)
 
 }
 \description{
-Auxillary function for bootstrap by 'boot::boot()'
+Auxiliary function for bootstrap by 'boot::boot()'
 }

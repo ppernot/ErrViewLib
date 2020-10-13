@@ -13,5 +13,5 @@ fOrderMSIP(data, index = 1:nrow(data), ...)
 
 }
 \description{
-Auxillary function for bootstrap by 'boot::boot()'
+Auxiliary function for bootstrap by 'boot::boot()'
 }

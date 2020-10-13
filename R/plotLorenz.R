@@ -3,6 +3,7 @@
 #' @param X
 #' @param title
 #' @param show.leg
+#' @param show.norm
 #' @param col.index
 #' @param label
 #' @param leg.lwd
@@ -12,13 +13,16 @@
 #' @export
 #'
 #' @examples
-plotUncEcdf = function(X,
-                       title = 'Lorenz curves',
-                       show.leg = TRUE,
-                       col.index = 1:ncol(X),
-                       label = 0,
-                       leg.lwd = 30,
-                       gPars) {
+plotLorenz = function(
+  X,
+  title = ' Lorenz curves',
+  show.norm = FALSE,
+  show.leg = TRUE,
+  col.index = 1:ncol(X),
+  label = 0,
+  leg.lwd = 2,
+  gPars) {
+
   # Expose gPars list
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
@@ -47,48 +51,60 @@ plotUncEcdf = function(X,
     colnames(X) = n
   }
 
-
+  gini = lac = c()
   for (icol in 1:ncol(X)) {
     x = X[, icol]
-    sel = !is.na(x)
-    x = x[sel]
-    io = order(x)
-    x = x[io]
+    x = sort(x[ !is.na(x) ])
     prob = (1:length(x)) / length(x)
     lc = cumsum(x)/sum(x)
+    gini[icol] = ineq::Gini(x)
+    lac[icol] = ineq::Lasym(x)
 
     if (icol == 1) {
       plot(
         prob,lc,
         type = 'l',
+        lwd = 2*lwd,
+        main = title,
         col  = cols[col.index[icol]],
         xlab = 'p',
         xlim = c(0,1),
-        main = '',
-        yaxs = 'i',
-        ylab = 'L'
+        xaxs = 'i',
+        ylab = 'L',
+        ylim = c(0,1),
+        yaxs = 'i'
       )
       grid(lwd = 2)
     } else {
-      lines(prob, lc, col = cols[col.index[icol]])
+      lines(prob, lc, lwd = 2*lwd, col = cols[col.index[icol]])
     }
-    abline(a=0,b=1)
-
+  }
+  abline(a=0,b=1)
+  if(show.norm) {
+    x = sort(abs(rnorm(10000,0,1)))
+    prob = (1:length(x)) / length(x)
+    lc = cumsum(x)/sum(x)
+    lines(prob, lc, lwd = 2*lwd, lty=2, col='gray70')
   }
   box()
 
-  if (show.leg & length(colnames(X)) != 0)
+  if (show.leg & ncol(X) >= 1) {
+    legend = paste0(colnames(X),
+                    '; Gini = ',signif(gini,2),
+                    '; LAC = ', signif(lac,2))
+    if(show.norm)
+      legend = c(legend, 'Normal ; Gini = 0.41; LAC = 0.85')
+
     legend(
       'topleft',
-      title = title,
-      title.adj = 0,
-      legend = colnames(X),
+      legend = legend,
       bty = 'n',
-      col = cols_tr2[col.index],
-      lty = 1,
+      col = c(cols[col.index],'gray70'),
+      lty = c(rep(1,ncol(X)),2),
       lwd = leg.lwd,
       cex = cex.leg
     )
+  }
 
   if(label >0)
     mtext(

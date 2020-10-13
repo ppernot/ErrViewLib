@@ -6,11 +6,12 @@
 \usage{
 plotLorenz(
   X,
-  title = "Lorenz curves",
+  title = " Lorenz curves",
+  show.norm = FALSE,
   show.leg = TRUE,
   col.index = 1:ncol(X),
   label = 0,
-  leg.lwd = 30,
+  leg.lwd = 2,
   gPars
 )
 }

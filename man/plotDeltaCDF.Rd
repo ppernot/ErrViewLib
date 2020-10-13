@@ -9,12 +9,17 @@ plotDeltaCDF(
   meth1,
   meth2,
   eps = NULL,
+  xmin = NULL,
   xmax = NULL,
   xlab = NULL,
   units = "a.u.",
   main = "",
   nboot = 1000,
   label = 0,
+  showSIP = TRUE,
+  showMLG = TRUE,
+  showDmue = TRUE,
+  showCI = TRUE,
   gPars
 )
 }

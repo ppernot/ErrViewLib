@@ -6,12 +6,10 @@ Authors@R:
     person(given = "Pascal ",
            family = "PERNOT",
            role = c("aut", "cre"),
-           email = "pascal.pernot@u-psud.fr")
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+           email = "pascal.pernot@universite-paris-saclay.fr")
+Description: Library for ErrView
 License: GPL (>=3) + file LICENSE
 Encoding: UTF-8
-Imports: Hmisc,boot,corrplot,distillery,fields,inlmisc,mvtnorm,rlist
+Imports: Hmisc,boot,corrplot,distillery,fields,inlmisc,mvtnorm,rlist,moments,ineq
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

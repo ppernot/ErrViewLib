@@ -13,5 +13,5 @@ fdif(X, index = 1:nrow(X), fscore, ...)
 
 }
 \description{
-Auxillary function for bootstrap by 'boot::boot()'
+Auxiliary function for bootstrap by 'boot::boot()'
 }
