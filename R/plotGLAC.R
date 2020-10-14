@@ -1,4 +1,4 @@
-#' Plot of a set of Lorenz curves
+#' Plot Gini vs. LAC coefs
 #'
 #' @param X
 #' @param title
@@ -13,9 +13,9 @@
 #' @export
 #'
 #' @examples
-plotLorenz = function(
+plotGiniVsLAC = function(
   X,
-  title = ' Lorenz curves',
+  title = '',
   show.norm = FALSE,
   show.leg = TRUE,
   col.index = 1:ncol(X),
@@ -51,54 +51,32 @@ plotLorenz = function(
     colnames(X) = n
   }
 
-  # gini = lac = c()
+  gini = lac = c()
   for (icol in 1:ncol(X)) {
     x = X[, icol]
     x = sort(x[ !is.na(x) ])
     prob = (1:length(x)) / length(x)
     lc = cumsum(x)/sum(x)
-    # gini[icol] = ineq::Gini(x)
-    # lac[icol] = ineq::Lasym(x)
+    gini[icol] = ineq::Gini(x)
+    lac[icol] = ineq::Lasym(x)
+  }
 
-    if (icol == 1) {
-      plot(
-        prob,lc,
-        type = 'l',
-        lwd = 2*lwd,
-        main = title,
-        col  = cols[col.index[icol]],
-        xlab = 'p',
-        xlim = c(0,1),
-        xaxs = 'i',
-        ylab = 'L',
-        ylim = c(0,1),
-        yaxs = 'i'
-      )
-      grid(lwd = 2)
-    } else {
-      lines(prob, lc, lwd = 2*lwd, col = cols[col.index[icol]])
-    }
-  }
-  abline(a=0,b=1)
-  if(show.norm) {
-    x = sort(abs(rnorm(10000,0,1)))
-    prob = (1:length(x)) / length(x)
-    lc = cumsum(x)/sum(x)
-    lines(prob, lc, lwd = 2*lwd, lty=2, col='gray70')
-  }
+  plot(
+    gini, lac,
+    pch = 16,
+    xlim = c(0.8*min(c(0.414,gini)),1.2*max(gini)),
+    xlab = 'G',
+    ylim = c(0.8*min(c(0.85,lac)),1.2*max(lac)),
+    ylab = 'LAC',
+    col = cols[col.index]
+  )
+  grid(lwd = 2)
+  abline(v = 0.414, lty = 2, col = 'gray70')
+  abline(h = 0.85, lty = 2, col = 'gray70')
   box()
 
   if (show.leg & ncol(X) >= 1) {
-    # legend = paste0(colnames(X),
-    #                 '; Gini = ',signif(gini,2),
-    #                 '; LAC = ', signif(lac,2))
-    # if(show.norm)
-    #   legend = c(legend, 'Normal ; Gini = 0.41; LAC = 0.85')
-
     legend = colnames(X)
-    if(show.norm)
-      legend = c(legend, 'Normal')
-
     legend(
       'topleft',
       legend = legend,
