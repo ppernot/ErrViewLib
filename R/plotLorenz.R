@@ -70,7 +70,7 @@ plotLorenz = function(
         xlab = 'p',
         xlim = c(0,1),
         xaxs = 'i',
-        ylab = 'L',
+        ylab = 'L(p)',
         ylim = c(0,1),
         yaxs = 'i'
       )
