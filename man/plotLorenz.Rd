@@ -10,6 +10,7 @@ plotLorenz(
   show.norm = FALSE,
   show.leg = TRUE,
   col.index = 1:ncol(X),
+  identity.grid = FALSE,
   label = 0,
   leg.lwd = 2,
   gPars

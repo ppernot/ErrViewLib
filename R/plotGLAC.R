@@ -63,10 +63,10 @@ plotGiniVsLAC = function(
 
   plot(
     gini, lac,
-    pch = 16,
-    xlim = c(0.8*min(c(0.414,gini)),1.2*max(gini)),
+    pch = 1,
+    xlim = c(0,1), #c(0.8*min(c(0.414,gini)),1.2*max(gini)),
     xlab = 'G',
-    ylim = c(0.8*min(c(0.85,lac)),1.2*max(lac)),
+    ylim = c(0.6,1.4), #c(0.8*min(c(0.85,lac)),1.2*max(lac)),
     ylab = 'LAC',
     col = cols[col.index]
   )

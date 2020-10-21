@@ -14,6 +14,7 @@
 #' @param main
 #' @param plotReg
 #' @param plotConf
+#' @param degree
 #' @param plotBA
 #' @param plotBAci
 #' @param xlim
@@ -40,6 +41,7 @@ plotDistHist = function(
   main      = NULL,
   plotReg   = TRUE,  # Regression line
   plotConf  = FALSE, # Confidence limits on reg-line
+  degree    = 0,
   plotBA    = FALSE, # Bland-Altman LOAs
   plotBAci  = FALSE, # 95% CI on Bland-Altman LOAs
   xlim      = range(x),
@@ -209,8 +211,16 @@ plotDistHist = function(
   }
 
   if (plotReg) {
-    # Plot regression line
-    reg = lm(y ~ x)
+    # Build regression formula
+    fo = y ~ 1
+    if (degree > 0)
+      fo = as.formula(
+        paste0('y ~ 1 +',
+               paste0(
+                 'I(x^', 1:degree, ')',
+                 collapse = '+'
+               )))
+    reg = lm(fo)
     indx = order(x)
 
     if(plotConf) {

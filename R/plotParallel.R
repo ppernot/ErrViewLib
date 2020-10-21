@@ -142,7 +142,7 @@ paraPlot = function (x,
   rx = matrix(rep(1:ncol(x)),nrow=ncol(x),ncol=nrow(x))
   if(scramble)
     rx = rx + rnorm(length(rx),0,0.1)
-print(xlim)
+# print(xlim)
   matplot(
     rx,
     t(x),

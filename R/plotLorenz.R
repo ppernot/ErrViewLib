@@ -5,6 +5,7 @@
 #' @param show.leg
 #' @param show.norm
 #' @param col.index
+#' @param identity.grid
 #' @param label
 #' @param leg.lwd
 #' @param gPars
@@ -19,6 +20,7 @@ plotLorenz = function(
   show.norm = FALSE,
   show.leg = TRUE,
   col.index = 1:ncol(X),
+  identity.grid = FALSE,
   label = 0,
   leg.lwd = 2,
   gPars) {
@@ -86,6 +88,13 @@ plotLorenz = function(
     lc = cumsum(x)/sum(x)
     lines(prob, lc, lwd = 2*lwd, lty=2, col='gray70')
   }
+  if(identity.grid)
+    for (a in seq(-1, 0, by = 0.1))
+      abline(a = a,
+             b = 1,
+             lty = 3,
+             col = 'gray70'
+      )
   box()
 
   if (show.leg & ncol(X) >= 1) {
