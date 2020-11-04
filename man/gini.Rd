@@ -2,7 +2,7 @@
 % Please edit documentation in R/stats.R
 \name{gini}
 \alias{gini}
-\title{Gini coefficient of absolute errors}
+\title{Gini's coefficient of absolute errors}
 \usage{
 gini(X, index = 1:length(X), ...)
 }

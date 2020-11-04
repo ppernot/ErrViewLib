@@ -6,6 +6,7 @@
 \usage{
 plotLorenz(
   X,
+  var = FALSE,
   title = " Lorenz curves",
   show.norm = FALSE,
   show.leg = TRUE,

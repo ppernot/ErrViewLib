@@ -1,6 +1,7 @@
 #' Plot of a set of ECDFs
 #'
 #' @param X
+#' @param absErrors
 #' @param xlab
 #' @param xmax
 #' @param title
@@ -18,6 +19,7 @@
 #'
 #' @examples
 plotUncEcdf = function(X,
+                       absErrors = TRUE,
                        xlab = NULL,
                        xmin = 0,
                        xmax = NULL,
@@ -60,6 +62,9 @@ plotUncEcdf = function(X,
     colnames(X) = n
   }
 
+  if(absErrors)
+    X = abs(X)
+
   if (is.null(xmin))
     xmin = min(X, na.rm = TRUE)
 
@@ -67,7 +72,10 @@ plotUncEcdf = function(X,
     xmax = max(X, na.rm = TRUE)
 
   if(is.null(xlab))
-    xlab = paste0('|Errors| [',units,']')
+    if(absErrors)
+      xlab = paste0('|Errors| [',units,']')
+    else
+      xlab = paste0('Errors [',units,']')
 
   for (icol in 1:ncol(X)) {
     x = X[, icol]
@@ -117,7 +125,7 @@ plotUncEcdf = function(X,
 
     if (show.MAE) {
       MAE = mean(abs(x))
-      pMAE = prob[which(x >= MAE)[1]]
+      pMAE = prob[which(abs(x) >= MAE)[1]]
       segments(MAE, 0, MAE, pMAE,
                col = cols[col.index[icol]], lty = 3)
       segments(0, pMAE, MAE, pMAE,
@@ -136,6 +144,9 @@ plotUncEcdf = function(X,
       las = 2
     )
   }
+
+  if(!absErrors)
+    abline(v=0)
 
   box()
 

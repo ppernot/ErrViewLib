@@ -1,6 +1,7 @@
 #' Plot of a set of Lorenz curves
 #'
 #' @param X
+#' @param var
 #' @param title
 #' @param show.leg
 #' @param show.norm
@@ -16,6 +17,7 @@
 #' @examples
 plotLorenz = function(
   X,
+  var = FALSE,
   title = ' Lorenz curves',
   show.norm = FALSE,
   show.leg = TRUE,
@@ -56,9 +58,16 @@ plotLorenz = function(
   # gini = lac = c()
   for (icol in 1:ncol(X)) {
     x = X[, icol]
-    x = sort(x[ !is.na(x) ])
-    prob = (1:length(x)) / length(x)
+    if(var) {
+      # Variance-based Lorenz curve
+      m  = mean(x, na.rm = TRUE)
+      x  = sort(abs(x[ !is.na(x) ]-m))^2
+    } else {
+      # Usual Lorenz curve
+      x  = sort(abs(x[ !is.na(x) ]))
+    }
     lc = cumsum(x)/sum(x)
+    prob = (1:length(x)) / length(x)
     # gini[icol] = ineq::Gini(x)
     # lac[icol] = ineq::Lasym(x)
 
@@ -85,7 +94,10 @@ plotLorenz = function(
   if(show.norm) {
     x = sort(abs(rnorm(10000,0,1)))
     prob = (1:length(x)) / length(x)
-    lc = cumsum(x)/sum(x)
+    if(var)
+      lc = cumsum(x^2)/sum(x^2)
+    else
+      lc = cumsum(x)/sum(x)
     lines(prob, lc, lwd = 2*lwd, lty=2, col='gray70')
   }
   if(identity.grid)

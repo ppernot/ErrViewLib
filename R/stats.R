@@ -111,7 +111,7 @@ q95hd = function(X, index = 1:length(X),...){
   # Quantile estimate by Harrell & Davis 1982
   hd(abs(X[index]), 0.95)
 }
-#' Gini coefficient of absolute errors
+#' Gini's coefficient of absolute errors
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
@@ -125,7 +125,21 @@ q95hd = function(X, index = 1:length(X),...){
 gini = function(X, index = 1:length(X),...){
   ineq::Gini(abs(X[index]))
 }
-#' Lorenz curve assymetry of absolute errors
+#' Pietra's coefficient of absolute errors
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+pietra = function(X, index = 1:length(X),...){
+  ineq::RS(abs(X[index]))
+}
+#' Lorenz curve asymmetry of absolute errors
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
