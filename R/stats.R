@@ -12,6 +12,20 @@
 mse = function(X, index = 1:length(X),...) {
   mean(X[index])
 }
+#' Mode of signed errors
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+hrmode = function(X, index = 1:length(X), ...) {
+  genefilter::half.range.mode(X[index])
+}
 #' Root-Mean Squared Deviation (RMSD)
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
@@ -54,6 +68,22 @@ mad_sd = function(X, index = 1:length(X),...) {
 skew = function(X, index = 1:length(X),...) {
   moments::skewness(X[index])
 }
+#' Robust Skewness (SkewGM)
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+skewgm = function(X, index = 1:length(X), ...) {
+  X = X[index]
+  m = hd(X, 0.5)
+  (mean(X) - m) / mean(abs(X - m))
+}
 #' Kurtosis (Kurt)
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
@@ -67,6 +97,27 @@ skew = function(X, index = 1:length(X),...) {
 #' @examples
 kurt = function(X, index = 1:length(X),...) {
   moments::kurtosis(X[index])
+}
+#' Robust Kurtosis (Crow & Siddiqui)
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+kurtcs = function(X, index = 1:length(X), ...) {
+  # Formula KR4 from Kim2004
+  x = X[index]
+  q975 = hd(x, 0.975)
+  q025 = hd(x, 0.025)
+  q75  = hd(x, 0.75)
+  q25  = hd(x, 0.25)
+
+  (q975-q025)/(q75-q25) - 2.91
 }
 #' Mean Unsigned Error (MUE)
 #'
@@ -111,7 +162,7 @@ q95hd = function(X, index = 1:length(X),...){
   # Quantile estimate by Harrell & Davis 1982
   hd(abs(X[index]), 0.95)
 }
-#' Gini's coefficient of absolute errors
+#' Gini coefficient of absolute errors
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
@@ -125,6 +176,22 @@ q95hd = function(X, index = 1:length(X),...){
 gini = function(X, index = 1:length(X),...){
   ineq::Gini(abs(X[index]))
 }
+#' Gini coefficient of mode-centered absolute errors
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gimc = function(X, index = 1:length(X), ...) {
+  X = X[index]
+  ineq::Gini(abs(X - hrmode(X)))
+}
+
 #' Pietra's coefficient of absolute errors
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'

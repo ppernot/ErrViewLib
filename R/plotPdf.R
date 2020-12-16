@@ -69,8 +69,12 @@ plotPdf = function(X,
   if(absErrors)
     X = abs(X)
 
-  if (is.null(xmin))
-    xmin = min(X, na.rm = TRUE)
+  if (is.null(xmin)) {
+    if(absErrors)
+      xmin = 0
+    else
+      xmin = min(X, na.rm = TRUE)
+  }
 
   if (is.null(xmax))
     xmax = max(X, na.rm = TRUE)
@@ -91,7 +95,7 @@ plotPdf = function(X,
       Q95[[icol]] = hd(x, 0.95)
     else
       Q95[[icol]] = quantile(x,0.95,na.rm=TRUE)
-    d = density(x, adjust = adjust, kernel = 'rectangular')
+    d = density(x, adjust = adjust, kernel = 'gaussian')
     densx[[icol]] = d$x
     densy[[icol]] = d$y
   }

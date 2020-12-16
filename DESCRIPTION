@@ -10,6 +10,6 @@ Authors@R:
 Description: Library for ErrView
 License: GPL (>=3) + file LICENSE
 Encoding: UTF-8
-Imports: Hmisc,boot,corrplot,distillery,fields,inlmisc,mvtnorm,rlist,moments,ineq
+Imports: Hmisc,boot,corrplot,distillery,fields,inlmisc,mvtnorm,rlist,moments,ineq,bde,genefilter
 LazyData: true
 RoxygenNote: 7.1.1
