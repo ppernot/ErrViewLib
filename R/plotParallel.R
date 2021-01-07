@@ -23,6 +23,7 @@ plotParallel = function (X, maxPoints = nrow(X),
                          scramble = FALSE,
                          outliers = FALSE,
                          outLabCex = 1,
+                         outMethCex = 1,
                          xlim = c(1, ncol(X)),
                          ylim = NULL,
                          units = 'a.u.',
@@ -77,6 +78,7 @@ plotParallel = function (X, maxPoints = nrow(X),
     scramble = scramble,
     outliers = outliers,
     outLabCex = outLabCex,
+    outMethCex = outMethCex,
     xlim = xlim,
     ylim = ylim,
     ylab = ifelse(
@@ -131,6 +133,7 @@ paraPlot = function (x,
                      scramble = FALSE,
                      outliers = "no",
                      outLabCex = 1,
+                     outMethCex = 1,
                      xlim = c(1, ncol(x)),
                      ylim = NULL,
                      ylab = "",
@@ -158,9 +161,10 @@ paraPlot = function (x,
 
   axis(
     1,
-    at = 1:ncol(x),
+    at     = 1:ncol(x),
     labels = colnames(x),
-    las = las)
+    las    = las,
+    cex.axis = outMethCex)
 
   if(rescale) {
     axis(2,
