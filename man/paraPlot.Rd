@@ -16,6 +16,7 @@ paraPlot(
   scramble = FALSE,
   outliers = "no",
   outLabCex = 1,
+  outMethCex = 1,
   xlim = c(1, ncol(x)),
   ylim = NULL,
   ylab = "",

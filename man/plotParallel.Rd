@@ -14,6 +14,7 @@ plotParallel(
   scramble = FALSE,
   outliers = FALSE,
   outLabCex = 1,
+  outMethCex = 1,
   xlim = c(1, ncol(X)),
   ylim = NULL,
   units = "a.u.",

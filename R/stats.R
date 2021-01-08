@@ -12,7 +12,7 @@
 mse = function(X, index = 1:length(X),...) {
   mean(X[index])
 }
-#' Mode of signed errors
+#' Mode of signed errors by half-range estimator
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
@@ -25,6 +25,20 @@ mse = function(X, index = 1:length(X),...) {
 #' @examples
 hrmode = function(X, index = 1:length(X), ...) {
   genefilter::half.range.mode(X[index])
+}
+#' Mode of signed errors by half-sample estimator
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+hsmode = function(X, index = 1:length(X), ...) {
+  modeest::hsm(X[index],bw=0.5)
 }
 #' Root-Mean Squared Deviation (RMSD)
 #'
