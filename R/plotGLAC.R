@@ -58,21 +58,21 @@ plotGiniVsLAC = function(
     prob = (1:length(x)) / length(x)
     lc = cumsum(x)/sum(x)
     gini[icol] = ineq::Gini(x)
-    lac[icol] = ineq::Lasym(x)
+    lac[icol] = Zanardi(x) #ineq::Lasym(x)
   }
 
   plot(
     gini, lac,
     pch = 1,
     xlim = c(0,1), #c(0.8*min(c(0.414,gini)),1.2*max(gini)),
-    xlab = 'G',
-    ylim = c(0.6,1.4), #c(0.8*min(c(0.85,lac)),1.2*max(lac)),
-    ylab = 'LAC',
+    xlab = 'Gini',
+    ylim = c(-1,1), #c(0.6,1.4), #c(0.8*min(c(0.85,lac)),1.2*max(lac)),
+    ylab = 'Zanardi',
     col = cols[col.index]
   )
   grid(lwd = 2)
-  abline(v = 0.414, lty = 2, col = 'gray70')
-  abline(h = 0.85, lty = 2, col = 'gray70')
+  abline(v = 0.414, lty = 2, col = 'gray70') # Ref. Normal
+  abline(h = -0.2,  lty = 2, col = 'gray70') # Ref. Normal
   box()
 
   if (show.leg & ncol(X) >= 1) {

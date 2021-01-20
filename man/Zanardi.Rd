@@ -4,7 +4,7 @@
 \alias{Zanardi}
 \title{Zanardi index (Clementi2019)}
 \usage{
-Zanardi(X, indx = 1:length(X), ...)
+Zanardi(X, index = 1:length(X), ...)
 }
 \arguments{
 \item{index}{}
