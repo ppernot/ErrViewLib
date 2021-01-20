@@ -18,9 +18,10 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
   for (prop in S[['props']]) {
 
     un = units
-    if((prop %in% c('P1','W',
-                    'skew','kurt','skewgm','kurtcs',
-                    'gini','gimc','pietra','lasym')))
+    if(prop %in% c('P1','W',
+                   'skew','kurt','skewgm','kurtcs',
+                   'gini','gimc','pietra','lasym','Zanardi')
+    )
       un = ''
 
     v = S[[prop]]$val

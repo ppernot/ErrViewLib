@@ -234,6 +234,73 @@ pietra = function(X, index = 1:length(X),...){
 lasym = function(X, index = 1:length(X),...){
   ineq::Lasym(abs(X[index]))
 }
+#' Zanardi index (Clementi2019)
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X
+#' @param index
+#'
+#' @return
+#' @export
+#'
+#' @examples
+Zanardi = function(X, index = 1:length(X), ...) {
+  # Estimate Zanardi index (Clementi2019)
+
+  trapz = function(x,y) {
+    # Trapezoidal integration
+    idx = 2:length(x)
+    return (as.double( (x[idx] - x[idx-1]) %*%
+                         (y[idx] + y[idx-1])) / 2)
+  }
+  lagint = function(x,y,xout) {
+    # Lagrange quadratic interpolation
+    x1 = x[1]; y1 = y[1]
+    x2 = x[2]; y2 = y[2]
+    x3 = x[3]; y3 = y[3]
+    yout = (xout-x2)/(x1-x2) * (xout-x3)/(x1-x3) * y1 +
+      (xout-x1)/(x2-x1) * (xout-x3)/(x2-x3) * y2 +
+      (xout-x1)/(x3-x1) * (xout-x2)/(x3-x2) * y3
+    return(yout)
+  }
+
+  X = abs(X[index])
+
+  # Lorenz curve
+  L = ineq::Lc(X, plot = FALSE)
+
+  # Gini coefficient
+  G = ineq::Gini(X)
+
+  # Gini transform
+  p = L$p
+  q = L$L
+
+  x = p + q
+  y = p - q
+
+  # Discriminant point
+  d = which.min(abs(x-1.0))
+  xd = 1.0
+  yd = lagint(x[(d-1):(d+1)],y[(d-1):(d+1)],xd)
+  pd = 0.5 * (xd + yd)
+  qd = 0.5 * (xd - yd)
+
+  # Zanardi index
+  n   = length(x)
+  Kd  = pd * qd / 2
+
+  i0  = d # Position of integration limit vs. d
+  if(x[d]-xd > 0) i0 = d-1
+  A0p = trapz(x[1:i0], y[1:i0]) - yd / 2
+  A0r = trapz(x[(i0+1):n], y[(i0+1):n]) - yd / 2
+  Gp  = A0p / Kd
+  Gr  = A0r / Kd
+  Zd  = 2 * Kd * (Gr - Gp) / G
+
+  return(Zd)
+}
 #' Probability for the absolute errors to be below a threshold
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'

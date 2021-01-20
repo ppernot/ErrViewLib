@@ -2,6 +2,7 @@
 
 export(P1)
 export(W)
+export(Zanardi)
 export(agrestiCoull)
 export(cdfF)
 export(erf)
