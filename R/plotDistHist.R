@@ -310,3 +310,353 @@ plotDistHist = function(
   }
   box()
 }
+#' Scatter plot of an error set with marginal histogram (plotly version)
+#'
+#' @param x
+#' @param y
+#' @param uy
+#' @param nclass
+#' @param xlab
+#' @param ylab
+#' @param plotGauss
+#' @param outLiers
+#' @param p
+#' @param labels
+#' @param select
+#' @param main
+#' @param plotReg
+#' @param plotConf
+#' @param degree
+#' @param plotBA
+#' @param plotBAci
+#' @param xlim
+#' @param ylim
+#' @param scaleLegBA
+#' @param gPars
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plotlyDistHist = function(
+  x,
+  y,
+  uy        = NULL,
+  nclass    = NULL,  # Nb class for histogram
+  xlab      = 'x',
+  ylab      = 'y',
+  plotGauss = FALSE, # Plot Gaussian fit of hist.
+  outLiers  = FALSE, # Mark outliers
+  p         = 0.9,   # Width of proba interval to detect outliers
+  labels    = 1:length(x),
+  select    = NULL,  # Indices of points to colorize
+  main      = NULL,
+  plotReg   = TRUE,  # Regression line
+  plotConf  = FALSE, # Confidence limits on reg-line
+  degree    = 0,
+  plotBA    = FALSE, # Bland-Altman LOAs
+  plotBAci  = FALSE, # 95% CI on Bland-Altman LOAs
+  xlim      = range(x),
+  ylim      = range(y),
+  scaleLegBA = 0.75,
+  scalePoints = 0.75,
+  gPars
+) {
+
+  if (length(x)*length(y) == 0)
+    return()
+
+  # Expose gPars list
+  for (n in names(gPars))
+    assign(n, rlist::list.extract(gPars, n))
+
+  # Histogram(s)
+  ## Use R's hist breaks for compatibility with Gaussian plot
+  h = hist(y, breaks = nclass, plot = FALSE)
+
+  hi <- plot_ly(showlegend = FALSE) %>%
+    add_histogram(
+      y = y,
+      # nbinsy = nclass,
+      ybins = list(
+        start =min(h$breaks),
+        end = max(h$breaks)+1,
+        size = diff(h$breaks)[1]
+      ),
+      name = 'Density',
+      hoverinfo = 'x',
+      marker = list(color = cols[5]),
+      alpha = 0.5
+    )
+
+  if (plotGauss) {
+    ## Gaussian fit
+    xg = seq(from = min(y),
+             to   = max(y),
+             length.out = 1000)
+    yg = dnorm(xg, mean(y), sd(y))
+    yg = yg / max(yg) * max(h$counts) # Rescale to hist's max
+    hi <- hi %>%
+      add_paths(
+        x = yg, y = xg,
+        name = 'Gaussian Fit',
+        line = list(color = cols[3], width = lwd)
+      )
+  }
+
+  if (!is.null(select)) {
+    # Partial histograms: TBD !!!!
+    # y1 = y[select]
+    # y2 = y[!select]
+  }
+
+  # Scatterplot
+  sc <- plot_ly(
+    type = 'scatter',
+    mode = 'markers',
+    showlegend = FALSE) %>%
+    add_trace(
+      x = x, y = y,
+      text = labels,
+      name = 'Errors',
+      hoverinfo = 'text',
+      marker = list(size = 12*scalePoints, color = cols[5]),
+      error_y = if(is.null(uy))
+        list()
+      else
+        list(type="data",array=1.96*uy,color = cols[5],
+             thickness = 0.75 * lwd, width=0)
+    )
+
+
+  if (outLiers) {
+    # Mark quantile-based outliers
+    plow = (1 - p) / 2
+    pup  = p + plow
+    out  = y > quantile(y, p = pup) | y < quantile(y, p = plow)
+    if (sum(out) > 0) {
+      sc <- sc %>%
+        add_trace(
+          x = x[out], y = y[out],
+          text = labels[out],
+          hoverinfo = 'text',
+          marker = list(size = 12*scalePoints, color = cols[2]),
+          error_y = if(is.null(uy))
+            list()
+          else
+            list(type="data",array=1.96*uy[out],color = cols[2],
+                 thickness = 0.75 * lwd, width=0)
+        )
+    }
+  }
+
+  if (plotReg) {
+    # Build regression formula
+    fo = y ~ 1
+    if (degree > 0)
+      fo = as.formula(
+        paste0('y ~ 1 +',
+               paste0(
+                 'I(x^', 1:degree, ')',
+                 collapse = '+'
+               )))
+    reg = lm(fo)
+    indx = order(x)
+
+    if(plotConf) {
+      # Plot 95% confidence interval on reg-line
+      p = predict(reg, interval = 'conf')
+      sc <- sc %>%
+        add_lines(
+          x = x[indx], y = p[indx,1],
+          line = list(color = cols[2], width = lwd)
+        )%>%
+        add_lines(
+          x = x[indx], y = p[indx,2],
+          line = list(color = cols[2], width = lwd, dash = 'dash')
+        )%>%
+        add_lines(
+          x = x[indx], y = p[indx,3],
+          line = list(color = cols[2], width = lwd, dash = 'dash')
+        )
+    } else {
+      # Plot only regline
+      p = predict(reg)
+      sc <- sc %>%
+        add_lines(
+          x = x[indx], y = p[indx],
+          line = list(color = cols[2], width = lwd)
+        )
+    }
+
+  }
+
+  if(plotBA) {
+    # Bland-Alman-type plot with LOAs
+    bias = mean(y)
+    sc <- sc %>%
+      add_lines(
+        x = range(pretty(x)), y = c(bias,bias),
+        line = list(color = cols[3], width = lwd)
+      ) %>%
+      layout(
+        annotations = list(
+          x = max(pretty(x)), y = bias,
+          xanchor = 'left',
+          yanchor = 'middle',
+          text = 'Mean',
+          font = list(family = 'Arial',
+                      size = scaleLegBA *16,
+                      color = cols[3]),
+          showarrow = FALSE
+        )
+      )
+
+    if(plotBAci) {
+      # 95% CI on mean
+      ubias = sd(y)/sqrt(length(y))
+      xlim = range(pretty(x))
+      sc <- sc %>%
+        add_lines(
+          x = xlim,
+          y = c(bias - 1.96 * ubias, bias - 1.96 * ubias),
+          line = list(color = 'transparent'),
+          showlegend = FALSE
+        ) %>%
+        add_lines(
+          x = xlim,
+          y = c(bias + 1.96 * ubias, bias + 1.96 * ubias),
+          fill = 'tonexty',
+          fillcolor = cols_tr2[3],
+          line = list(color = 'transparent'),
+          showlegend = FALSE
+        )
+    }
+    # LOAs
+    loas = quantile(y,probs = c(0.025,0.975))
+    sc <- sc %>%
+      add_lines(
+        x = range(pretty(x)), y = c(loas[1],loas[1]),
+        line = list(color = cols[2], width = lwd)
+      ) %>%
+      layout(
+        annotations = list(
+          x = max(pretty(x)), y = loas[1],
+          xanchor = 'left',
+          yanchor = 'middle',
+          text = '02.5%',
+          font = list(family = 'Arial',
+                      size = scaleLegBA *16,
+                      color = cols[2]),
+          showarrow = FALSE
+        )
+      )%>%
+      add_lines(
+        x = range(pretty(x)), y = c(loas[2],loas[2]),
+        line = list(color = cols[4], width = lwd)
+      ) %>%
+      layout(
+        annotations = list(
+          x = max(pretty(x)), y = loas[2],
+          xanchor = 'left',
+          yanchor = 'middle',
+          text = '97.5%',
+          font = list(family = 'Arial',
+                      size = scaleLegBA *16,
+                      color = cols[4]),
+          showarrow = FALSE
+        )
+      )
+
+    if(plotBAci) {
+      # Bootstrap 95% CI on LOAs
+      q = function(x,i) ErrViewLib::hd(x[i], 0.025)
+      loas.boot = boot::boot(y, q, stype='i', R=1000)
+      loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
+      sc <- sc %>%
+        add_lines(
+          x = xlim,
+          y = c(loas.ci$bca[4], loas.ci$bca[4]),
+          line = list(color = 'transparent'),
+          showlegend = FALSE
+        ) %>%
+        add_lines(
+          x = xlim,
+          y = c(loas.ci$bca[5], loas.ci$bca[5]),
+          fill = 'tonexty',
+          fillcolor = cols_tr2[2],
+          line = list(color = 'transparent'),
+          showlegend = FALSE
+        )
+
+      q = function(x,i) ErrViewLib::hd(x[i], 0.975)
+      loas.boot = boot::boot(y, q, stype='i', R=1000)
+      loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
+      sc <- sc %>%
+        add_lines(
+          x = xlim,
+          y = c(loas.ci$bca[4], loas.ci$bca[4]),
+          line = list(color = 'transparent'),
+          showlegend = FALSE
+        ) %>%
+        add_lines(
+          x = xlim,
+          y = c(loas.ci$bca[5], loas.ci$bca[5]),
+          fill = 'tonexty',
+          fillcolor = cols_tr2[4],
+          line = list(color = 'transparent'),
+          showlegend = FALSE
+        )
+
+    }
+  }
+
+  # Display
+  marg_plot <- subplot(
+    hi,sc,
+    nrows = 1,
+    widths = c(.2,.7),
+    margin = 0,
+    shareY = TRUE) %>%
+    layout(
+      xaxis = list(
+        showline = TRUE, linewidth = 2,
+        autorange = "reversed",
+        color = 'gray70',
+        showgrid = TRUE,
+        mirror = TRUE
+      ),
+      yaxis = list(
+        visible = TRUE,
+        zeroline = TRUE, zerolinewidth = 2, zerolinecolor = '#AAA',
+        showline = TRUE, linewidth = 2,
+        side = "left",
+        color = 'gray70',
+        mirror = TRUE,
+        showgrid = TRUE,
+        title = ylab,
+        range = range(pretty(ylim))
+      ),
+      xaxis2 = list(
+        visible = TRUE,
+        showline = TRUE, linewidth = 2,
+        zeroline = TRUE,
+        color = 'gray70',
+        showgrid = TRUE,
+        mirror = TRUE,
+        title = xlab
+      )
+    ) %>%
+    config(
+      displaylogo = FALSE,
+      modeBarButtonsToRemove =
+        c("zoomIn2d", "zoomOut2d",
+          "select2d","lasso2d",
+          "autoScale2d",
+          "toggleSpikelines",
+          "hoverClosestCartesian",
+          "hoverCompareCartesian")
+    )
+  marg_plot
+
+}
