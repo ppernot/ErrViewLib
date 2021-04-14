@@ -5,13 +5,13 @@
 \title{Generate results table from benchmarking statistics generated
 by 'estBS()'}
 \usage{
-genTabStat(S, comp = TRUE, ref = 0, numDig = 1, units = "a.u.")
+genTabStat(S, comp = TRUE, ref = 0, numDig = 1, units = "a.u.", short = TRUE)
 }
 \arguments{
-\item{numDig}{}
+\item{short}{}
 }
 \value{
-
+A dataframe.
 }
 \description{
 Generate results table from benchmarking statistics generated

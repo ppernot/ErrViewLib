@@ -4,17 +4,55 @@
 #' @param S
 #' @param comp
 #' @param ref
-#' @param numDig
+#' @param numDig (integer) number of digits to keep for uncertainty display.
+#' @param units (string) units of the data.
+#' @param short (logical) use parenthetic notation to display uncertainty.
 #'
-#' @return
+#' @return A dataframe.
 #' @export
 #'
 #' @examples
-genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
+genTabStat = function(
+  S,
+  comp    = TRUE,
+  ref     = 0,
+  numDig  = 1,
+  units   = 'a.u.',
+  short   = TRUE
+) {
+
+  colUnc = function(
+    prop,
+    x,
+    ux,
+    units = '',
+    short = TRUE,
+    numDig=2
+  ) {
+    # Generate matrix of values and uncertainties with adequate truncation
+    # and format
+    if(short) {
+      vu = matrix(
+        apply(cbind(x,ux),1,
+              function(x) prettyUnc(x[1],x[2],numDig = numDig)),
+        ncol=1)
+      vu = rbind(units,vu)
+      colnames(vu) = prop
+    } else{
+      vu = matrix(
+        apply(cbind(x,ux),1,
+              function(x) unlist(formatUnc(x[1],x[2],numDig = numDig))),
+        ncol=2,
+        byrow = TRUE)
+      vu = rbind(c(units,units),vu)
+      colnames(vu) = c(prop, paste0('u_', prop))
+    }
+    return(vu)
+  }
   methods = names(S[[S[['props']][1]]]$val)
   nm = length(methods)
 
-  df = data.frame(Methods = c('',methods)) # Leave 1rst row for units
+  df = data.frame(Methods = c('Units',methods)) # Leave 1rst row for units
   for (prop in S[['props']]) {
 
     un = units
@@ -24,17 +62,13 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
     )
       un = ''
 
-    v = S[[prop]]$val
-    vu = matrix(
-      apply(cbind(v,S[[prop]]$unc),1,
-            function(x) prettyUnc(x[1],x[2],numDig = numDig)),
-      ncol=1)
-    vu = matrix(c(un,vu),ncol=1)
-    colnames(vu) = prop
+    v  = S[[prop]]$val
+    uv = S[[prop]]$unc
+    vu = colUnc(prop,v,uv,units=un,short=short,numDig=numDig)
     df = cbind(df, vu)
 
     if (comp &
-        (prop %in% c('mue','wmue','rmsd','q95hd')) &
+        (prop %in% c('mue','rmsd','q95hd')) &
         nm > 1) {
       if(ref != 0){
         # compare with specified method
@@ -45,87 +79,97 @@ genTabStat = function(S, comp=TRUE, ref = 0, numDig=1, units = 'a.u.') {
       }
       mi = methods[im]
 
-      # t-test for unpaired  values
-      compt = c()
-      compt[im] = 1
-      for (j in (1:nm)[-im]) {
-        mj = methods[j]
-        diff  = abs(S[[prop]]$val[mi] - S[[prop]]$val[mj])
-        udiff = sqrt(
-          S[[prop]]$unc[mi]^2 + S[[prop]]$unc[mj]^2
-        )
-        compt[j] = 2*(1-pnorm(diff/udiff))
-      }
-      names(compt) = methods
-      df = cbind(df, punc = c('',round(compt,2)))
-
-      # t-test for paired values
-      compt = c()
-      compt[im] = 1
-      for (j in (1:nm)[-im]) {
-        mj = methods[j]
-        diff  = unlist(S[[prop]]$bs[mi]) -
-          unlist(S[[prop]]$bs[mj])
-        compt[j] = genpval(diff)
-      }
-      names(compt) = methods
-      df = cbind(df, pg = c('',round(compt,2)))
+      # # t-test for unpaired  values
+      # compt = c()
+      # compt[im] = 1
+      # for (j in (1:nm)[-im]) {
+      #   mj = methods[j]
+      #   diff  = abs(S[[prop]]$val[mi] - S[[prop]]$val[mj])
+      #   udiff = sqrt(
+      #     S[[prop]]$unc[mi]^2 + S[[prop]]$unc[mj]^2
+      #   )
+      #   compt[j] = 2*(1-pnorm(diff/udiff))
+      # }
+      # names(compt) = methods
+      # df = cbind(df, punc = c('',round(compt,2)))
+      #
+      # # t-test for paired values
+      # compt = c()
+      # compt[im] = 1
+      # for (j in (1:nm)[-im]) {
+      #   mj = methods[j]
+      #   diff  = unlist(S[[prop]]$bs[mi]) -
+      #     unlist(S[[prop]]$bs[mj])
+      #   compt[j] = genpval(diff)
+      # }
+      # names(compt) = methods
+      # df = cbind(df, pg = c('',round(compt,2)))
 
       # Pinv
-      compt = c()
-      compt[im] = NA
+      compt = rep(NA,nm)
       for (j in (1:nm)[-im]) {
         mj = methods[j]
         d0    = S[[prop]]$val[mi] - S[[prop]]$val[mj]
-        diff  = unlist(S[[prop]]$bs[mi]) -
-          unlist(S[[prop]]$bs[mj])
-        compt[j] = pinv(diff,d0)
+        diff  = unlist(S[[prop]]$bs[mi]) - unlist(S[[prop]]$bs[mj])
+        compt[j] = round(pinv(diff,d0),2)
       }
-      names(compt) = methods
-      df = cbind(df, Pinv = c('',round(compt,2)))
+      compt = matrix(compt,ncol=1)
+      colnames(compt) = paste0('Pinv_',prop)
+      df = cbind(df,rbind('',compt))
     }
   }
 
   if(!is.null(S$sip)) {
     # Mean SIP
-    msip = rowMeans(S[['sip']], na.rm=TRUE)
-    umsip = sqrt(rowSums(S[['usip']]^2, na.rm=TRUE) / nm) # Hyp. indép.
-    vu = matrix(
-      apply(cbind(msip,umsip),1,
-            function(x) prettyUnc(x[1],x[2],numDig = numDig)),
-      ncol=1)
-    df = cbind(df, MSIP = c('',vu))
+    prop = 'MSIP'
+    msip = rowMeans(S[['sip']], na.rm = TRUE)
+    umsip = sqrt(rowSums(S[['usip']] ^ 2, na.rm = TRUE) / nm) # Hyp. indép.
+    vu = colUnc(prop,
+                msip,
+                umsip,
+                units = '',
+                short = short,
+                numDig = numDig)
+    df = cbind(df, vu)
 
     # SIP for best MUE
+    prop = 'SIP'
     v = S[['mue']]$val
     im = which.min(abs(v))
     mi = methods[im]
-    sip = S[['sip']][mi,]
-    usip = S[['usip']][mi,]
-    vu = matrix(
-      apply(cbind(sip,usip),1,
-            function(x) prettyUnc(x[1],x[2],numDig = numDig)),
-      ncol=1)
-    df = cbind(df, SIP = c('',vu))
+    sip  = S[['sip']][mi, ]
+    usip = S[['usip']][mi, ]
+    vu = colUnc(prop,
+                sip,
+                usip,
+                units = '',
+                short = short,
+                numDig = numDig)
+    df = cbind(df, vu)
 
     # Mean gain
-    mg  = S[['mg']][ mi, ]
-    umg = S[['umg']][ mi, ]
-    vu = matrix(
-      apply(cbind(mg,umg),1,
-            function(x) prettyUnc(x[1],x[2],numDig = numDig)),
-      ncol=1)
-    df = cbind(df, MG = c(un,vu))
+    prop = 'MG'
+    mg  = S[['mg']][mi,]
+    umg = S[['umg']][mi,]
+    vu = colUnc(prop,
+                mg,
+                umg,
+                units = units,
+                short = short,
+                numDig = numDig)
+    df = cbind(df, vu)
 
     # Mean loss
-    mg = -S[['mg']][ , mi ]
-    umg = S[['umg']][ , mi ]
-    vu = matrix(
-      apply(cbind(mg,umg),1,
-            function(x) prettyUnc(x[1],x[2],numDig = numDig)),
-      ncol=1)
-    df = cbind(df, ML = c(un,vu))
-
+    prop = 'ML'
+    mg = -S[['mg']][, mi]
+    umg = S[['umg']][, mi]
+    vu = colUnc(prop,
+                mg,
+                umg,
+                units = units,
+                short = short,
+                numDig = numDig)
+    df = cbind(df, vu)
   }
   return(df)
 }
@@ -169,23 +213,56 @@ pinv = function (X,d0) {
   C = sum( X == 0 )
   (A - C)/length(X)
 }
-#' Title
+#' Truncate value and uncertainty to consistent number of digits.
 #'
-#' @param y
-#' @param uy
-#' @param numDig
+#' @param y (numeric) value
+#' @param uy (numeric) uncertainty on `y`
+#' @param numDig (numeric) number of digits to keep on `uy`
 #'
-#' @return
+#' @return A list with truncated values of `y` and `uy`.
+#' @export
+#'
+#' @examples
+formatUnc = function(y, uy, numDig = 2) {
+
+  if (!is.finite(y) | !is.finite(uy) | uy <= 0)
+    return(
+      list(y  = y, uy = uy)
+    )
+
+  # Get scales
+  n0 = 1 + floor(log10(abs(y)))
+  n1 = floor(log10(uy))
+
+  # Format uncertainty
+  fmt = switch(
+    sign(n1) + 2, # Map (-1,0,1) to (1,2,3)
+    paste0("%", n0 - n1 + numDig - 1, ".", -n1 + numDig - 1, "f"),
+    paste0("%", n0 - n1 + numDig - 1, ".", -n1 + numDig - 1, "f"),
+    paste0("%", n0, ".0f")
+  )
+  short_y  = sprintf(fmt, y)
+  short_uy = paste0(signif(uy, numDig))
+
+  return(
+    list(
+      y  = short_y,
+      uy = short_uy
+    )
+  )
+}
+#' Print value and uncertainty in parenthesis format
+#'
+#' @param y (numeric) value
+#' @param uy (numeric) uncertainty on `y`
+#' @param numDig (numeric) number of digits to keep on `uy`
+##'
+#' @return A string.
 #' @export
 #'
 #' @examples
 prettyUnc = function(y, uy, numDig = 2) {
-  # Print result + uncertainty in parenthesis format
-
-  if (!is.finite(y))
-    return(y)
-
-  if (!is.finite(uy) | uy <= 0)
+  if (!is.finite(y) | !is.finite(uy) | uy <= 0)
     return(y)
 
   # Get scales
@@ -208,5 +285,7 @@ prettyUnc = function(y, uy, numDig = 2) {
          })
   short_y  = sprintf(fmt, y)
 
-  return(paste0(short_y, '(', short_uy, ')'))
+  str   = paste0(short_y, '(', short_uy, ')')
+
+  return(str)
 }
