@@ -79,36 +79,35 @@ genTabStat = function(
       }
       mi = methods[im]
 
-      # # t-test for unpaired  values
-      # compt = c()
-      # compt[im] = 1
-      # for (j in (1:nm)[-im]) {
-      #   mj = methods[j]
-      #   diff  = abs(S[[prop]]$val[mi] - S[[prop]]$val[mj])
-      #   udiff = sqrt(
-      #     S[[prop]]$unc[mi]^2 + S[[prop]]$unc[mj]^2
-      #   )
-      #   compt[j] = 2*(1-pnorm(diff/udiff))
-      # }
-      # names(compt) = methods
-      # df = cbind(df, punc = c('',round(compt,2)))
-      #
-      # # t-test for paired values
-      # compt = c()
-      # compt[im] = 1
-      # for (j in (1:nm)[-im]) {
-      #   mj = methods[j]
-      #   diff  = unlist(S[[prop]]$bs[mi]) -
-      #     unlist(S[[prop]]$bs[mj])
-      #   compt[j] = genpval(diff)
-      # }
-      # names(compt) = methods
-      # df = cbind(df, pg = c('',round(compt,2)))
+      # t-test for unpaired  values
+      compt = c()
+      compt[im] = 1
+      for (j in (1:nm)[-im]) {
+        mj = methods[j]
+        diff  = abs(S[[prop]]$val[mi] - S[[prop]]$val[mj])
+        udiff = sqrt(S[[prop]]$unc[mi]^2 + S[[prop]]$unc[mj]^2)
+        compt[j] = 2*(1-pnorm(diff/udiff))
+      }
+      compt = matrix(compt,ncol=1)
+      colnames(compt) = paste0('punc_',prop)
+      df = cbind(df,rbind('',compt))
+
+      # t-test for paired values
+      compt = c()
+      compt[im] = 1
+      for (j in (1:nm)[-im]) {
+        mj = methods[j]
+        diff  = unlist(S[[prop]]$bs[mi]) - unlist(S[[prop]]$bs[mj])
+        compt[j] = genpval(diff)
+      }
+      compt = matrix(compt,ncol=1)
+      colnames(compt) = paste0('pg_',prop)
+      df = cbind(df,rbind('',compt))
 
       # Pinv
       compt = rep(NA,nm)
       for (j in (1:nm)[-im]) {
-        mj = methods[j]
+        mj    = methods[j]
         d0    = S[[prop]]$val[mi] - S[[prop]]$val[mj]
         diff  = unlist(S[[prop]]$bs[mi]) - unlist(S[[prop]]$bs[mj])
         compt[j] = round(pinv(diff,d0),2)
@@ -124,51 +123,29 @@ genTabStat = function(
     prop = 'MSIP'
     msip = rowMeans(S[['sip']], na.rm = TRUE)
     umsip = sqrt(rowSums(S[['usip']] ^ 2, na.rm = TRUE) / nm) # Hyp. indép.
-    vu = colUnc(prop,
-                msip,
-                umsip,
-                units = '',
-                short = short,
-                numDig = numDig)
+    vu = colUnc(prop, msip, umsip, units = '', short = short, numDig = numDig)
     df = cbind(df, vu)
 
     # SIP for best MUE
     prop = 'SIP'
-    v = S[['mue']]$val
-    im = which.min(abs(v))
-    mi = methods[im]
+    mi   = methods[which.min(S[['mue']]$val)]
     sip  = S[['sip']][mi, ]
     usip = S[['usip']][mi, ]
-    vu = colUnc(prop,
-                sip,
-                usip,
-                units = '',
-                short = short,
-                numDig = numDig)
+    vu = colUnc(prop, sip, usip, units = '', short = short, numDig = numDig)
     df = cbind(df, vu)
 
     # Mean gain
     prop = 'MG'
     mg  = S[['mg']][mi,]
     umg = S[['umg']][mi,]
-    vu = colUnc(prop,
-                mg,
-                umg,
-                units = units,
-                short = short,
-                numDig = numDig)
+    vu = colUnc(prop, mg, umg, units = units, short = short, numDig = numDig)
     df = cbind(df, vu)
 
     # Mean loss
     prop = 'ML'
     mg = -S[['mg']][, mi]
     umg = S[['umg']][, mi]
-    vu = colUnc(prop,
-                mg,
-                umg,
-                units = units,
-                short = short,
-                numDig = numDig)
+    vu = colUnc(prop, mg, umg, units = units, short = short, numDig = numDig)
     df = cbind(df, vu)
   }
   return(df)
@@ -219,7 +196,7 @@ pinv = function (X,d0) {
 #' @param uy (numeric) uncertainty on `y`
 #' @param numDig (numeric) number of digits to keep on `uy`
 #'
-#' @return A list with truncated values of `y` and `uy`.
+#' @return A list with strings of truncated values of `y` and `uy`.
 #' @export
 #'
 #' @examples
@@ -242,7 +219,7 @@ formatUnc = function(y, uy, numDig = 2) {
     paste0("%", n0, ".0f")
   )
   short_y  = sprintf(fmt, y)
-  short_uy = paste0(signif(uy, numDig))
+  short_uy = sprintf(fmt,uy) #paste0(signif(uy, numDig))
 
   return(
     list(
@@ -262,6 +239,7 @@ formatUnc = function(y, uy, numDig = 2) {
 #'
 #' @examples
 prettyUnc = function(y, uy, numDig = 2) {
+
   if (!is.finite(y) | !is.finite(uy) | uy <= 0)
     return(y)
 
@@ -270,19 +248,21 @@ prettyUnc = function(y, uy, numDig = 2) {
   n1 = floor(log10(uy))
 
   # Format uncertainty
-  switch(sign(n1) + 2, # Map (-1,0,1) to (1,2,3)
-         {
-           fmt = paste0("%", n0 - n1 + numDig - 1, ".", -n1 + numDig - 1, "f")
-           short_uy = signif(uy / 10 ^ (n1 - numDig + 1), numDig)
-         },
-         {
-           fmt = paste0("%", n0 - n1 + numDig - 1, ".", -n1 + numDig - 1, "f")
-           short_uy = signif(uy / 10 ^ n1, numDig)
-         },
-         {
-           fmt = paste0("%", n0, ".0f")
-           short_uy = signif(uy / 10 ^ (n1 - numDig + 1), numDig)
-         })
+  switch(
+    sign(n1) + 2, # Map (-1,0,1) to (1,2,3)
+    {
+      fmt = paste0("%", n0 - n1 + numDig - 1, ".", -n1 + numDig - 1, "f")
+      short_uy = signif(uy / 10 ^ (n1 - numDig + 1), numDig)
+    },
+    {
+      fmt = paste0("%", n0 - n1 + numDig - 1, ".", -n1 + numDig - 1, "f")
+      short_uy = signif(uy / 10 ^ n1, numDig)
+    },
+    {
+      fmt = paste0("%", n0, ".0f")
+      short_uy = signif(uy / 10 ^ (n1 - numDig + 1), numDig)
+    }
+  )
   short_y  = sprintf(fmt, y)
 
   str   = paste0(short_y, '(', short_uy, ')')

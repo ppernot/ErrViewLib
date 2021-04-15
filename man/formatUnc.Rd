@@ -14,7 +14,7 @@ formatUnc(y, uy, numDig = 2)
 \item{numDig}{(numeric) number of digits to keep on `uy`}
 }
 \value{
-A list with truncated values of `y` and `uy`.
+A list with strings of truncated values of `y` and `uy`.
 }
 \description{
 Truncate value and uncertainty to consistent number of digits.

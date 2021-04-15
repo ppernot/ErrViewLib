@@ -8,7 +8,11 @@ by 'estBS()'}
 genTabStat(S, comp = TRUE, ref = 0, numDig = 1, units = "a.u.", short = TRUE)
 }
 \arguments{
-\item{short}{}
+\item{numDig}{(integer) number of digits to keep for uncertainty display.}
+
+\item{units}{(string) units of the data.}
+
+\item{short}{(logical) use parenthetic notation to display uncertainty.}
 }
 \value{
 A dataframe.
