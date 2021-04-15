@@ -2,16 +2,20 @@
 % Please edit documentation in R/hdQuantiles.R
 \name{hd}
 \alias{hd}
-\title{Quantiles estimation by the Harrell & Davis method}
+\title{Estimate quantiles by Harrell & Davis 1982}
 \usage{
 hd(x, q = 0.5, na.rm = TRUE)
 }
 \arguments{
-\item{na.rm}{}
+\item{x}{(vector) a set of values}
+
+\item{q}{(numeric) a probability level}
+
+\item{na.rm}{(logical) remove NAs}
 }
 \value{
-
+A quantile.
 }
 \description{
-Quantiles estimation by the Harrell & Davis method
+Estimate quantiles by Harrell & Davis 1982
 }

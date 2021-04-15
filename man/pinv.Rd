@@ -2,16 +2,18 @@
 % Please edit documentation in R/genTabStat.R
 \name{pinv}
 \alias{pinv}
-\title{Title}
+\title{Probability to have a sign different from the sign of d0}
 \usage{
 pinv(X, d0)
 }
 \arguments{
-\item{d0}{}
+\item{X}{(vector) values to be tested.}
+
+\item{d0}{(numeric) reference value.}
 }
 \value{
-
+A probability.
 }
 \description{
-Title
+Probability to have a sign different from the sign of d0
 }

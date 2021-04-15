@@ -1,12 +1,12 @@
-#' Estimate benchmarking statistics and their uncertainty by bootstrap
+#' Estimate benchmarking statistics and their uncertainty by bootstraping
 #'
-#' @param error
-#' @param props
-#' @param nboot
-#' @param do.sip
-#' @param eps
-#' @param seed
-#' @param silent
+#' @param error (list)
+#' @param props (strings; optional) a vector of statistics to compute.
+#' @param nboot (numeric; optional) the number of bootstrap repetitions.
+#' @param do.sip (logical; optional) perform SIP analysis.
+#' @param eps (numeric; optional) threshold for the estimation of P1.
+#' @param seed (numeric; optional) seed for RNG.
+#' @param silent (logical; optional) flag to hide progress messages.
 #'
 #' @return
 #' @export
@@ -36,7 +36,7 @@ estBS1 = function(error,
   for (prop in props) {
     results[[prop]] = list()
     if(!silent)
-      print(prop)
+      message('>>> Computing ',prop,'\n')
 
     statistic = get(prop) # associated function
     bsl = list()
@@ -68,6 +68,9 @@ estBS1 = function(error,
 
   # Systematic improvement probability
   if(do.sip & nm > 1) {
+    if(!silent)
+      message('>>> Computing SIP\n')
+
     fsi = function(X, index=1:nrow(X), uX = 0,...){
       v1 = abs(X[index,1])
       v2 = abs(X[index,2])
@@ -79,16 +82,12 @@ estBS1 = function(error,
       }
       diff = v1 - v2
       gain = diff < 0 # 1 has smaller errors than 2
-      loss = diff > 0
-      # How to deal with ties ?
-      # eq   = diff == 0
-      mg = ifelse(sum(gain) == 0, 0, mean(diff[gain]))
-      # ml = ifelse(sum(loss) == 0, 0, mean(diff[loss]))
-      p  = sum(gain) / N
-      # p  = (sum(gain)+0.5*sum(eq)) / N
+      mg   = ifelse(sum(gain) == 0, 0, mean(diff[gain]))
+      p    = mean(gain)
 
       return(c(p,mg))
     }
+
     sip = usip = mg = umg = matrix(NA, nrow = nm, ncol = nm)
     for (i in 1:nm) {
       mi = methods[i]

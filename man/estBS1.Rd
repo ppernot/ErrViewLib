@@ -2,7 +2,7 @@
 % Please edit documentation in R/estBS.R
 \name{estBS1}
 \alias{estBS1}
-\title{Estimate benchmarking statistics and their uncertainty by bootstrap}
+\title{Estimate benchmarking statistics and their uncertainty by bootstraping}
 \usage{
 estBS1(
   error,
@@ -15,11 +15,23 @@ estBS1(
 )
 }
 \arguments{
-\item{silent}{}
+\item{error}{(list)}
+
+\item{props}{(strings; optional) a vector of statistics to compute.}
+
+\item{nboot}{(numeric; optional) the number of bootstrap repetitions.}
+
+\item{do.sip}{(logical; optional) perform SIP analysis.}
+
+\item{eps}{(numeric; optional) threshold for the estimation of P1.}
+
+\item{seed}{(numeric; optional) seed for RNG.}
+
+\item{silent}{(logical; optional) flag to hide progress messages.}
 }
 \value{
 
 }
 \description{
-Estimate benchmarking statistics and their uncertainty by bootstrap
+Estimate benchmarking statistics and their uncertainty by bootstraping
 }

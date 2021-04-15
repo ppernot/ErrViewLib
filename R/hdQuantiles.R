@@ -1,16 +1,15 @@
-#' Quantiles estimation by the Harrell & Davis method
+#' Estimate quantiles by Harrell & Davis 1982
 #'
-#' @param x
-#' @param q
-#' @param na.rm
+#' @param x (vector) a set of values
+#' @param q (numeric) a probability level
+#' @param na.rm (logical) remove NAs
 #'
-#' @return
+#' @return A quantile.
 #' @export
 #'
 #' @examples
 hd = function (x, q = 0.5, na.rm = TRUE){
-  # Estimate quantiles by Harrell & Davis 1982
-  # Extracted for consistency from package WRS2 which does not export it.
+  # Extracted from package WRS2 which does not export it.
   # Mair, P., & Wilcox, R. R. (2019). "Robust Statistical Methods
   # in R Using the WRS2", Behavior Research Methods, Forthcoming...
   if (na.rm)
@@ -33,7 +32,7 @@ hd = function (x, q = 0.5, na.rm = TRUE){
 #' @examples
 elimna = function (m){
   # Used by hd().
-  # Extracted for consistency from package WRS2 which does not export it.
+  # Extracted from package WRS2 which does not export it.
   # Mair, P., & Wilcox, R. R. (2019). "Robust Statistical Methods
   # in R Using the WRS2", Behavior Research Methods, Forthcoming...
   if (is.null(dim(m)))

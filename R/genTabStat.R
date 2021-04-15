@@ -150,16 +150,15 @@ genTabStat = function(
   }
   return(df)
 }
-#' Title
+#' Generalized p-value (Liu & Sing 1997, Wilcox 2012)
 #'
-#' @param X
+#' @param X (vector) a set of values
 #'
-#' @return
+#' @return a p-value
 #' @export
 #'
 #' @examples
 genpval = function(X) {
-  # Generalized p-value (Liu & Sing 1997, Wilcox 2012)
   ps = (sum(X < 0) + 0.5 * sum(X == 0)) / length(X)
   2 * min(ps, 1 - ps)
 }
@@ -174,17 +173,16 @@ genpval = function(X) {
 pval = function(x) {
   2*pnorm(x, lower.tail = FALSE)
 }
-#' Title
+#' Probability to have a sign different from the sign of d0
 #'
-#' @param X
-#' @param d0
+#' @param X (vector) values to be tested.
+#' @param d0 (numeric) reference value.
 #'
-#' @return
+#' @return A probability.
 #' @export
 #'
 #' @examples
 pinv = function (X,d0) {
-  # Probability to have a sign different from d0's
   # The zeros (sign = 0) are subtracted
   A = sum( sign(X) != sign(d0) )
   C = sum( X == 0 )

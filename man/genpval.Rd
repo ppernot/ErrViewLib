@@ -2,16 +2,16 @@
 % Please edit documentation in R/genTabStat.R
 \name{genpval}
 \alias{genpval}
-\title{Title}
+\title{Generalized p-value (Liu & Sing 1997, Wilcox 2012)}
 \usage{
 genpval(X)
 }
 \arguments{
-\item{X}{}
+\item{X}{(vector) a set of values}
 }
 \value{
-
+a p-value
 }
 \description{
-Title
+Generalized p-value (Liu & Sing 1997, Wilcox 2012)
 }
