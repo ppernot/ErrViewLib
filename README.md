@@ -5,8 +5,8 @@
 Package for the statistical analysis and plotting of error sets from
 computational chemistry methods.
 
-It is used by the [ErrView](https://github.com/ppernot/ErrView) code,
-but can be used in standalone R scripts. For instance:
+It is used by the [ErrView](https://github.com/ppernot/ErrView) 
+shiny code, but can be used in standard R scripts. For instance:
 
 ```r
 library(ErrViewLib)
@@ -35,11 +35,16 @@ df = ErrViewLib::genTabStat(bs,comp = FALSE)
 print(knitr::kable(df))
 
 # Plot Lorenz curves
-gPars=msAnaLib::setgPars()
-gPars$cex=1
-gPars$lwd=1
-gPars$cols = rainbow(length(methList))
-ErrViewLib::plotLorenz(Errors,gPars=gPars)
+ErrViewLib::plotLorenz(
+  Errors,
+  gPars = ErrViewLib::setgPars( # Redefine plot params
+    type = 'plot',
+    gPars = list(
+      lwd = 1,
+      cols = rainbow(length(methList))
+    )
+  )
+)
 ```
 
 ## Install
