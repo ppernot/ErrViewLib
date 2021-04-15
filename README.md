@@ -1,11 +1,48 @@
 [![DOI](https://zenodo.org/badge/235801923.svg)](https://zenodo.org/badge/latestdoi/235801923)
 
 # ErrViewLib
-Library for [ErrView](https://github.com/ppernot/ErrView) code.
+
+Package for the statistical analysis and plotting of error sets from
+computational chemistry methods.
+
+It is used by the [ErrView](https://github.com/ppernot/ErrView) code,
+but can be used in standalone R scripts. For instance:
+
+```r
+library(ErrViewLib)
+
+# Get data
+data = read.csv(file = 'myData.csv',
+                header = TRUE,
+                stringsAsFactors = FALSE,
+                check.names = FALSE)
+
+# Transform data to error sets
+systems <- data[, 1]                   # System names
+rownames(data) = systems
+Ref <- data[, 2]                       # Reference values
+Data <- data[, -c(1, 2), drop = FALSE] # Data
+methList <- colnames(Data)             # Methods names
+Errors <- Ref - Data                   # Errors
+
+# Estimate statistics (MUE, Q95 and GMCF)
+bs = ErrViewLib::estBS1(Errors,
+                        props = c('mue','q95hd','gimc'),
+                        do.sip = FALSE)
+
+#Generate and print results table
+df = ErrViewLib::genTabStat(bs,comp = FALSE)
+print(knitr::kable(df))
+
+# Plot Lorenz curves
+gPars=msAnaLib::setgPars()
+gPars$cex=1
+gPars$lwd=1
+gPars$cols = rainbow(length(methList))
+ErrViewLib::plotLorenz(Errors,gPars=gPars)
+```
 
 ## Install
-
-You can install this package in R from GitHub by executing
 
 ```r
 install.packages("devtools")
