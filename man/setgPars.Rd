@@ -4,10 +4,10 @@
 \alias{setgPars}
 \title{Set default graphical parameters}
 \usage{
-setgPars(type = c("shiny", "plot"), gPars = list())
+setgPars(type = c("plot", "publish", "shiny"), gPars = list())
 }
 \arguments{
-\item{type}{(string) plot type. Default: 'shiny'}
+\item{type}{(string) plot type. Default: 'plot'. Other options are 'shiny' and 'publish'.}
 
 \item{gPars}{(list) list of graphical parameters to supersede defaults}
 }
