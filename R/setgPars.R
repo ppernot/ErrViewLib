@@ -1,7 +1,7 @@
 #' Set default graphical parameters
 #'
-#'@param type (string) plot type. Default: 'shiny'
-#'@param gPars (list) list of graphical parameters to supersede defaults
+#' @param type (string) plot type. Default: 'plot'. Other options are 'shiny' and 'publish'.
+#' @param gPars (list) list of graphical parameters to supersede defaults
 #'
 #' @return A list with the following arguments:
 #' \describe{
@@ -9,8 +9,8 @@
 #'   \item{cols_tr}{A set of highly transparent colors}
 #'   \item{cols_tr2}{Sames as cols_tr with more density}
 #'   \item{pty}{A character specifying the type of plot region to be used;
-#'     "s" generates a square plotting region and "m" generates the maximal
-#'     plotting region (default: "s")}
+#'     's' generates a square plotting region and 'm' generates the maximal
+#'     plotting region (default: 's')}
 #'   \item{mar}{Margins around the plot. The default is c(3,3,3,.5).
 #'     See \link{graphics::par}.
 #'   \item{mgp}{The margin line (in mex units) for the axis title,
@@ -32,13 +32,13 @@
 #'
 #' @examples
 setgPars = function(
-  type = c('shiny','plot'),
+  type = c('plot','publish','shiny'),
   gPars = list()
 ) {
 
   type = match.arg(type)
 
-  # Shiny defaults
+  # Defaults
   gParsDef = list(
     cols     = rev(inlmisc::GetColors(8))[1:7],
     cols_tr  = rev(inlmisc::GetColors(8, alpha = 0.2))[1:7],
@@ -47,15 +47,25 @@ setgPars = function(
     mar      = c(3,3,3,.5),
     mgp      = c(2,.75,0),
     tcl      = -0.5,
-    lwd      = 4.0,
-    cex      = 4.0,
-    cex.leg  = 0.7,
     reso     = 1200
   )
   # Adapt to plot type
   if(type == 'plot') {
-    gParsDef$lwd = 1.5
-    gParsDef$cex = 1
+    gParsDef$lwd     = 1.5
+    gParsDef$cex     = 1
+    gParsDef$cex.leg = 0.7
+
+  } else if(type == 'shiny') {
+    gParsDef$mar     = c(3,3,1,1)
+    gParsDef$lwd     = 2
+    gParsDef$cex     = 1.4
+    gParsDef$cex.leg = 0.8
+
+  } else {
+    # 'publish' (for png plots with base resolution 'reso')
+    gParsDef$lwd     = 4
+    gParsDef$cex     = 4
+    gParsDef$cex.leg = 0.7
   }
 
   # Override by user's specs, if any
