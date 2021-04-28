@@ -44,7 +44,7 @@ bs = ErrViewLib::estBS1(
   do.sip = FALSE
 )
 
-#Generate and print simple results table
+# Generate and print simple results table
 df = ErrViewLib::genTabStat(bs,comp = FALSE)
 print(knitr::kable(df))
 

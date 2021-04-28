@@ -550,7 +550,7 @@ plotlyDistHist = function(
                       color = cols[2]),
           showarrow = FALSE
         )
-      )%>%
+      ) %>%
       add_lines(
         x = range(pretty(x)), y = c(loas[2],loas[2]),
         line = list(color = cols[4], width = lwd)
@@ -607,7 +607,6 @@ plotlyDistHist = function(
           line = list(color = 'transparent'),
           showlegend = FALSE
         )
-
     }
   }
 
@@ -617,7 +616,8 @@ plotlyDistHist = function(
     nrows = 1,
     widths = c(.2,.7),
     margin = 0,
-    shareY = TRUE) %>%
+    shareY = TRUE
+  ) %>%
     layout(
       xaxis = list(
         showline = TRUE, linewidth = 2,
@@ -658,5 +658,4 @@ plotlyDistHist = function(
           "hoverCompareCartesian")
     )
   marg_plot
-
 }
