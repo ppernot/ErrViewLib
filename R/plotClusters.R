@@ -8,7 +8,7 @@
 #' @param xlim (optional) a 2-vector of limits for the x-axis.
 #' @param ylim (optional) a 2-vector of limits for the y-axis.
 #' @param cex.lab (optional) a scale factor for the size of labels.
-#' @param gPars a list of graphical parameters. See \linl{setgPars}
+#' @param gPars a list of graphical parameters. See \link{setgPars}
 #'
 #' @return a plot
 #' @export
