@@ -29,7 +29,7 @@ clustering method. Default : "complete".}
 
 \item{cex.lab}{(optional) a scale factor for the size of labels.}
 
-\item{gPars}{a list of graphical parameters. See \linl{setgPars}}
+\item{gPars}{a list of graphical parameters. See \link{setgPars}}
 }
 \value{
 a plot
