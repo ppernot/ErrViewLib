@@ -4,6 +4,7 @@
 #'
 #' @param X
 #' @param title
+#' @param scale
 #' @param plotCI
 #' @param score
 #' @param gPars
@@ -15,8 +16,9 @@
 plotPpnorm <- function(
   X,
   title = '',
+  scale  = FALSE,
   plotCI = FALSE,
-  score = TRUE,
+  score  = TRUE,
   gPars
 ) {
 
@@ -63,9 +65,11 @@ plotPpnorm <- function(
     )
   }
 
-  Xs = scale(X, center = TRUE, scale = TRUE)
+  if(scale)
+    X = scale(X, center = TRUE, scale = TRUE)
+
   pt = c(0,pnorm(q),1)
-  pe = c(0,ecdf(Xs)(q),1)
+  pe = c(0,ecdf(X)(q),1)
   plot(
     pt, pe,
     type = 'l',

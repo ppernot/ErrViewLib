@@ -4,7 +4,7 @@
 \alias{plotPpnorm}
 \title{plotPpnorm}
 \usage{
-plotPpnorm(X, title = "", plotCI = FALSE, score = TRUE, gPars)
+plotPpnorm(X, title = "", scale = FALSE, plotCI = FALSE, score = TRUE, gPars)
 }
 \arguments{
 \item{gPars}{}
