@@ -44,11 +44,10 @@ plotPpnorm <- function(
     mfrow = c(1, 1),
     mar = mar,
     mgp = mgp,
-    pty = pty,
+    pty = 's',
     tcl = tcl,
     cex = cex,
-    lwd = lwd,
-    lend = 2
+    lwd = lwd
   )
 
   trapz = function (
@@ -67,8 +66,6 @@ plotPpnorm <- function(
   Xs = scale(X, center = TRUE, scale = TRUE)
   pt = c(0,pnorm(q),1)
   pe = c(0,ecdf(Xs)(q),1)
-  par(mfrow=c(1,1))
-  par(pty='s',lwd=2)
   plot(
     pt, pe,
     type = 'l',
