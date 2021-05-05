@@ -38,7 +38,7 @@ plotRankMat = function (E,
   par(
     mfrow = c(1, 1),
     pty = pty,
-    # mar = mar,
+    # mar = c(1,1,1,1),
     mgp = mgp,
     tcl = tcl,
     cex = cex,
@@ -134,7 +134,5 @@ plotRankMat = function (E,
         cex  = 1.5*cex.lab*cex,
         line = 2.7)
   }
-
-
 
 }
