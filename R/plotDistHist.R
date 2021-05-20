@@ -192,7 +192,7 @@ plotDistHist = function(
     # Mark and label quantile-based outliers
     plow = (1 - p) / 2
     pup  = p + plow
-    lab  = y > quantile(y, p = pup) | y < quantile(y, p = plow)
+    lab  = y > ErrViewLib::hd(y, pup) | y < ErrViewLib::hd(y, plow)
     if (sum(lab) > 0) {
       points(
         x = x[lab],
@@ -269,7 +269,11 @@ plotDistHist = function(
     }
 
     # LOAs
-    loas = quantile(y,probs = c(0.025,0.975))
+    loas = c(
+      ErrViewLib::hd(y, 0.025),
+      ErrViewLib::hd(y, 0.975)
+    )
+    # loas = quantile(y,probs = c(0.025,0.975))
     abline(h = loas, col=cols[c(2,4)])
     mtext(
       '02.5%',
@@ -292,7 +296,10 @@ plotDistHist = function(
     if(plotBAci) {
       # Bootstrap 95% CI on LOAs
       q = function(x,i) ErrViewLib::hd(x[i], 0.025)
-      loas.boot = boot::boot(y, q, stype='i', R=1000)
+      # Adapt nBoot for boot.ci
+      # (https://stat.ethz.ch/pipermail/r-help/2011-February/269006.html)
+      nBoot = max(1000, length(y) + 1)
+      loas.boot = boot::boot(y, q, stype='i', R=nBoot)
       loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
       polygon(polygonXlimits,
               c(loas.ci$bca[4], loas.ci$bca[4],
@@ -300,7 +307,7 @@ plotDistHist = function(
               col = cols_tr2[2], border = NA)
 
       q = function(x,i) ErrViewLib::hd(x[i], 0.975)
-      loas.boot = boot::boot(y, q, stype='i', R=1000)
+      loas.boot = boot::boot(y, q, stype='i', R=nBoot)
       loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
       polygon(polygonXlimits,
               c(loas.ci$bca[4], loas.ci$bca[4],
@@ -433,7 +440,7 @@ plotlyDistHist = function(
     # Mark quantile-based outliers
     plow = (1 - p) / 2
     pup  = p + plow
-    out  = y > quantile(y, p = pup) | y < quantile(y, p = plow)
+    out  = y > ErrViewLib::hd(y,pup) | y < ErrViewLib::hd(y,plow)
     if (sum(out) > 0) {
       sc <- sc %>%
         add_trace(
@@ -499,7 +506,7 @@ plotlyDistHist = function(
         x = range(pretty(x)), y = c(bias,bias),
         line = list(color = cols[3], width = lwd)
       ) %>%
-      layout(
+      plotly::layout(
         annotations = list(
           x = max(pretty(x)), y = bias,
           xanchor = 'left',
@@ -533,13 +540,17 @@ plotlyDistHist = function(
         )
     }
     # LOAs
-    loas = quantile(y,probs = c(0.025,0.975))
+    loas = c(
+      ErrViewLib::hd(y, 0.025),
+      ErrViewLib::hd(y, 0.975)
+    )
+    # loas = quantile(y,probs = c(0.025,0.975))
     sc <- sc %>%
       add_lines(
         x = range(pretty(x)), y = c(loas[1],loas[1]),
         line = list(color = cols[2], width = lwd)
       ) %>%
-      layout(
+      plotly::layout(
         annotations = list(
           x = max(pretty(x)), y = loas[1],
           xanchor = 'left',
@@ -555,7 +566,7 @@ plotlyDistHist = function(
         x = range(pretty(x)), y = c(loas[2],loas[2]),
         line = list(color = cols[4], width = lwd)
       ) %>%
-      layout(
+      plotly::layout(
         annotations = list(
           x = max(pretty(x)), y = loas[2],
           xanchor = 'left',
@@ -571,7 +582,10 @@ plotlyDistHist = function(
     if(plotBAci) {
       # Bootstrap 95% CI on LOAs
       q = function(x,i) ErrViewLib::hd(x[i], 0.025)
-      loas.boot = boot::boot(y, q, stype='i', R=1000)
+      # Adapt nBoot for boot.ci
+      # (https://stat.ethz.ch/pipermail/r-help/2011-February/269006.html)
+      nBoot = max(1000, length(y) + 1)
+      loas.boot = boot::boot(y, q, stype='i', R=nBoot)
       loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
       sc <- sc %>%
         add_lines(
@@ -590,7 +604,7 @@ plotlyDistHist = function(
         )
 
       q = function(x,i) ErrViewLib::hd(x[i], 0.975)
-      loas.boot = boot::boot(y, q, stype='i', R=1000)
+      loas.boot = boot::boot(y, q, stype='i', R=nBoot)
       loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
       sc <- sc %>%
         add_lines(
@@ -618,7 +632,7 @@ plotlyDistHist = function(
     margin = 0,
     shareY = TRUE
   ) %>%
-    layout(
+    plotly::layout(
       xaxis = list(
         showline = TRUE, linewidth = 2,
         autorange = "reversed",
