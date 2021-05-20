@@ -10,15 +10,17 @@
 #' @export
 #'
 #' @examples
-plotBA = function(data1,
-                  data2,
-                  ylim = NULL,
-                  title = '',
-                  gPars) {
+plotBA = function(
+  data1,
+  data2,
+  ylim = NULL,
+  title = '',
+  gPars
+) {
 
   # Bootstapped version of the Bland-Altman graph
-  delta = data2-data1
-  meand = (data1+data2)/2
+  delta = data2 - data1
+  meand = (data1 + data2) / 2
 
   # Expose gPars list
   for (n in names(gPars))
@@ -92,17 +94,18 @@ plotBA = function(data1,
     line=0.25
   )
 
-  q = function(x,i) quantile(x[i],p=0.025)
-  loas.boot = boot::boot(delta, q, stype='i', R=500)
-  loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="basic")
+  q = function(x,i) ErrViewLib::hd(x[i],p=0.025)
+  nBoot = max(1000, length(delta) + 1) # Needed for boot.ci
+  loas.boot = boot::boot(delta, q, stype = 'i', R = nBoot)
+  loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
   polygon(polygonXlimits,
           c(loas.ci$basic[4], loas.ci$basic[4],
             loas.ci$basic[5], loas.ci$basic[5]),
           col = cols_tr2[2], border = NA)
 
-  q = function(x,i) quantile(x[i],p=0.975)
-  loas.boot = boot::boot(delta, q, stype='i', R=500)
-  loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="basic")
+  q = function(x,i) ErrViewLib::hd(x[i],p=0.975)
+  loas.boot = boot::boot(delta, q, stype = 'i', R = nBoot)
+  loas.ci   = boot::boot.ci(loas.boot, conf = 0.95, type = "bca")
   polygon(polygonXlimits,
           c(loas.ci$basic[4], loas.ci$basic[4],
             loas.ci$basic[5], loas.ci$basic[5]),
