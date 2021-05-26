@@ -4,13 +4,24 @@
 \alias{plotPpnorm}
 \title{plotPpnorm}
 \usage{
-plotPpnorm(X, title = "", scale = FALSE, plotCI = FALSE, score = TRUE, gPars)
+plotPpnorm(
+  X,
+  title = "",
+  scale = FALSE,
+  plotCI = FALSE,
+  score = TRUE,
+  label = 0,
+  gPars
+)
 }
 \arguments{
+\item{label}{(integer) index of letter for subplot tag}
+
 \item{gPars}{}
 }
 \value{
-
+a plot and an invisible list of metrics `misCal`, `misCalUp`
+  and `calErr`
 }
 \description{
 Deviation of ECDF from normality

@@ -23,6 +23,23 @@ hd = function (x, q = 0.5, na.rm = TRUE){
   hd <- sum(w * y)
   hd
 }
+#' Quantiles by Harrell & Davis 1982 for a vector of probabilities
+#'
+#' @param x (vector) a set of values
+#' @param p (vector) a vector of probability levels.
+#' @param na.rm (logical) remove NAs.
+#'
+#' @return A vector of quantiles.
+#' @export
+#'
+#' @examples
+vhd = function(x, p=c(0.025,0.975), na.rm = TRUE) {
+  # Calculate quantiles by hd for a vector of probabilities
+  q = vector(length=length(p))
+  for(i in seq_along(p))
+    q[i] = hd(x,p[i], na.rm)
+  return(q)
+}
 #' Eliminate NA's
 #'
 #' @param m

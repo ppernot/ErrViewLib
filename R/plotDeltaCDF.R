@@ -18,22 +18,24 @@
 #' @export
 #'
 #' @examples
-plotDeltaCDF <- function(err,
-                         meth1,
-                         meth2,
-                         eps   = NULL,
-                         xmin  = NULL,
-                         xmax  = NULL,
-                         xlab  = NULL,
-                         units = 'a.u.',
-                         main  = '',
-                         nboot = max(1000,nrow(err)+1),
-                         label = 0,
-                         showSIP  = TRUE,
-                         showMLG  = TRUE,
-                         showDmue = TRUE,
-                         showCI   = TRUE,
-                         gPars) {
+plotDeltaCDF <- function(
+  err,
+  meth1,
+  meth2,
+  eps   = NULL,
+  xmin  = NULL,
+  xmax  = NULL,
+  xlab  = NULL,
+  units = 'a.u.',
+  main  = '',
+  nboot = 1000,
+  label = 0,
+  showSIP  = TRUE,
+  showMLG  = TRUE,
+  showDmue = TRUE,
+  showCI   = TRUE,
+  gPars
+) {
   # Expose gPars list
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
@@ -58,6 +60,8 @@ plotDeltaCDF <- function(err,
     X = abs(err[[meth1]]) - abs(err[[meth2]])
     Y = cbind(err[[meth1]],err[[meth2]])
   }
+
+  nboot = max(nboot, length(X)+1)
 
   # Stats of SIP and DeltaMUE indicators
   if (showSIP | showMLG) {
