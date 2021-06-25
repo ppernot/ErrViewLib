@@ -8,7 +8,7 @@ plotPpnorm(
   X,
   title = "",
   scale = FALSE,
-  plotCI = FALSE,
+  plotCI = TRUE,
   score = TRUE,
   label = 0,
   gPars

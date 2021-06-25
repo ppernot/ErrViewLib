@@ -4,14 +4,23 @@
 \alias{plotPIT}
 \title{Plot PIT histograms}
 \usage{
-plotPIT(R, C, uC, col = 5, breaks = 10, title = "", label = 0, gPars)
+plotPIT(
+  Z,
+  dist = c("norm", "t"),
+  shape = 2,
+  col = 5,
+  breaks = 10,
+  title = "",
+  label = 0,
+  gPars
+)
 }
 \arguments{
-\item{R}{(vector) a set of reference values}
+\item{Z}{(vector) a set of z-zscores}
 
-\item{C}{(vector) a set of predicted values}
+\item{dist}{(string) a distribution}
 
-\item{uC}{(vector) a set of prediction uncertainties}
+\item{shape}{(numeric) shape parameter (> 0, maybe non-integer).}
 
 \item{col}{(integer) a color number for the histigram}
 

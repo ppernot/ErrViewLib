@@ -19,7 +19,7 @@ plotPpnorm <- function(
   X,
   title = '',
   scale  = FALSE,
-  plotCI = FALSE,
+  plotCI = TRUE,
   score  = TRUE,
   label  = 0,
   gPars
@@ -110,12 +110,12 @@ plotPpnorm <- function(
   box()
   if(score) {
     misCal = trapz(pt,abs(pe-pt))
-    calErr = sum((pt-pe)^2)
+    calErr = sqrt(sum((pt-pe)^2))
     text(
       0.75, 0.1,
       paste0(
         'MisCal   = ',signif(misCal,2),'\n',
-        'MisCalUp = ',signif(misCalUp,2),'\n',
+        ifelse(plotCI,paste0('MisCalUp = ',signif(misCalUp,2),'\n'),''),
         'CalErr   = ',signif(calErr,2)
       ),
       cex=1
@@ -133,7 +133,7 @@ plotPpnorm <- function(
   invisible(
     list(
       misCal = misCal,
-      misCalUp = misCalUp,
+      misCalUp = ifelse(plotCI,misCalUp,NA),
       calErr = calErr
     )
   )

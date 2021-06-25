@@ -238,8 +238,12 @@ formatUnc = function(y, uy, numDig = 2) {
 #' @examples
 prettyUnc = function(y, uy, numDig = 2) {
 
-  if (!is.finite(y) | !is.finite(uy) | uy <= 0)
-    return(y)
+  if (!is.finite(uy) |
+      !is.finite(y)  |
+      is.na(y)       |
+      is.na(uy)      |
+      uy <0            )
+    return(NA)
 
   # Get scales
   n0 = 1 + floor(log10(abs(y)))

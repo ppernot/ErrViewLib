@@ -1,8 +1,8 @@
 #' Plot PIT histograms
 #'
-#' @param R (vector) a set of reference values
-#' @param C  (vector) a set of predicted values
-#' @param uC  (vector) a set of prediction uncertainties
+#' @param Z (vector) a set of z-zscores
+#' @param dist (string) a distribution
+#' @param shape (numeric) shape parameter (> 0, maybe non-integer).
 #' @param col (integer) a color number for the histigram
 #' @param breaks (integer) number of breaks in the histogram
 #' @param title (string) a title for the plot
@@ -14,13 +14,17 @@
 #'
 #' @examples
 plotPIT = function(
-  R, C, uC,
+  Z,
+  dist  = c('norm','t'),
+  shape = 2,
   col = 5,
   breaks = 10,
   title = '',
   label = 0,
   gPars
 ) {
+
+  dist = match.arg(dist)
 
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
@@ -36,12 +40,20 @@ plotPIT = function(
   )
 
   # Uncertainty on uniform histogram
-  v  = length(C)/breaks
+  v  = length(Z)/breaks
   uv = sqrt(v)
 
-  h = hist(pnorm((R-C)/uC), breaks = breaks, plot=FALSE)$counts
+  # Probability Integral Transform
+  pit = switch(
+    dist,
+    norm = normalp::pnormp(Z,p=shape),
+    t    = pt(Z,df=shape)
+  )
+
+  # Histogram
+  h = hist(pit, breaks = breaks, plot=FALSE)$counts # To estimate ylim
   hist(
-    pnorm((R-C)/uC),
+    pit,
     col=cols_tr2[col],
     xlim = c(0,1),
     xlab = 'PIT',
@@ -50,7 +62,13 @@ plotPIT = function(
     main = title
   )
 
-  abline(h=c(v-2*uv,v,v+2*uv), lty=c(2,1,2), lwd = lwd, col= cols[2])
+  # 95% CI
+  abline(
+    h=c(max(0,v-2*uv),v,v+2*uv),
+    lty=c(2,1,2),
+    lwd = lwd,
+    col= cols[2]
+  )
 
   if(label > 0)
     mtext(

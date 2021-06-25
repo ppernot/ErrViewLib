@@ -1,0 +1,392 @@
+#' Auxillary function for plotPcoverage
+#'
+#' @param cLearn
+#' @param rLearn
+#' @param cTest
+#' @param rTest
+#' @param corTrend
+#' @param fo
+#' @param prob
+#' @param qreg
+#'
+#' @return
+#'
+#' @examples
+predQ = function(
+  cLearn, rLearn,
+  cTest, rTest,
+  # ucLearn  = NULL,
+  # ucTest   = NULL,
+  corTrend = FALSE,
+  fo       = NA,
+  prob     = c(0.5, 0.75, 0.95),
+  qreg     = FALSE,
+  dist     = c('norm','t'),
+  shape    = 2
+){
+
+  dist = match.arg(dist)
+
+  alpha = 1-prob
+  plow = alpha/2
+  psup = 1-alpha/2
+  pfac = switch(
+    dist,
+    norm = normalp::qnormp(psup,p=shape),
+    t    = qt(psup,df=shape)
+  ) # TBD: allow for non-symmetric distribs ?
+
+  eLearn = rLearn - cLearn
+  eTest  = rTest - cTest
+
+  # Learn quantiles
+  if(corTrend) {
+    environment(fo) <- environment()
+    x      = cLearn
+    y      = rLearn
+    reg    = lm(fo)
+    eLearn = residuals(reg)
+    cPred  = predict(reg, newdata = data.frame(x=cTest))
+    eTest  = rTest - cPred # Prediction errors
+  }
+
+  # Use z-scores if uncertainty available
+  # if(!is.null(ucLearn))
+  #   eLearn = eLearn / ucLearn
+  # if(!is.null(ucTest))
+  #   eTest = eTest / ucTest
+
+  eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=length(cTest))
+
+  if(qreg) {
+    # Quantile estimates of CI limits
+    for (k in seq_along(prob)) {
+      eqLwr[k, ] = ErrViewLib::hd(eLearn, q = plow[k])
+      eqUpr[k, ] = ErrViewLib::hd(eLearn, q = psup[k])
+    }
+  } else {
+    # Linear regression
+    if (corTrend) {
+      # Account for regression uncertainty
+      for(k in seq_along(prob)) {
+        cp = predict(reg,
+                     newdata = data.frame(x=cTest),
+                     interval = "prediction",
+                     level = prob[k])
+        eqUpr[k, ] = cp[,"upr"] - cPred
+        # if(!is.null(ucTest))
+        #   eqUpr[k, ] = eqUpr[k, ] / ucTest
+        eqLwr[k, ] = cp[,"lwr"] - cPred
+        # if(!is.null(ucTest))
+        #   eqLwr[k, ] = eqLwr[k, ] / ucTest
+      }
+    } else {
+      # Uniform CI from normal hypothesis
+      for(k in seq_along(prob)) {
+        eqLwr[k, ] = mean(eLearn) - pfac[k]*sd(eLearn)
+        eqUpr[k, ] = mean(eLearn) + pfac[k]*sd(eLearn)
+      }
+    }
+  }
+
+  return(
+    list(
+      eTest = eTest,
+      eqLwr = eqLwr,
+      eqUpr = eqUpr
+    )
+  )
+}
+#' Plot local coverage probabilities to assess calibration and sharpness
+#'
+#' @param R (vector) a reference dataset
+#' @param C (vector) a set of predicted values
+#' @param uC (vector) a set of prediction uncertainties
+#' @param corTrend (logical) flag to correct trend
+#' @param degree (integer) polynomial degree of trend
+#' @param qreg (logical) flag to quantile regression (basic)
+#' @param prob (vector) a set of coverage probabilities to test
+#' @param dist (string) a distribution
+#' @param shape (numeric) shape parameter (> 0, maybe non-integer).
+#' @param mycols (vector) a set of color indexes to gPars colors
+#' @param valid (string) a cross-validation method: "kfold" (default) or "loo"
+#' @param nFold (integer) number of folds (default: 10)
+#' @param nRepeat (integer) number of repeats for k-fold cross-validation
+#' @param nBin (integer) number of intervals for local coverage stats
+#' @param ylim (vector) limits of the y axis
+#' @param title (string) a title to display above the plot
+#' @param legloc (string) location of the legend (default: "bottom")
+#' @param label (integer) index of letter for subplot tag
+#' @param gPars (list) graphical parameters
+#'
+#' @return Nothing. It is used for its side effect (plot).
+#' @export
+#'
+#' @examples
+plotPcoverage = function(
+  R, C,
+  uC        = NULL,
+  corTrend  = FALSE,
+  degree    = 1,
+  qreg      = TRUE,
+  prob      = c(0.5,0.75,0.95),
+  dist      = c('norm','t'),
+  shape     = 2,
+  mycols    = 1:length(prob),
+  valid     = c("kfold","loo"),
+  nFold     = 10,
+  nRepeat   = 10,
+  nBin      = 10,
+  xlab      = 'Calculated value',
+  ylim      = NA,
+  title     = '',
+  legloc    = 'bottom',
+  label     = 0,
+  gPars
+) {
+
+  dist  = match.arg(dist)
+  valid = match.arg(valid)
+
+  if(nRepeat <= 0)
+    stop('>>> nRepeat should be > 0')
+  if(nFold <= 0)
+    stop('>>> nFold should be > 0')
+  if(nBin <= 0)
+    stop('>>> nBin should be > 0')
+
+  E = R - C
+  N = length(C)
+
+  if(!is.null(uC)) {
+    # Direct validation of z-scores: no cross-validation
+
+    alpha = 1 - prob
+    plow  = alpha / 2
+    psup  = 1 - alpha / 2
+    qlow  = switch(
+      dist,
+      norm = normalp::qnormp(plow, p = shape),
+      t    = qt(plow, df = shape)
+    )
+    qsup  = switch(
+      dist,
+      norm = normalp::qnormp(psup, p = shape),
+      t    = qt(psup, df = shape)
+    )
+
+    # Attribute bin numbers to data
+    ord  = order(C)
+    cOrd = C[ord]
+    zOrd = (R[ord]-C[ord])/uC[ord]
+    p    = seq(0, 1, length.out = nBin + 1)[-1]
+    br   = vhd(cOrd, p = p)
+    cl   = c()
+    for (i in seq_along(cOrd))
+      cl[i] = which(br >= cOrd[i])[1]
+
+    # Coverage stats
+    pP = loP = upP = matrix(NA,nrow=length(prob),ncol=length(br))
+    mint = c()
+    tG = matrix(NA,nrow=length(prob),ncol=length(cl))
+    i0 = 1
+    for (i in seq_along(br)) {
+      sel = which(cl==i)
+      len = length(sel)
+      for (ip in seq_along(prob)) {
+        t = zOrd[sel] >= qlow[ip] & zOrd[sel] <= qsup[ip]
+        tG[ip,i0:(i0+len-1)] = t
+        pp         = mean(t)
+        pP[ip,i]   = pp
+        upp        = sqrt( pp * (1 - pp) / length(t) )
+        loP[ip, i] = pp - 1.96 * upp
+        upP[ip, i] = pp + 1.96 * upp
+      }
+      i0 = i0 + len
+      mint[i] = mean(cOrd[sel]) # Center of interval
+    }
+    meanP = rowMeans(tG) # avoid inequal samples bias
+
+  } else {
+
+    fo = NA
+    if(corTrend) {
+      # Build regression formula for trend correction
+      fo = y ~ 1
+      if (degree > 0)
+        fo = as.formula(
+          paste0('y ~ 1 +',
+                 paste0(
+                   'I(x^', 1:degree, ')',
+                   collapse = '+'
+                 )))
+    }
+
+    if(valid =="loo") {
+      cfold = 1:N
+      nFold = N
+      nRepeat = 1
+
+    } else {
+      # Generate kfold sample of approximately same size
+      # enables to distribute randomly points above round
+      # division.
+      pfold = seq(0, 1, length.out = nFold + 1)[-1]
+      bfold = vhd(1:N, p = pfold)
+      cfold = c()
+      for (i in 1:N)
+        cfold[i] = which(bfold >= i)[1]
+      if (sum(table(cfold)) != N)
+        stop('>>> Pb. in cfold calculation ----')
+
+    }
+
+    # Generate samples
+    pin  = matrix(0, nrow = N, ncol = length(prob))
+    for(irep in 1:nRepeat) {
+      iran = sample.int(N,N) # Randomize points
+      for (k in 1:nFold) {
+        sel    = which(cfold == k)
+        iTest  = iran[sel]
+        iLearn = which(! iran %in% iTest)
+
+        cLearn = C[iLearn]
+        cTest  = C[iTest]
+        rLearn = R[iLearn]
+        rTest  = R[iTest]
+        # ucLearn = NULL
+        # if(!is.null(uC))
+        #   ucLearn = uC[iLearn]
+        # ucTest = NULL
+        # if(!is.null(uC))
+        #   ucTest = uC[iTest]
+
+        # Prediction of CI over eTest
+        predCI = predQ(
+          cLearn, rLearn,
+          cTest,  rTest,
+          # ucLearn, ucTest,
+          corTrend = corTrend,
+          fo = fo,
+          prob = prob,
+          qreg = qreg,
+          dist = dist,
+          shape = shape
+        )
+
+        # Test
+        for (ip in seq_along(prob)) {
+          for (j in seq_along(cTest)) {
+            t = predCI$eTest[j] >= predCI$eqLwr[ip, j] &
+              predCI$eTest[j] <= predCI$eqUpr[ip, j]
+            # Accumulate for kfold repeats
+            pin[iTest[j], ip] = pin[iTest[j], ip] + t
+          }
+        }
+
+      } # End nFold loop: all points tested
+
+    } # End nRepeat loop
+
+    # Partition of predictive variable for local coverage stats
+    ord = order(C)
+    cOrd = C[ord]
+    p  = seq(0, 1, length.out = nBin + 1)[-1]
+    br = vhd(cOrd, p = p)
+    cl = c()
+    for (i in seq_along(cOrd))
+      cl[i] = which(br >= cOrd[i])[1]
+
+    # Coverage stats
+    pP = loP = upP = matrix(NA,nrow=length(prob),ncol=length(br))
+    mint = c()
+    for (i in seq_along(br)) {
+      sel = which(cl==i)
+      for (ip in seq_along(prob)) {
+        X          = pin[ord[sel],ip]
+        pp         = ErrViewLib::mse(X) / nRepeat
+        pP[ip,i]   = pp
+        upp        = sqrt( pp * (1 - pp) / (length(X)*nRepeat) )
+        loP[ip, i] = pp - 1.96 * upp
+        upP[ip, i] = pp + 1.96 * upp
+      }
+      mint[i] = mean(cOrd[sel]) # Center of interval
+    }
+    meanP = rowMeans(pP) # Mean coverage
+
+  }
+
+
+
+  # Plot
+  for (n in names(gPars))
+    assign(n, rlist::list.extract(gPars, n))
+
+  par(
+    mfrow = c(1, 1),
+    mar = mar,
+    mgp = mgp,
+    pty = 's',
+    tcl = tcl,
+    cex = cex,
+    lwd = lwd
+  )
+
+  if (any(is.na(ylim)))
+    ylim = range(c(loP, upP))
+
+  matplot(
+    mint,
+    t(pP),
+    xlab = xlab,
+    ylab = 'Local Coverage Probability',
+    ylim = ylim,
+    type = 'b',
+    lty = 3,
+    pch  = 19,
+    lwd = lwd,
+    col  = cols[mycols],
+    main = title
+  )
+  grid()
+  for(i in seq_along(prob))
+    segments(mint, loP[i,], mint, upP[i,], col = cols[mycols[i]])
+  mtext(text = paste0(prob,' -'),
+        side = 2,
+        at = prob,
+        col = cols[mycols],
+        cex = 0.75*cex,
+        las = 1,
+        font = 2)
+  abline(h   = prob,
+         lty = 2,
+         col = cols[mycols],
+         lwd = lwd)
+  # Mean coverage proba
+  mtext(text = c(' Mean',paste0('- ',signif(meanP,2))),
+        side = 4,
+        at = c(1,meanP),
+        col = c(1,cols[mycols]),
+        cex = 0.75*cex,
+        las = 1,
+        font = 2)
+  legend(
+    legloc, bty = 'n',
+    legend = paste0('P',round(100*prob)),
+    col = cols[mycols],
+    pch = 19,
+    lty  = 3,
+    ncol = 1,
+    cex  = 0.8
+  )
+  box()
+
+  if(label > 0)
+    mtext(
+      text = paste0('(', letters[label], ')'),
+      side = 3,
+      adj = 1,
+      cex = cex,
+      line = 0.3)
+
+}
