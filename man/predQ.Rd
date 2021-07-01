@@ -5,20 +5,20 @@
 \title{Auxillary function for plotPcoverage}
 \usage{
 predQ(
-  cLearn,
-  rLearn,
-  cTest,
-  rTest,
-  ucLearn = NULL,
-  ucTest = NULL,
+  cL,
+  rL,
+  cT,
+  rT,
   corTrend = FALSE,
   fo = NA,
   prob = c(0.5, 0.75, 0.95),
-  qreg = FALSE
+  CImeth = c("eq", "pred", "dist"),
+  dist = c("norm", "t"),
+  shape = 2
 )
 }
 \arguments{
-\item{qreg}{}
+\item{CImeth}{}
 }
 \value{
 

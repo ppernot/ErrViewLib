@@ -7,96 +7,177 @@
 #' @param corTrend
 #' @param fo
 #' @param prob
-#' @param qreg
+#' @param CImeth
 #'
 #' @return
 #'
 #' @examples
 predQ = function(
-  cLearn, rLearn,
-  cTest, rTest,
-  # ucLearn  = NULL,
-  # ucTest   = NULL,
+  cL, rL, cT,  rT,
   corTrend = FALSE,
   fo       = NA,
   prob     = c(0.5, 0.75, 0.95),
-  qreg     = FALSE,
+  CImeth   = c('eq','pred','dist'),
   dist     = c('norm','t'),
   shape    = 2
 ){
 
   dist = match.arg(dist)
+  CImeth = match.arg(CImeth)
 
-  alpha = 1-prob
-  plow = alpha/2
-  psup = 1-alpha/2
-  pfac = switch(
-    dist,
-    norm = normalp::qnormp(psup,p=shape),
-    t    = qt(psup,df=shape)
-  ) # TBD: allow for non-symmetric distribs ?
+  # Percentages for symmetric CI at prob values
+  alpha = 1 - prob
+  plow = alpha / 2
+  psup = 1 - alpha / 2
 
-  eLearn = rLearn - cLearn
-  eTest  = rTest - cTest
+  # Errors
+  eL = rL - cL
+  eT = rT - cT
 
-  # Learn quantiles
+  # Apply trend corrections
   if(corTrend) {
     environment(fo) <- environment()
-    x      = cLearn
-    y      = rLearn
-    reg    = lm(fo)
-    eLearn = residuals(reg)
-    cPred  = predict(reg, newdata = data.frame(x=cTest))
-    eTest  = rTest - cPred # Prediction errors
+    x   = cL
+    y   = eL
+    reg = lm(fo)
+    eL  = residuals(reg)
+    eP  = predict(reg, newdata = data.frame(x=cT))
+    eT  = eT - eP
   }
 
-  # Use z-scores if uncertainty available
-  # if(!is.null(ucLearn))
-  #   eLearn = eLearn / ucLearn
-  # if(!is.null(ucTest))
-  #   eTest = eTest / ucTest
+  eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=length(cT))
 
-  eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=length(cTest))
-
-  if(qreg) {
+  if(CImeth == 'eq') {
     # Quantile estimates of CI limits
     for (k in seq_along(prob)) {
-      eqLwr[k, ] = ErrViewLib::hd(eLearn, q = plow[k])
-      eqUpr[k, ] = ErrViewLib::hd(eLearn, q = psup[k])
+      eqLwr[k, ] = ErrViewLib::hd(eL, q = plow[k])
+      eqUpr[k, ] = ErrViewLib::hd(eL, q = psup[k])
     }
-  } else {
-    # Linear regression
+
+  } else if(CImeth == 'pred') {
+    # Linear regression of errors
     if (corTrend) {
       # Account for regression uncertainty
       for(k in seq_along(prob)) {
         cp = predict(reg,
-                     newdata = data.frame(x=cTest),
+                     newdata = data.frame(x=cT),
                      interval = "prediction",
                      level = prob[k])
-        eqUpr[k, ] = cp[,"upr"] - cPred
-        # if(!is.null(ucTest))
-        #   eqUpr[k, ] = eqUpr[k, ] / ucTest
-        eqLwr[k, ] = cp[,"lwr"] - cPred
-        # if(!is.null(ucTest))
-        #   eqLwr[k, ] = eqLwr[k, ] / ucTest
+        eqUpr[k, ] = cp[,"upr"] - eP
+        eqLwr[k, ] = cp[,"lwr"] - eP
       }
     } else {
-      # Uniform CI from normal hypothesis
-      for(k in seq_along(prob)) {
-        eqLwr[k, ] = mean(eLearn) - pfac[k]*sd(eLearn)
-        eqUpr[k, ] = mean(eLearn) + pfac[k]*sd(eLearn)
-      }
+      stop('CImeth = pred requires corTrend = TRUE')
+    }
+  } else {
+    pfac = switch(
+      dist,
+      norm = normalp::qnormp(psup,p=shape),
+      t    = qt(psup,df=shape)
+    ) # TBD: allow for non-symmetric distribs ?
+
+    # Uniform CI from pdf hypothesis
+    mu  = mean(eL)
+    sig = sd(eL)
+    for(k in seq_along(prob)) {
+      eqLwr[k, ] = mu - pfac[k]*sig
+      eqUpr[k, ] = mu + pfac[k]*sig
     }
   }
 
   return(
     list(
-      eTest = eTest,
+      eTest = eT,
       eqLwr = eqLwr,
       eqUpr = eqUpr
     )
   )
 }
+# predQOld = function(
+#   cLearn, rLearn,
+#   cTest, rTest,
+#   # ucLearn  = NULL,
+#   # ucTest   = NULL,
+#   corTrend = FALSE,
+#   fo       = NA,
+#   prob     = c(0.5, 0.75, 0.95),
+#   qreg     = FALSE,
+#   dist     = c('norm','t'),
+#   shape    = 2
+# ){
+#
+#   dist = match.arg(dist)
+#
+#   alpha = 1-prob
+#   plow = alpha/2
+#   psup = 1-alpha/2
+#   pfac = switch(
+#     dist,
+#     norm = normalp::qnormp(psup,p=shape),
+#     t    = qt(psup,df=shape)
+#   ) # TBD: allow for non-symmetric distribs ?
+#
+#   eLearn = rLearn - cLearn
+#   eTest  = rTest - cTest
+#
+#   # Learn quantiles
+#   if(corTrend) {
+#     environment(fo) <- environment()
+#     x      = cLearn
+#     y      = rLearn
+#     reg    = lm(fo)
+#     eLearn = residuals(reg)
+#     cPred  = predict(reg, newdata = data.frame(x=cTest))
+#     eTest  = rTest - cPred # Prediction errors
+#   }
+#
+#   # Use z-scores if uncertainty available
+#   # if(!is.null(ucLearn))
+#   #   eLearn = eLearn / ucLearn
+#   # if(!is.null(ucTest))
+#   #   eTest = eTest / ucTest
+#
+#   eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=length(cTest))
+#
+#   if(qreg) {
+#     # Quantile estimates of CI limits
+#     for (k in seq_along(prob)) {
+#       eqLwr[k, ] = ErrViewLib::hd(eLearn, q = plow[k])
+#       eqUpr[k, ] = ErrViewLib::hd(eLearn, q = psup[k])
+#     }
+#   } else {
+#     # Linear regression
+#     if (corTrend) {
+#       # Account for regression uncertainty
+#       for(k in seq_along(prob)) {
+#         cp = predict(reg,
+#                      newdata = data.frame(x=cTest),
+#                      interval = "prediction",
+#                      level = prob[k])
+#         eqUpr[k, ] = cp[,"upr"] - cPred
+#         # if(!is.null(ucTest))
+#         #   eqUpr[k, ] = eqUpr[k, ] / ucTest
+#         eqLwr[k, ] = cp[,"lwr"] - cPred
+#         # if(!is.null(ucTest))
+#         #   eqLwr[k, ] = eqLwr[k, ] / ucTest
+#       }
+#     } else {
+#       # Uniform CI from normal hypothesis
+#       for(k in seq_along(prob)) {
+#         eqLwr[k, ] = mean(eLearn) - pfac[k]*sd(eLearn)
+#         eqUpr[k, ] = mean(eLearn) + pfac[k]*sd(eLearn)
+#       }
+#     }
+#   }
+#
+#   return(
+#     list(
+#       eTest = eTest,
+#       eqLwr = eqLwr,
+#       eqUpr = eqUpr
+#     )
+#   )
+# }
 #' Plot local coverage probabilities to assess calibration and sharpness
 #'
 #' @param R (vector) a reference dataset
@@ -104,7 +185,7 @@ predQ = function(
 #' @param uC (vector) a set of prediction uncertainties
 #' @param corTrend (logical) flag to correct trend
 #' @param degree (integer) polynomial degree of trend
-#' @param qreg (logical) flag to quantile regression (basic)
+#' @param CImeth (string) method to estimate CI limits
 #' @param prob (vector) a set of coverage probabilities to test
 #' @param dist (string) a distribution
 #' @param shape (numeric) shape parameter (> 0, maybe non-integer).
@@ -128,7 +209,7 @@ plotPcoverage = function(
   uC        = NULL,
   corTrend  = FALSE,
   degree    = 1,
-  qreg      = TRUE,
+  CImeth   = c('eq','pred','dist'),
   prob      = c(0.5,0.75,0.95),
   dist      = c('norm','t'),
   shape     = 2,
@@ -147,6 +228,7 @@ plotPcoverage = function(
 
   dist  = match.arg(dist)
   valid = match.arg(valid)
+  CImeth = match.arg(CImeth)
 
   if(nRepeat <= 0)
     stop('>>> nRepeat should be > 0')
@@ -159,6 +241,7 @@ plotPcoverage = function(
   N = length(C)
 
   if(!is.null(uC)) {
+    # z-scores ----
     # Direct validation of z-scores: no cross-validation
 
     alpha = 1 - prob
@@ -208,6 +291,7 @@ plotPcoverage = function(
     meanP = rowMeans(tG) # avoid inequal samples bias
 
   } else {
+    # Errors ----
 
     fo = NA
     if(corTrend) {
@@ -254,22 +338,15 @@ plotPcoverage = function(
         cTest  = C[iTest]
         rLearn = R[iLearn]
         rTest  = R[iTest]
-        # ucLearn = NULL
-        # if(!is.null(uC))
-        #   ucLearn = uC[iLearn]
-        # ucTest = NULL
-        # if(!is.null(uC))
-        #   ucTest = uC[iTest]
 
         # Prediction of CI over eTest
         predCI = predQ(
           cLearn, rLearn,
           cTest,  rTest,
-          # ucLearn, ucTest,
           corTrend = corTrend,
           fo = fo,
           prob = prob,
-          qreg = qreg,
+          CImeth = CImeth,
           dist = dist,
           shape = shape
         )
@@ -316,9 +393,7 @@ plotPcoverage = function(
 
   }
 
-
-
-  # Plot
+  # Plot ----
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
 

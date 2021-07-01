@@ -10,8 +10,10 @@ plotPcoverage(
   uC = NULL,
   corTrend = FALSE,
   degree = 1,
-  qreg = TRUE,
+  CImeth = c("eq", "pred", "dist"),
   prob = c(0.5, 0.75, 0.95),
+  dist = c("norm", "t"),
+  shape = 2,
   mycols = 1:length(prob),
   valid = c("kfold", "loo"),
   nFold = 10,
@@ -36,9 +38,13 @@ plotPcoverage(
 
 \item{degree}{(integer) polynomial degree of trend}
 
-\item{qreg}{(logical) flag to quantile regression (basic)}
+\item{CImeth}{(string) method to estimate CI limits}
 
 \item{prob}{(vector) a set of coverage probabilities to test}
+
+\item{dist}{(string) a distribution}
+
+\item{shape}{(numeric) shape parameter (> 0, maybe non-integer).}
 
 \item{mycols}{(vector) a set of color indexes to gPars colors}
 
