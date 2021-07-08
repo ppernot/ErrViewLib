@@ -5,11 +5,9 @@
 \title{Plot local coverage probabilities to assess calibration and sharpness}
 \usage{
 plotPcoverage(
-  R,
-  C,
-  uC = NULL,
+  Data,
   corTrend = FALSE,
-  degree = 1,
+  fo = NA,
   CImeth = c("eq", "pred", "dist"),
   prob = c(0.5, 0.75, 0.95),
   dist = c("norm", "t"),
@@ -28,15 +26,11 @@ plotPcoverage(
 )
 }
 \arguments{
-\item{R}{(vector) a reference dataset}
-
-\item{C}{(vector) a set of predicted values}
-
-\item{uC}{(vector) a set of prediction uncertainties}
+\item{Data}{(data.frame) dataframe with predictor(s) and reference}
 
 \item{corTrend}{(logical) flag to correct trend}
 
-\item{degree}{(integer) polynomial degree of trend}
+\item{fo}{(formula) trend correction formula}
 
 \item{CImeth}{(string) method to estimate CI limits}
 
@@ -65,6 +59,8 @@ plotPcoverage(
 \item{label}{(integer) index of letter for subplot tag}
 
 \item{gPars}{(list) graphical parameters}
+
+\item{uP}{(vector) a set of prediction uncertainties}
 }
 \value{
 Nothing. It is used for its side effect (plot).

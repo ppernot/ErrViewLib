@@ -5,10 +5,8 @@
 \title{Auxillary function for plotPcoverage}
 \usage{
 predQ(
-  cL,
-  rL,
-  cT,
-  rT,
+  Learn,
+  Test,
   corTrend = FALSE,
   fo = NA,
   prob = c(0.5, 0.75, 0.95),

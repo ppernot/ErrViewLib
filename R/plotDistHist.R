@@ -12,6 +12,7 @@
 #' @param labels
 #' @param select
 #' @param main
+#' @param colPoints
 #' @param plotReg
 #' @param plotConf
 #' @param degree
@@ -42,6 +43,7 @@ plotDistHist = function(
   plotReg   = TRUE,  # Regression line
   plotConf  = FALSE, # Confidence limits on reg-line
   degree    = 0,
+  colPoints = NULL,
   plotBA    = FALSE, # Bland-Altman LOAs
   plotBAci  = FALSE, # 95% CI on Bland-Altman LOAs
   xlim      = range(x),
@@ -170,7 +172,7 @@ plotDistHist = function(
     x,
     y,
     pch = pch,
-    col = colp,
+    col = if(!is.null(colPoints)) colPoints else colp,
     xlim = xlim,
     ylim = ylim,
     xlab = xlab,

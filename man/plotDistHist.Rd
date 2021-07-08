@@ -20,6 +20,7 @@ plotDistHist(
   plotReg = TRUE,
   plotConf = FALSE,
   degree = 0,
+  colPoints = NULL,
   plotBA = FALSE,
   plotBAci = FALSE,
   xlim = range(x),

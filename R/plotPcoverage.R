@@ -13,7 +13,7 @@
 #'
 #' @examples
 predQ = function(
-  cL, rL, cT,  rT,
+  Learn, Test,
   corTrend = FALSE,
   fo       = NA,
   prob     = c(0.5, 0.75, 0.95),
@@ -31,27 +31,25 @@ predQ = function(
   psup = 1 - alpha / 2
 
   # Errors
-  eL = rL - cL
-  eT = rT - cT
+  E  = Learn[,'R'] - Learn[,'D']
+  eT = Test[,'R']  - Test[,'D']
 
   # Apply trend corrections
   if(corTrend) {
     environment(fo) <- environment()
-    x   = cL
-    y   = eL
-    reg = lm(fo)
-    eL  = residuals(reg)
-    eP  = predict(reg, newdata = data.frame(x=cT))
+    reg = lm(fo, data = Learn)
+    E  = residuals(reg)
+    eP  = predict(reg, newdata = Test)
     eT  = eT - eP
   }
 
-  eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=length(cT))
+  eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=nrow(Test))
 
   if(CImeth == 'eq') {
     # Quantile estimates of CI limits
     for (k in seq_along(prob)) {
-      eqLwr[k, ] = ErrViewLib::hd(eL, q = plow[k])
-      eqUpr[k, ] = ErrViewLib::hd(eL, q = psup[k])
+      eqLwr[k, ] = ErrViewLib::hd(E, q = plow[k])
+      eqUpr[k, ] = ErrViewLib::hd(E, q = psup[k])
     }
 
   } else if(CImeth == 'pred') {
@@ -60,7 +58,7 @@ predQ = function(
       # Account for regression uncertainty
       for(k in seq_along(prob)) {
         cp = predict(reg,
-                     newdata = data.frame(x=cT),
+                     newdata = Test,
                      interval = "prediction",
                      level = prob[k])
         eqUpr[k, ] = cp[,"upr"] - eP
@@ -77,8 +75,8 @@ predQ = function(
     ) # TBD: allow for non-symmetric distribs ?
 
     # Uniform CI from pdf hypothesis
-    mu  = mean(eL)
-    sig = sd(eL)
+    mu  = mean(E)
+    sig = sd(E)
     for(k in seq_along(prob)) {
       eqLwr[k, ] = mu - pfac[k]*sig
       eqUpr[k, ] = mu + pfac[k]*sig
@@ -93,98 +91,12 @@ predQ = function(
     )
   )
 }
-# predQOld = function(
-#   cLearn, rLearn,
-#   cTest, rTest,
-#   # ucLearn  = NULL,
-#   # ucTest   = NULL,
-#   corTrend = FALSE,
-#   fo       = NA,
-#   prob     = c(0.5, 0.75, 0.95),
-#   qreg     = FALSE,
-#   dist     = c('norm','t'),
-#   shape    = 2
-# ){
-#
-#   dist = match.arg(dist)
-#
-#   alpha = 1-prob
-#   plow = alpha/2
-#   psup = 1-alpha/2
-#   pfac = switch(
-#     dist,
-#     norm = normalp::qnormp(psup,p=shape),
-#     t    = qt(psup,df=shape)
-#   ) # TBD: allow for non-symmetric distribs ?
-#
-#   eLearn = rLearn - cLearn
-#   eTest  = rTest - cTest
-#
-#   # Learn quantiles
-#   if(corTrend) {
-#     environment(fo) <- environment()
-#     x      = cLearn
-#     y      = rLearn
-#     reg    = lm(fo)
-#     eLearn = residuals(reg)
-#     cPred  = predict(reg, newdata = data.frame(x=cTest))
-#     eTest  = rTest - cPred # Prediction errors
-#   }
-#
-#   # Use z-scores if uncertainty available
-#   # if(!is.null(ucLearn))
-#   #   eLearn = eLearn / ucLearn
-#   # if(!is.null(ucTest))
-#   #   eTest = eTest / ucTest
-#
-#   eqLwr = eqUpr = matrix(NA,nrow=length(prob),ncol=length(cTest))
-#
-#   if(qreg) {
-#     # Quantile estimates of CI limits
-#     for (k in seq_along(prob)) {
-#       eqLwr[k, ] = ErrViewLib::hd(eLearn, q = plow[k])
-#       eqUpr[k, ] = ErrViewLib::hd(eLearn, q = psup[k])
-#     }
-#   } else {
-#     # Linear regression
-#     if (corTrend) {
-#       # Account for regression uncertainty
-#       for(k in seq_along(prob)) {
-#         cp = predict(reg,
-#                      newdata = data.frame(x=cTest),
-#                      interval = "prediction",
-#                      level = prob[k])
-#         eqUpr[k, ] = cp[,"upr"] - cPred
-#         # if(!is.null(ucTest))
-#         #   eqUpr[k, ] = eqUpr[k, ] / ucTest
-#         eqLwr[k, ] = cp[,"lwr"] - cPred
-#         # if(!is.null(ucTest))
-#         #   eqLwr[k, ] = eqLwr[k, ] / ucTest
-#       }
-#     } else {
-#       # Uniform CI from normal hypothesis
-#       for(k in seq_along(prob)) {
-#         eqLwr[k, ] = mean(eLearn) - pfac[k]*sd(eLearn)
-#         eqUpr[k, ] = mean(eLearn) + pfac[k]*sd(eLearn)
-#       }
-#     }
-#   }
-#
-#   return(
-#     list(
-#       eTest = eTest,
-#       eqLwr = eqLwr,
-#       eqUpr = eqUpr
-#     )
-#   )
-# }
 #' Plot local coverage probabilities to assess calibration and sharpness
 #'
-#' @param R (vector) a reference dataset
-#' @param C (vector) a set of predicted values
-#' @param uC (vector) a set of prediction uncertainties
+#' @param Data (data.frame) dataframe with predictor(s) and reference
+#' @param uP (vector) a set of prediction uncertainties
 #' @param corTrend (logical) flag to correct trend
-#' @param degree (integer) polynomial degree of trend
+#' @param fo (formula) trend correction formula
 #' @param CImeth (string) method to estimate CI limits
 #' @param prob (vector) a set of coverage probabilities to test
 #' @param dist (string) a distribution
@@ -205,11 +117,10 @@ predQ = function(
 #'
 #' @examples
 plotPcoverage = function(
-  R, C,
-  uC        = NULL,
+  Data,
   corTrend  = FALSE,
-  degree    = 1,
-  CImeth   = c('eq','pred','dist'),
+  fo        = NA,
+  CImeth    = c('eq','pred','dist'),
   prob      = c(0.5,0.75,0.95),
   dist      = c('norm','t'),
   shape     = 2,
@@ -237,10 +148,15 @@ plotPcoverage = function(
   if(nBin <= 0)
     stop('>>> nBin should be > 0')
 
+  C = Data$D
+  R = Data$R
   E = R - C
+  Data = cbind(Data,E)
   N = length(C)
 
-  if(!is.null(uC)) {
+  if(!is.null(Data$uP)) {
+    uP = Data$uP
+
     # z-scores ----
     # Direct validation of z-scores: no cross-validation
 
@@ -261,7 +177,7 @@ plotPcoverage = function(
     # Attribute bin numbers to data
     ord  = order(C)
     cOrd = C[ord]
-    zOrd = (R[ord]-C[ord])/uC[ord]
+    zOrd = (R[ord]-C[ord])/uP[ord]
     p    = seq(0, 1, length.out = nBin + 1)[-1]
     br   = vhd(cOrd, p = p)
     cl   = c()
@@ -281,9 +197,15 @@ plotPcoverage = function(
         tG[ip,i0:(i0+len-1)] = t
         pp         = mean(t)
         pP[ip,i]   = pp
-        upp        = sqrt( pp * (1 - pp) / length(t) )
-        loP[ip, i] = pp - 1.96 * upp
-        upP[ip, i] = pp + 1.96 * upp
+        limits     = binom::binom.confint(
+          x = sum(t),
+          n = length(t),
+          methods = "wilson")
+        loP[ip, i] = limits$lower
+        upP[ip, i] = limits$upper
+        # upp        = sqrt( pp * (1 - pp) / length(t) )
+        # loP[ip, i] = pp - 1.96 * upp
+        # upP[ip, i] = pp + 1.96 * upp
       }
       i0 = i0 + len
       mint[i] = mean(cOrd[sel]) # Center of interval
@@ -292,19 +214,6 @@ plotPcoverage = function(
 
   } else {
     # Errors ----
-
-    fo = NA
-    if(corTrend) {
-      # Build regression formula for trend correction
-      fo = y ~ 1
-      if (degree > 0)
-        fo = as.formula(
-          paste0('y ~ 1 +',
-                 paste0(
-                   'I(x^', 1:degree, ')',
-                   collapse = '+'
-                 )))
-    }
 
     if(valid =="loo") {
       cfold = 1:N
@@ -334,15 +243,12 @@ plotPcoverage = function(
         iTest  = iran[sel]
         iLearn = which(! iran %in% iTest)
 
-        cLearn = C[iLearn]
-        cTest  = C[iTest]
-        rLearn = R[iLearn]
-        rTest  = R[iTest]
+        Learn = Data[iLearn,]
+        Test  = Data[iTest,]
 
         # Prediction of CI over eTest
         predCI = predQ(
-          cLearn, rLearn,
-          cTest,  rTest,
+          Learn, Test,
           corTrend = corTrend,
           fo = fo,
           prob = prob,
@@ -353,7 +259,7 @@ plotPcoverage = function(
 
         # Test
         for (ip in seq_along(prob)) {
-          for (j in seq_along(cTest)) {
+          for (j in 1:nrow(Test)) {
             t = predCI$eTest[j] >= predCI$eqLwr[ip, j] &
               predCI$eTest[j] <= predCI$eqUpr[ip, j]
             # Accumulate for kfold repeats
@@ -383,9 +289,15 @@ plotPcoverage = function(
         X          = pin[ord[sel],ip]
         pp         = ErrViewLib::mse(X) / nRepeat
         pP[ip,i]   = pp
-        upp        = sqrt( pp * (1 - pp) / (length(X)*nRepeat) )
-        loP[ip, i] = pp - 1.96 * upp
-        upP[ip, i] = pp + 1.96 * upp
+        limits     = binom::binom.confint(
+          x = sum(X),
+          n = length(X)*nRepeat,
+          methods = "wilson")
+        loP[ip, i] = limits$lower
+        upP[ip, i] = limits$upper
+        # upp        = sqrt( pp * (1 - pp) / (length(X)*nRepeat) )
+        # loP[ip, i] = pp - 1.96 * upp
+        # upP[ip, i] = pp + 1.96 * upp
       }
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
