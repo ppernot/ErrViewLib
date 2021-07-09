@@ -111,8 +111,10 @@ predQ = function(
 #' @param legloc (string) location of the legend (default: "bottom")
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
+#' @param plot (logical) plot the results
 #'
-#' @return Nothing. It is used for its side effect (plot).
+#' @return Invisibly returns a list of LCP results. Mainly used
+#'   for its plotting side effect.
 #' @export
 #'
 #' @examples
@@ -124,17 +126,18 @@ plotPcoverage = function(
   prob      = c(0.5,0.75,0.95),
   dist      = c('norm','t'),
   shape     = 2,
-  mycols    = 1:length(prob),
   valid     = c("kfold","loo"),
   nFold     = 10,
   nRepeat   = 10,
   nBin      = 10,
+  plot      = TRUE,
+  mycols    = 1:length(prob),
   xlab      = 'Calculated value',
   ylim      = NA,
   title     = '',
   legloc    = 'bottom',
   label     = 0,
-  gPars
+  gPars     = NULL
 ) {
 
   dist  = match.arg(dist)
@@ -203,14 +206,12 @@ plotPcoverage = function(
           methods = "wilson")
         loP[ip, i] = limits$lower
         upP[ip, i] = limits$upper
-        # upp        = sqrt( pp * (1 - pp) / length(t) )
-        # loP[ip, i] = pp - 1.96 * upp
-        # upP[ip, i] = pp + 1.96 * upp
       }
       i0 = i0 + len
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
     meanP = rowMeans(tG) # avoid inequal samples bias
+    cvP = apply(pP,1,sd)/meanP*100
 
   } else {
     # Errors ----
@@ -295,85 +296,108 @@ plotPcoverage = function(
           methods = "wilson")
         loP[ip, i] = limits$lower
         upP[ip, i] = limits$upper
-        # upp        = sqrt( pp * (1 - pp) / (length(X)*nRepeat) )
-        # loP[ip, i] = pp - 1.96 * upp
-        # upP[ip, i] = pp + 1.96 * upp
       }
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
     meanP = rowMeans(pP) # Mean coverage
+    cvP = apply(pP,1,sd)/meanP*100
 
   }
 
-  # Plot ----
-  for (n in names(gPars))
-    assign(n, rlist::list.extract(gPars, n))
+  if(plot) {
 
-  par(
-    mfrow = c(1, 1),
-    mar = mar,
-    mgp = mgp,
-    pty = 's',
-    tcl = tcl,
-    cex = cex,
-    lwd = lwd
-  )
+    # Plot ----
+    if(length(gPars) == 0)
+      gPars = ErrViewLib::setgPars()
 
-  if (any(is.na(ylim)))
-    ylim = range(c(loP, upP))
+    for (n in names(gPars))
+      assign(n, rlist::list.extract(gPars, n))
 
-  matplot(
-    mint,
-    t(pP),
-    xlab = xlab,
-    ylab = 'Local Coverage Probability',
-    ylim = ylim,
-    type = 'b',
-    lty = 3,
-    pch  = 19,
-    lwd = lwd,
-    col  = cols[mycols],
-    main = title
-  )
-  grid()
-  for(i in seq_along(prob))
-    segments(mint, loP[i,], mint, upP[i,], col = cols[mycols[i]])
-  mtext(text = paste0(prob,' -'),
-        side = 2,
-        at = prob,
-        col = cols[mycols],
-        cex = 0.75*cex,
-        las = 1,
-        font = 2)
-  abline(h   = prob,
-         lty = 2,
-         col = cols[mycols],
-         lwd = lwd)
-  # Mean coverage proba
-  mtext(text = c(' Mean',paste0('- ',signif(meanP,2))),
-        side = 4,
-        at = c(1,meanP),
-        col = c(1,cols[mycols]),
-        cex = 0.75*cex,
-        las = 1,
-        font = 2)
-  legend(
-    legloc, bty = 'n',
-    legend = paste0('P',round(100*prob)),
-    col = cols[mycols],
-    pch = 19,
-    lty  = 3,
-    ncol = 1,
-    cex  = 0.8
-  )
-  box()
-
-  if(label > 0)
-    mtext(
-      text = paste0('(', letters[label], ')'),
-      side = 3,
-      adj = 1,
+    par(
+      mfrow = c(1, 1),
+      mar = c(mar[1:3],4.3),
+      mgp = mgp,
+      pty = 's',
+      tcl = tcl,
       cex = cex,
-      line = 0.3)
+      lwd = lwd
+    )
 
+    if (any(is.na(ylim)))
+      ylim = range(c(loP, upP))
+
+    matplot(
+      mint,
+      t(pP),
+      xlab = xlab,
+      ylab = 'Local Coverage Probability',
+      ylim = ylim,
+      type = 'b',
+      lty = 3,
+      pch  = 19,
+      lwd = lwd,
+      col  = cols[mycols],
+      main = title
+    )
+    grid()
+    for(i in seq_along(prob))
+      segments(mint, loP[i,], mint, upP[i,], col = cols[mycols[i]])
+    mtext(text = paste0(prob,' -'),
+          side = 2,
+          at = prob,
+          col = cols[mycols],
+          cex = 0.75*cex,
+          las = 1,
+          font = 2)
+    abline(h   = prob,
+           lty = 2,
+           col = cols[mycols],
+           lwd = lwd)
+    # Mean coverage proba
+    mtext(text = c(' Mean',paste0('- ',signif(meanP,2))),
+          side = 4,
+          at = c(1.02,meanP),
+          col = c(1,cols[mycols]),
+          cex = 0.75*cex,
+          las = 1,
+          font = 2)
+    mtext(text = c('(CV)',paste0('(',signif(cvP,2),' %)')),
+          side = 4,
+          at = c(1.02,meanP),
+          col = c(1,cols[mycols]),
+          cex = 0.75*cex,
+          las = 1,
+          line = 2,
+          font = 2)
+    legend(
+      legloc, bty = 'n',
+      legend = paste0('P',round(100*prob)),
+      col = cols[mycols],
+      pch = 19,
+      lty  = 3,
+      ncol = 1,
+      cex  = 0.8
+    )
+    box()
+
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj = 1,
+        cex = cex,
+        line = 0.3)
+
+  }
+
+  invisible(
+    list(
+      pc    = pP,
+      pcl   = loP,
+      pcu   = upP,
+      meanP = meanP,
+      cvP   = cvP,
+      prob  = prob
+    )
+  )
 }
