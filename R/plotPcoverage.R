@@ -133,7 +133,7 @@ plotPcoverage = function(
   plot      = TRUE,
   mycols    = 1:length(prob),
   xlab      = 'Calculated value',
-  ylim      = NA,
+  ylim      = c(0,1),
   title     = '',
   legloc    = 'bottom',
   label     = 0,
@@ -200,18 +200,19 @@ plotPcoverage = function(
         tG[ip,i0:(i0+len-1)] = t
         pp         = mean(t)
         pP[ip,i]   = pp
-        limits     = binom::binom.confint(
-          x = sum(t),
-          n = length(t),
-          methods = "wilson")
-        loP[ip, i] = limits$lower
-        upP[ip, i] = limits$upper
+        counts = length(t)
+        low = qbeta(0.025,pp*counts,(1-pp)*counts)
+        upr = qbeta(0.975,pp*counts,(1-pp)*counts)
+        loP[ip, i] = low
+        upP[ip, i] = upr
       }
       i0 = i0 + len
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
     meanP = rowMeans(tG) # avoid inequal samples bias
-    cvP = apply(pP,1,sd)/meanP*100
+    cvP   = apply(pP,1,sd) / meanP * 100
+    up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
+    cv0   = 100 * up / prob # reference CV
 
   } else {
     # Errors ----
@@ -288,20 +289,20 @@ plotPcoverage = function(
       sel = which(cl==i)
       for (ip in seq_along(prob)) {
         X          = pin[ord[sel],ip]
-        pp         = ErrViewLib::mse(X) / nRepeat
+        pp         = mean(X) / nRepeat
         pP[ip,i]   = pp
-        limits     = binom::binom.confint(
-          x = sum(X),
-          n = length(X)*nRepeat,
-          methods = "wilson")
-        loP[ip, i] = limits$lower
-        upP[ip, i] = limits$upper
+        counts = length(X) * nRepeat
+        low = qbeta(0.025,pp*counts,(1-pp)*counts)
+        upr = qbeta(0.975,pp*counts,(1-pp)*counts)
+        loP[ip, i] = low
+        upP[ip, i] = upr
       }
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
     meanP = rowMeans(pP) # Mean coverage
-    cvP = apply(pP,1,sd)/meanP*100
-
+    cvP   = apply(pP,1,sd) / meanP * 100
+    up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
+    cv0   = 100 * up / prob # reference CV
   }
 
   if(plot) {
@@ -315,7 +316,7 @@ plotPcoverage = function(
 
     par(
       mfrow = c(1, 1),
-      mar = c(mar[1:3],4.3),
+      mar = c(mar[1:3],6),
       mgp = mgp,
       pty = 's',
       tcl = tcl,
@@ -334,7 +335,7 @@ plotPcoverage = function(
       ylim = ylim,
       type = 'b',
       lty = 3,
-      pch  = 19,
+      pch = 19,
       lwd = lwd,
       col  = cols[mycols],
       main = title
@@ -349,21 +350,38 @@ plotPcoverage = function(
           cex = 0.75*cex,
           las = 1,
           font = 2)
+    xpos = pretty(C)
+    for(i in seq_along(prob)) {
+      p = prob[i]
+      counts = N / nBin
+      low = qbeta(0.025,p*counts,(1-p)*counts)
+      upr = qbeta(0.975,p*counts,(1-p)*counts)
+      rect(
+        xpos[1],      low,
+        rev(xpos)[1], upr,
+        col = cols_tr[mycols[i]],
+        border = NA
+      )
+    }
     abline(h   = prob,
            lty = 2,
            col = cols[mycols],
            lwd = lwd)
+
     # Mean coverage proba
+    ypos = par("usr")[4]
     mtext(text = c(' Mean',paste0('- ',signif(meanP,2))),
           side = 4,
-          at = c(1.02,meanP),
+          at = c(ypos,meanP),
           col = c(1,cols[mycols]),
           cex = 0.75*cex,
           las = 1,
           font = 2)
-    mtext(text = c('(CV)',paste0('(',signif(cvP,2),' %)')),
+    mtext(text = c('(CV / CV0)',paste0(
+      '(',signif(cvP,2),' / ',
+          signif(cv0,2),' %)')),
           side = 4,
-          at = c(1.02,meanP),
+          at = c(ypos,meanP),
           col = c(1,cols[mycols]),
           cex = 0.75*cex,
           las = 1,
@@ -397,6 +415,7 @@ plotPcoverage = function(
       pcu   = upP,
       meanP = meanP,
       cvP   = cvP,
+      cv0   = cv0,
       prob  = prob
     )
   )

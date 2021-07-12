@@ -12,17 +12,18 @@ plotPcoverage(
   prob = c(0.5, 0.75, 0.95),
   dist = c("norm", "t"),
   shape = 2,
-  mycols = 1:length(prob),
   valid = c("kfold", "loo"),
   nFold = 10,
   nRepeat = 10,
   nBin = 10,
+  plot = TRUE,
+  mycols = 1:length(prob),
   xlab = "Calculated value",
-  ylim = NA,
+  ylim = c(0, 1),
   title = "",
   legloc = "bottom",
   label = 0,
-  gPars
+  gPars = NULL
 )
 }
 \arguments{
@@ -40,8 +41,6 @@ plotPcoverage(
 
 \item{shape}{(numeric) shape parameter (> 0, maybe non-integer).}
 
-\item{mycols}{(vector) a set of color indexes to gPars colors}
-
 \item{valid}{(string) a cross-validation method: "kfold" (default) or "loo"}
 
 \item{nFold}{(integer) number of folds (default: 10)}
@@ -49,6 +48,10 @@ plotPcoverage(
 \item{nRepeat}{(integer) number of repeats for k-fold cross-validation}
 
 \item{nBin}{(integer) number of intervals for local coverage stats}
+
+\item{plot}{(logical) plot the results}
+
+\item{mycols}{(vector) a set of color indexes to gPars colors}
 
 \item{ylim}{(vector) limits of the y axis}
 
@@ -63,7 +66,8 @@ plotPcoverage(
 \item{uP}{(vector) a set of prediction uncertainties}
 }
 \value{
-Nothing. It is used for its side effect (plot).
+Invisibly returns a list of LCP results. Mainly used
+  for its plotting side effect.
 }
 \description{
 Plot local coverage probabilities to assess calibration and sharpness
