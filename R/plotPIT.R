@@ -36,7 +36,9 @@ plotPIT = function(
     pty = 's',
     tcl = tcl,
     cex = cex,
-    lwd = lwd
+    lwd = lwd,
+    xaxs = 'i',
+    yaxs = 'i'
   )
 
   # Uncertainty on uniform histogram
@@ -57,7 +59,7 @@ plotPIT = function(
     col=cols_tr2[col],
     xlim = c(0,1),
     xlab = 'PIT',
-    ylim = c(0,max(c(v+2*uv,h))),
+    ylim = c(0,1.1*max(c(v+2*uv,h))),
     breaks = breaks,
     main = title
   )
@@ -69,6 +71,8 @@ plotPIT = function(
     lwd = lwd,
     col= cols[2]
   )
+
+  box()
 
   if(label > 0)
     mtext(

@@ -18,6 +18,7 @@
 #' @param degree
 #' @param plotBA
 #' @param plotBAci
+#' @param topMar
 #' @param xlim
 #' @param ylim
 #' @param scaleLegBA
@@ -46,6 +47,7 @@ plotDistHist = function(
   colPoints = NULL,
   plotBA    = FALSE, # Bland-Altman LOAs
   plotBAci  = FALSE, # 95% CI on Bland-Altman LOAs
+  topMar    = 1.6,
   xlim      = range(x),
   ylim      = range(y),
   scaleLegBA = 0.75,
@@ -78,7 +80,7 @@ plotDistHist = function(
   }
 
   # Subfigure with histogram
-  par(mar = c(3, 3, 1.6, 0),
+  par(mar = c(3, 3, topMar, 0),
       fig = c(0, 0.35, 0, 1))
   h = hist(y, nclass = nclass, plot = FALSE)
   binWidth = h$breaks[2] - h$breaks[1]
@@ -155,7 +157,7 @@ plotDistHist = function(
   box()
 
   par(
-    mar = c(3, 0, 1.6, ifelse(plotBA,3,0.5)),
+    mar = c(3, 0, topMar, ifelse(plotBA,3,0.5)),
     fig = c(0.35, 1, 0, 1),
     new = TRUE
   )
