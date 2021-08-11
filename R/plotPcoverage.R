@@ -210,6 +210,7 @@ plotPcoverage = function(
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
     meanP = rowMeans(tG) # avoid inequal samples bias
+    uMeanP = sqrt(meanP*(1-meanP)/(N+1))
     cvP   = apply(pP,1,sd) / meanP * 100
     up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
     cv0   = 100 * up / prob # reference CV
@@ -370,7 +371,10 @@ plotPcoverage = function(
 
     # Mean coverage proba
     ypos = par("usr")[4]
-    mtext(text = c(' Mean',paste0('- ',signif(meanP,2))),
+    pm = c()
+    for(i in seq_along(meanP))
+      pm[i] = ErrViewLib::prettyUnc(meanP[i],uMeanP[i],1)
+    mtext(text = c(' Mean',paste0('- ',pm)),
           side = 4,
           at = c(ypos,meanP),
           col = c(1,cols[mycols]),
@@ -385,7 +389,7 @@ plotPcoverage = function(
           col = c(1,cols[mycols]),
           cex = 0.75*cex,
           las = 1,
-          line = 2,
+          line = 3,
           font = 2)
     legend(
       legloc, bty = 'n',
@@ -410,13 +414,14 @@ plotPcoverage = function(
 
   invisible(
     list(
-      pc    = pP,
-      pcl   = loP,
-      pcu   = upP,
-      meanP = meanP,
-      cvP   = cvP,
-      cv0   = cv0,
-      prob  = prob
+      pc     = pP,
+      pcl    = loP,
+      pcu    = upP,
+      meanP  = meanP,
+      uMeanP = uMeanP,
+      cvP    = cvP,
+      cv0    = cv0,
+      prob   = prob
     )
   )
 }
