@@ -301,6 +301,7 @@ plotPcoverage = function(
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
     meanP = rowMeans(pP) # Mean coverage
+    uMeanP = sqrt(meanP*(1-meanP)/(N+1))
     cvP   = apply(pP,1,sd) / meanP * 100
     up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
     cv0   = 100 * up / prob # reference CV

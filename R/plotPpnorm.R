@@ -97,7 +97,7 @@ plotPpnorm <- function(
   )
   polygon(
     c(pt,0),c(pe,0),
-    col = cols_tr2[6],
+    col = cols_tr2[5],
     border = NA
   )
   if(plotCI)
