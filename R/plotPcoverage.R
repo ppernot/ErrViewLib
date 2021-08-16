@@ -373,8 +373,12 @@ plotPcoverage = function(
     # Mean coverage proba
     ypos = par("usr")[4]
     pm = c()
-    for(i in seq_along(meanP))
-      pm[i] = ErrViewLib::prettyUnc(meanP[i],uMeanP[i],1)
+    for(i in seq_along(meanP)) {
+      if(uMeanP[i] != 0)
+        pm[i] = ErrViewLib::prettyUnc(meanP[i],uMeanP[i],1)
+      else
+        pm[i] = signif(meanP[i],2)
+    }
     mtext(text = c(' Mean',paste0('- ',pm)),
           side = 4,
           at = c(ypos,meanP),
