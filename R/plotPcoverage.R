@@ -209,11 +209,9 @@ plotPcoverage = function(
       i0 = i0 + len
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
-    meanP = rowMeans(tG) # avoid inequal samples bias
-    uMeanP = sqrt(meanP*(1-meanP)/(N+1))
-    cvP   = apply(pP,1,sd) / meanP * 100
-    up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
-    cv0   = 100 * up / prob # reference CV
+    meanP = rowMeans(tG) # avoid unequal samples bias
+    # uMeanP = sqrt(meanP*(1-meanP)/(N+1))
+    # cvP   = 100 * apply(pP,1,sd) / meanP
 
   } else {
     # Errors ----
@@ -300,12 +298,34 @@ plotPcoverage = function(
       }
       mint[i] = mean(cOrd[sel]) # Center of interval
     }
-    meanP = rowMeans(pP) # Mean coverage
-    uMeanP = sqrt(meanP*(1-meanP)/(N+1))
-    cvP   = apply(pP,1,sd) / meanP * 100
-    up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
-    cv0   = 100 * up / prob # reference CV
+    meanP  = rowMeans(pP) # Mean coverage
+    # uMeanP = sqrt(meanP*(1-meanP)/(N+1))
+    # cvP    = apply(pP,1,sd) / meanP * 100
+    # up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
+    # cv0   = 100 * up / prob # reference CV
   }
+
+  uMeanP = sqrt(meanP*(1-meanP)/(N+1))
+  cvP    = apply(pP,1,sd) / meanP * 100
+
+  # Estimate upper limit of 95% CI of reference CV
+  cvUp = c()
+  for (ip in seq_along(prob)) {
+    tcv = c()
+    for (iMC in 1:5000) {
+      p = c()
+      for (i in 1:nBin) {
+        x = rnorm(N/nBin)
+        p[i] = mean( x >= qnorm(0.5*(1-prob[ip])) &
+                     x <= qnorm(0.5*(1+prob[ip])) )
+      }
+      tcv[iMC] = 100 * sd(p) / mean(p)
+    }
+    # cv0[ip] = ErrViewLib::prettyUnc(mean(tcv),sd(tcv),numDig = 1)
+    cvUp[ip] = signif(quantile(tcv,0.975),2)
+  }
+  # up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
+  # cv0   = 100 * up / prob # reference CV
 
   if(plot) {
 
@@ -386,15 +406,13 @@ plotPcoverage = function(
           cex = 0.75*cex,
           las = 1,
           font = 2)
-    mtext(text = c('(CV / CV0)',paste0(
-      '(',signif(cvP,2),' / ',
-          signif(cv0,2),' %)')),
+    mtext(text = c('[CV / CVup]', paste0('[',signif(cvP,2),' / ',cvUp,' ]')),
           side = 4,
           at = c(ypos,meanP),
           col = c(1,cols[mycols]),
           cex = 0.75*cex,
           las = 1,
-          line = 3,
+          line = 3.1,
           font = 2)
     legend(
       legloc, bty = 'n',

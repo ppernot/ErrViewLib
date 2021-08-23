@@ -242,7 +242,7 @@ prettyUnc = function(y, uy, numDig = 2) {
       !is.finite(y)  |
       is.na(y)       |
       is.na(uy)      |
-      uy <0            )
+      uy < 0            )
     return(NA)
 
   # Get scales
