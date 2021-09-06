@@ -131,6 +131,7 @@ plotPcoverage = function(
   nRepeat   = 10,
   nBin      = 10,
   plot      = TRUE,
+  slide     = FALSE,
   mycols    = 1:length(prob),
   xlab      = 'Calculated value',
   ylim      = c(0,1),
@@ -177,41 +178,74 @@ plotPcoverage = function(
       t    = qt(psup, df = shape)
     )
 
-    # Attribute bin numbers to data
+    # Order data
     ord  = order(C)
     cOrd = C[ord]
     zOrd = (R[ord]-C[ord])/uP[ord]
-    p    = seq(0, 1, length.out = nBin + 1)[-1]
-    br   = vhd(cOrd, p = p)
-    cl   = c()
-    for (i in seq_along(cOrd))
-      cl[i] = which(br >= cOrd[i])[1]
 
-    # Coverage stats
-    pP = loP = upP = matrix(NA,nrow=length(prob),ncol=length(br))
-    mint = c()
-    tG = matrix(NA,nrow=length(prob),ncol=length(cl))
-    i0 = 1
-    for (i in seq_along(br)) {
-      sel = which(cl==i)
-      len = length(sel)
-      for (ip in seq_along(prob)) {
-        t = zOrd[sel] >= qlow[ip] & zOrd[sel] <= qsup[ip]
-        tG[ip,i0:(i0+len-1)] = t
-        pp         = mean(t)
-        pP[ip,i]   = pp
-        counts = length(t)
-        low = qbeta(0.025,pp*counts,(1-pp)*counts)
-        upr = qbeta(0.975,pp*counts,(1-pp)*counts)
-        loP[ip, i] = low
-        upP[ip, i] = upr
+    if (slide) {
+
+      nLoc = N / nBin
+      nbr = N-nLoc
+
+      # Coverage stats
+      pP = loP = upP = matrix(NA,nrow=length(prob),ncol=nbr)
+      mint = c()
+      for (i in 1:nbr) {
+        sel = (1:nLoc) + i - 1
+        len = length(sel)
+        for (ip in seq_along(prob)) {
+          t = zOrd[sel] >= qlow[ip] & zOrd[sel] <= qsup[ip]
+          pp         = mean(t)
+          pP[ip,i]   = pp
+          counts = length(t)
+          ci = binom::binom.wilson(pp*counts, counts,
+                                   conf.level = 0.95)
+          loP[ip, i] = ci$lower
+          upP[ip, i] = ci$upper
+        }
+        mint[i] = mean(cOrd[sel]) # Center of interval
       }
-      i0 = i0 + len
-      mint[i] = mean(cOrd[sel]) # Center of interval
+      # Global PICP
+      meanP = c()
+      for (ip in seq_along(prob))
+        meanP[ip] = mean(zOrd >= qlow[ip] & zOrd <= qsup[ip])
+
+    } else {
+
+      # Attribute bin numbers to data
+      p    = seq(0, 1, length.out = nBin + 1)[-1]
+      br   = vhd(cOrd, p = p)
+      cl   = c()
+      for (i in seq_along(cOrd))
+        cl[i] = which(br >= cOrd[i])[1]
+
+      # Coverage stats
+      pP = loP = upP = matrix(NA,nrow=length(prob),ncol=length(br))
+      mint = c()
+      tG = matrix(NA,nrow=length(prob),ncol=length(cl))
+      i0 = 1
+      for (i in seq_along(br)) {
+        sel = which(cl==i)
+        len = length(sel)
+        for (ip in seq_along(prob)) {
+          t = zOrd[sel] >= qlow[ip] & zOrd[sel] <= qsup[ip]
+          tG[ip,i0:(i0+len-1)] = t
+          pp         = mean(t)
+          pP[ip,i]   = pp
+          counts = length(t)
+          low = qbeta(0.025,pp*counts,(1-pp)*counts)
+          upr = qbeta(0.975,pp*counts,(1-pp)*counts)
+          loP[ip, i] = low
+          upP[ip, i] = upr
+        }
+        i0 = i0 + len
+        mint[i] = mean(cOrd[sel]) # Center of interval
+      }
+      meanP = rowMeans(tG) # avoid unequal samples bias
+      # uMeanP = sqrt(meanP*(1-meanP)/(N+1))
+      # cvP   = 100 * apply(pP,1,sd) / meanP
     }
-    meanP = rowMeans(tG) # avoid unequal samples bias
-    # uMeanP = sqrt(meanP*(1-meanP)/(N+1))
-    # cvP   = 100 * apply(pP,1,sd) / meanP
 
   } else {
     # Errors ----
@@ -363,8 +397,29 @@ plotPcoverage = function(
       main = title
     )
     grid()
-    for(i in seq_along(prob))
-      segments(mint, loP[i,], mint, upP[i,], col = cols[mycols[i]])
+    if(slide) {
+
+      for(i in seq_along(prob)) {
+        polygon(
+          c(mint,rev(mint)),
+          c(loP[i,], rev(upP[i,])),
+          col = cols_tr[mycols[i]],
+          border = NA)
+        segments(
+          mint[1], loP[i,1],
+          mint[1], upP[i,1],
+          col = cols[mycols[i]])
+        segments(
+          mint[nbr], loP[i,nbr],
+          mint[nbr], upP[i,nbr],
+          col = cols[mycols[i]])
+
+      }
+
+    } else {
+      for(i in seq_along(prob))
+        segments(mint, loP[i,], mint, upP[i,], col = cols[mycols[i]])
+    }
     mtext(text = paste0(prob,' -'),
           side = 2,
           at = prob,
@@ -373,18 +428,18 @@ plotPcoverage = function(
           las = 1,
           font = 2)
     xpos = pretty(C)
-    for(i in seq_along(prob)) {
-      p = prob[i]
-      counts = N / nBin
-      low = qbeta(0.025,p*counts,(1-p)*counts)
-      upr = qbeta(0.975,p*counts,(1-p)*counts)
-      rect(
-        xpos[1],      low,
-        rev(xpos)[1], upr,
-        col = cols_tr[mycols[i]],
-        border = NA
-      )
-    }
+    # for(i in seq_along(prob)) {
+    #   p = prob[i]
+    #   counts = N / nBin
+    #   low = qbeta(0.025,p*counts,(1-p)*counts)
+    #   upr = qbeta(0.975,p*counts,(1-p)*counts)
+    #   rect(
+    #     xpos[1],      low,
+    #     rev(xpos)[1], upr,
+    #     col = cols_tr[mycols[i]],
+    #     border = NA
+    #   )
+    # }
     abline(h   = prob,
            lty = 2,
            col = cols[mycols],
@@ -443,7 +498,7 @@ plotPcoverage = function(
       meanP  = meanP,
       uMeanP = uMeanP,
       cvP    = cvP,
-      cv0    = cv0,
+      cvUp   = cvUp,
       prob   = prob
     )
   )

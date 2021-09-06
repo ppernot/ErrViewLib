@@ -23,6 +23,7 @@ plotDistHist(
   colPoints = NULL,
   plotBA = FALSE,
   plotBAci = FALSE,
+  topMar = 1.6,
   xlim = range(x),
   ylim = range(y),
   scaleLegBA = 0.75,

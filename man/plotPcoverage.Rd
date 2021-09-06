@@ -17,6 +17,7 @@ plotPcoverage(
   nRepeat = 10,
   nBin = 10,
   plot = TRUE,
+  slide = FALSE,
   mycols = 1:length(prob),
   xlab = "Calculated value",
   ylim = c(0, 1),
