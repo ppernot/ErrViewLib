@@ -122,6 +122,7 @@ plotPcoverage = function(
   Data,
   corTrend  = FALSE,
   fo        = NA,
+  ordX      = c("C","uP"),
   CImeth    = c('eq','pred','dist'),
   prob      = c(0.5,0.75,0.95),
   dist      = c('norm','t'),
@@ -130,6 +131,8 @@ plotPcoverage = function(
   nFold     = 10,
   nRepeat   = 10,
   nBin      = 10,
+  binomCI   = c("wilson", "wilsoncc", "clopper-pearson",
+               "agresti-coull", "jeffreys"),
   plot      = TRUE,
   slide     = FALSE,
   mycols    = 1:length(prob),
@@ -141,9 +144,11 @@ plotPcoverage = function(
   gPars     = NULL
 ) {
 
-  dist  = match.arg(dist)
-  valid = match.arg(valid)
-  CImeth = match.arg(CImeth)
+  dist    = match.arg(dist)
+  valid   = match.arg(valid)
+  CImeth  = match.arg(CImeth)
+  binomCI = match.arg(binomCI)
+  ordX    = match.arg(ordX)
 
   if(nRepeat <= 0)
     stop('>>> nRepeat should be > 0')
@@ -158,10 +163,50 @@ plotPcoverage = function(
   Data = cbind(Data,E)
   N = length(C)
 
-  if(!is.null(Data$uP)) {
-    uP = Data$uP
+  ord = order(C)
+  xOrd = C[ord]
+  if( ordX == "uP" & !is.null(Data$uP)) {
+    ord = order(Data$uP)
+    xOrd = Data$uP[ord]
+  }
 
+  # Design local areas
+  if (slide) {
+    # Sliding interval of width nLoc
+    nLoc = floor(N / nBin)
+    # Nbr of intervals
+    nbr  = N - nLoc +1
+    # Lower index of interval in ordered data
+    lwindx = 1:nbr
+    # Upper index
+    upindx = lwindx + nLoc -1
+
+  } else {
+    # Breakpoints of nearly equi-sized C intervals
+    p    = seq(0, 1, length.out = nBin + 1)[1:nBin]
+    br   = ErrViewLib::vhd(xOrd, p = p)
+    print(p)
+    print(br)
+    # Nbr of intervals
+    nbr  = length(br)
+    # Lower index of interval in ordered data
+    lwindx = upindx = c()
+    lwindx[1] = 1
+    for (i in 2:nbr)
+      lwindx[i] = which(xOrd > br[i])[1]
+    # Upper index
+    for (i in 1:(nbr-1))
+      upindx[i] = lwindx[i+1]-1
+    upindx[nbr] = N
+    print(lwindx)
+    print(upindx)
+  }
+
+  if(!is.null(Data$uP)) {
     # z-scores ----
+    uP = Data$uP
+    zOrd = (R[ord]-C[ord])/uP[ord]
+
     # Direct validation of z-scores: no cross-validation
 
     alpha = 1 - prob
@@ -178,74 +223,12 @@ plotPcoverage = function(
       t    = qt(psup, df = shape)
     )
 
-    # Order data
-    ord  = order(C)
-    cOrd = C[ord]
-    zOrd = (R[ord]-C[ord])/uP[ord]
+    # Make coverage tests matrix
+    tm = matrix(NA,ncol=length(prob),nrow=length(zOrd))
+    for (ip in seq_along(prob))
+      tm[,ip] = as.numeric(zOrd >= qlow[ip] & zOrd <= qsup[ip])
 
-    if (slide) {
-
-      nLoc = N / nBin
-      nbr = N-nLoc
-
-      # Coverage stats
-      pP = loP = upP = matrix(NA,nrow=length(prob),ncol=nbr)
-      mint = c()
-      for (i in 1:nbr) {
-        sel = (1:nLoc) + i - 1
-        len = length(sel)
-        for (ip in seq_along(prob)) {
-          t = zOrd[sel] >= qlow[ip] & zOrd[sel] <= qsup[ip]
-          pp         = mean(t)
-          pP[ip,i]   = pp
-          counts = length(t)
-          ci = binom::binom.wilson(pp*counts, counts,
-                                   conf.level = 0.95)
-          loP[ip, i] = ci$lower
-          upP[ip, i] = ci$upper
-        }
-        mint[i] = mean(cOrd[sel]) # Center of interval
-      }
-      # Global PICP
-      meanP = c()
-      for (ip in seq_along(prob))
-        meanP[ip] = mean(zOrd >= qlow[ip] & zOrd <= qsup[ip])
-
-    } else {
-
-      # Attribute bin numbers to data
-      p    = seq(0, 1, length.out = nBin + 1)[-1]
-      br   = vhd(cOrd, p = p)
-      cl   = c()
-      for (i in seq_along(cOrd))
-        cl[i] = which(br >= cOrd[i])[1]
-
-      # Coverage stats
-      pP = loP = upP = matrix(NA,nrow=length(prob),ncol=length(br))
-      mint = c()
-      tG = matrix(NA,nrow=length(prob),ncol=length(cl))
-      i0 = 1
-      for (i in seq_along(br)) {
-        sel = which(cl==i)
-        len = length(sel)
-        for (ip in seq_along(prob)) {
-          t = zOrd[sel] >= qlow[ip] & zOrd[sel] <= qsup[ip]
-          tG[ip,i0:(i0+len-1)] = t
-          pp         = mean(t)
-          pP[ip,i]   = pp
-          counts = length(t)
-          low = qbeta(0.025,pp*counts,(1-pp)*counts)
-          upr = qbeta(0.975,pp*counts,(1-pp)*counts)
-          loP[ip, i] = low
-          upP[ip, i] = upr
-        }
-        i0 = i0 + len
-        mint[i] = mean(cOrd[sel]) # Center of interval
-      }
-      meanP = rowMeans(tG) # avoid unequal samples bias
-      # uMeanP = sqrt(meanP*(1-meanP)/(N+1))
-      # cvP   = 100 * apply(pP,1,sd) / meanP
-    }
+    nRepeat = 1
 
   } else {
     # Errors ----
@@ -270,7 +253,7 @@ plotPcoverage = function(
     }
 
     # Generate samples
-    pin  = matrix(0, nrow = N, ncol = length(prob))
+    tm  = matrix(0, nrow = N, ncol = length(prob))
     for(irep in 1:nRepeat) {
       iran = sample.int(N,N) # Randomize points
       for (k in 1:nFold) {
@@ -295,74 +278,37 @@ plotPcoverage = function(
         # Test
         for (ip in seq_along(prob)) {
           for (j in 1:nrow(Test)) {
-            t = predCI$eTest[j] >= predCI$eqLwr[ip, j] &
+            t = as.numeric(
+              predCI$eTest[j] >= predCI$eqLwr[ip, j] &
               predCI$eTest[j] <= predCI$eqUpr[ip, j]
+            )
             # Accumulate for kfold repeats
-            pin[iTest[j], ip] = pin[iTest[j], ip] + t
+            tm[iTest[j], ip] = tm[iTest[j], ip] + t
           }
         }
-
       } # End nFold loop: all points tested
-
     } # End nRepeat loop
+  } # End z-score test
 
-    # Partition of predictive variable for local coverage stats
-    ord = order(C)
-    cOrd = C[ord]
-    p  = seq(0, 1, length.out = nBin + 1)[-1]
-    br = vhd(cOrd, p = p)
-    cl = c()
-    for (i in seq_along(cOrd))
-      cl[i] = which(br >= cOrd[i])[1]
-
-    # Coverage stats
-    pP = loP = upP = matrix(NA,nrow=length(prob),ncol=length(br))
-    mint = c()
-    for (i in seq_along(br)) {
-      sel = which(cl==i)
-      for (ip in seq_along(prob)) {
-        X          = pin[ord[sel],ip]
-        pp         = mean(X) / nRepeat
-        pP[ip,i]   = pp
-        counts = length(X) * nRepeat
-        low = qbeta(0.025,pp*counts,(1-pp)*counts)
-        upr = qbeta(0.975,pp*counts,(1-pp)*counts)
-        loP[ip, i] = low
-        upP[ip, i] = upr
-      }
-      mint[i] = mean(cOrd[sel]) # Center of interval
+  # Coverage stats for test matrix
+  pP = loP = upP = matrix(NA,nrow=length(prob),ncol=nbr)
+  mint = c()
+  for (i in 1:nbr) {
+    sel = lwindx[i]:upindx[i]
+    M = length(sel)
+    for (ip in seq_along(prob)) {
+      S = sum(tm[sel,ip])/nRepeat
+      pP[ip,i] = S / M
+      ci = DescTools::BinomCI(S, M, method = binomCI)
+      loP[ip, i] = ci[,2]
+      upP[ip, i] = ci[,3]
     }
-    meanP  = rowMeans(pP) # Mean coverage
-    # uMeanP = sqrt(meanP*(1-meanP)/(N+1))
-    # cvP    = apply(pP,1,sd) / meanP * 100
-    # up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
-    # cv0   = 100 * up / prob # reference CV
+    mint[i] = mean(xOrd[sel]) # Center of interval
   }
-
-  uMeanP = sqrt(meanP*(1-meanP)/(N+1))
-  cvP    = apply(pP,1,sd) / meanP * 100
-
-  # Estimate upper limit of 95% CI of reference CV
-  cvUp = c()
-  for (ip in seq_along(prob)) {
-    tcv = c()
-    for (iMC in 1:5000) {
-      p = c()
-      for (i in 1:nBin) {
-        x = rnorm(N/nBin)
-        p[i] = mean( x >= qnorm(0.5*(1-prob[ip])) &
-                     x <= qnorm(0.5*(1+prob[ip])) )
-      }
-      tcv[iMC] = 100 * sd(p) / mean(p)
-    }
-    # cv0[ip] = ErrViewLib::prettyUnc(mean(tcv),sd(tcv),numDig = 1)
-    cvUp[ip] = signif(quantile(tcv,0.975),2)
-  }
-  # up    = sqrt(prob*(1-prob)/( 1 + N/nBin ))
-  # cv0   = 100 * up / prob # reference CV
+  meanP = colMeans(tm)/nRepeat
+  uMeanP = sqrt(meanP*(1-meanP)/N)
 
   if(plot) {
-
     # Plot ----
     if(length(gPars) == 0)
       gPars = ErrViewLib::setgPars()
@@ -372,7 +318,7 @@ plotPcoverage = function(
 
     par(
       mfrow = c(1, 1),
-      mar = c(mar[1:3],6),
+      mar = c(mar[1:3],3),
       mgp = mgp,
       pty = 's',
       tcl = tcl,
@@ -397,8 +343,9 @@ plotPcoverage = function(
       main = title
     )
     grid()
-    if(slide) {
 
+    if(slide) {
+      ipl = seq(1,length(mint),length.out=nBin)
       for(i in seq_along(prob)) {
         polygon(
           c(mint,rev(mint)),
@@ -406,19 +353,18 @@ plotPcoverage = function(
           col = cols_tr[mycols[i]],
           border = NA)
         segments(
-          mint[1], loP[i,1],
-          mint[1], upP[i,1],
+          mint[ipl], loP[i,ipl],
+          mint[ipl], upP[i,ipl],
           col = cols[mycols[i]])
-        segments(
-          mint[nbr], loP[i,nbr],
-          mint[nbr], upP[i,nbr],
-          col = cols[mycols[i]])
-
       }
 
     } else {
       for(i in seq_along(prob))
-        segments(mint, loP[i,], mint, upP[i,], col = cols[mycols[i]])
+        segments(
+          mint, loP[i,],
+          mint, upP[i,],
+          col = cols[mycols[i]])
+
     }
     mtext(text = paste0(prob,' -'),
           side = 2,
@@ -427,19 +373,7 @@ plotPcoverage = function(
           cex = 0.75*cex,
           las = 1,
           font = 2)
-    xpos = pretty(C)
-    # for(i in seq_along(prob)) {
-    #   p = prob[i]
-    #   counts = N / nBin
-    #   low = qbeta(0.025,p*counts,(1-p)*counts)
-    #   upr = qbeta(0.975,p*counts,(1-p)*counts)
-    #   rect(
-    #     xpos[1],      low,
-    #     rev(xpos)[1], upr,
-    #     col = cols_tr[mycols[i]],
-    #     border = NA
-    #   )
-    # }
+    xpos = pretty(xOrd)
     abline(h   = prob,
            lty = 2,
            col = cols[mycols],
@@ -460,14 +394,6 @@ plotPcoverage = function(
           col = c(1,cols[mycols]),
           cex = 0.75*cex,
           las = 1,
-          font = 2)
-    mtext(text = c('[CV / CVup]', paste0('[',signif(cvP,2),' / ',cvUp,' ]')),
-          side = 4,
-          at = c(ypos,meanP),
-          col = c(1,cols[mycols]),
-          cex = 0.75*cex,
-          las = 1,
-          line = 3.1,
           font = 2)
     legend(
       legloc, bty = 'n',
@@ -497,8 +423,6 @@ plotPcoverage = function(
       pcu    = upP,
       meanP  = meanP,
       uMeanP = uMeanP,
-      cvP    = cvP,
-      cvUp   = cvUp,
       prob   = prob
     )
   )
