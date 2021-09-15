@@ -130,13 +130,14 @@ plotPcoverage = function(
   valid     = c("kfold","loo"),
   nFold     = 10,
   nRepeat   = 10,
-  nBin      = 10,
+  nBin      = NULL,
   binomCI   = c("wilson", "wilsoncc", "clopper-pearson",
                "agresti-coull", "jeffreys"),
   plot      = TRUE,
-  slide     = FALSE,
+  slide     = NULL,
   mycols    = 1:length(prob),
   xlab      = 'Calculated value',
+  xlim      = NULL,
   ylim      = c(0,1),
   title     = '',
   legloc    = 'bottom',
@@ -154,8 +155,7 @@ plotPcoverage = function(
     stop('>>> nRepeat should be > 0')
   if(nFold <= 0)
     stop('>>> nFold should be > 0')
-  if(nBin <= 0)
-    stop('>>> nBin should be > 0')
+
 
   C = Data$D
   R = Data$R
@@ -163,12 +163,20 @@ plotPcoverage = function(
   Data = cbind(Data,E)
   N = length(C)
 
+  if(is.null(nBin))
+    nBin  = max(min(floor(N/150),15),2)
+  if(nBin <= 0)
+    stop('>>> nBin should be > 0')
+  if(is.null(slide))
+    slide = nBin <= 4
+
   ord = order(C)
   xOrd = C[ord]
   if( ordX == "uP" & !is.null(Data$uP)) {
     ord = order(Data$uP)
     xOrd = Data$uP[ord]
   }
+  DataOrd = Data[ord,]
 
   # Design local areas
   if (slide) {
@@ -185,8 +193,6 @@ plotPcoverage = function(
     # Breakpoints of nearly equi-sized C intervals
     p    = seq(0, 1, length.out = nBin + 1)[1:nBin]
     br   = ErrViewLib::vhd(xOrd, p = p)
-    print(p)
-    print(br)
     # Nbr of intervals
     nbr  = length(br)
     # Lower index of interval in ordered data
@@ -198,8 +204,10 @@ plotPcoverage = function(
     for (i in 1:(nbr-1))
       upindx[i] = lwindx[i+1]-1
     upindx[nbr] = N
-    print(lwindx)
-    print(upindx)
+
+    if(min(upindx-lwindx) < N/nBin/2 |
+       sum(upindx-lwindx+1) != N      )
+      stop('>>> Pb in equi-sized intervals design')
   }
 
   if(!is.null(Data$uP)) {
@@ -261,8 +269,8 @@ plotPcoverage = function(
         iTest  = iran[sel]
         iLearn = which(! iran %in% iTest)
 
-        Learn = Data[iLearn,]
-        Test  = Data[iTest,]
+        Learn = DataOrd[iLearn,]
+        Test  = DataOrd[iTest,]
 
         # Prediction of CI over eTest
         predCI = predQ(
@@ -303,7 +311,9 @@ plotPcoverage = function(
       loP[ip, i] = ci[,2]
       upP[ip, i] = ci[,3]
     }
-    mint[i] = mean(xOrd[sel]) # Center of interval
+    # mint[i] = mean(xOrd[sel]) # Barycenter of interval
+    mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
+
   }
   meanP = colMeans(tm)/nRepeat
   uMeanP = sqrt(meanP*(1-meanP)/N)
@@ -326,6 +336,9 @@ plotPcoverage = function(
       lwd = lwd
     )
 
+    if(is.null(xlim))
+      xlim = range(xOrd)
+
     if (any(is.na(ylim)))
       ylim = range(c(loP, upP))
 
@@ -334,11 +347,13 @@ plotPcoverage = function(
       t(pP),
       xlab = xlab,
       ylab = 'Local Coverage Probability',
+      xlim = xlim,
       ylim = ylim,
       type = 'b',
       lty = 3,
       pch = 19,
       lwd = lwd,
+      cex = ifelse(slide,0.5,1),
       col  = cols[mycols],
       main = title
     )
@@ -355,7 +370,8 @@ plotPcoverage = function(
         segments(
           mint[ipl], loP[i,ipl],
           mint[ipl], upP[i,ipl],
-          col = cols[mycols[i]])
+          col = cols[mycols[i]],
+          lwd = 1.5*lwd)
       }
 
     } else {
@@ -363,7 +379,8 @@ plotPcoverage = function(
         segments(
           mint, loP[i,],
           mint, upP[i,],
-          col = cols[mycols[i]])
+          col = cols[mycols[i]],
+          lwd = 1.5*lwd)
 
     }
     mtext(text = paste0(prob,' -'),
@@ -418,6 +435,9 @@ plotPcoverage = function(
 
   invisible(
     list(
+      mint   = mint,
+      lwindx = lwindx,
+      upindx = upindx,
       pc     = pP,
       pcl    = loP,
       pcu    = upP,
