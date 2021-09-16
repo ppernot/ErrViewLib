@@ -140,7 +140,8 @@ plotPcoverage = function(
   xlim      = NULL,
   ylim      = c(0,1),
   title     = '',
-  legloc    = 'bottom',
+  legLoc    = 'bottom',
+  legNcol   = 3,
   label     = 0,
   gPars     = NULL
 ) {
@@ -413,13 +414,14 @@ plotPcoverage = function(
           las = 1,
           font = 2)
     legend(
-      legloc, bty = 'n',
+      legLoc, bty = 'n',
       legend = paste0('P',round(100*prob)),
-      col = cols[mycols],
-      pch = 19,
-      lty  = 3,
-      ncol = 1,
-      cex  = 0.8
+      col  = cols[mycols],
+      lty  = 1,
+      pch  = 19,
+      ncol = legNcol,
+      cex  = 0.8,
+      adj  = 1
     )
     box()
 
