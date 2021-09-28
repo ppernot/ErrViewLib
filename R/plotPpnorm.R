@@ -41,21 +41,21 @@ plotPpnorm <- function(
   q = seq(-6, 6, length.out = 100)
   pt = c(0,pnorm(q),1)
 
-  if(plotCI) {
+  if(score) {
     # Monte Carlo estimation of 95% CI
     N = length(q)
     M = length(X)
     nMC = 1000
-    uly = matrix(0, ncol = N, nrow = nMC)
+    # uly = matrix(0, ncol = N, nrow = nMC)
     misCal = c()
     for (i in 1:nMC){
       pe  = ecdf(rnorm(M))(q)
-      uly[i, ]  = pe
+      # uly[i, ]  = pe
       misCal[i] = trapz(pt,abs(c(0,pe,1)-pt))
     }
-    q95 = t(apply(uly, 2, function(x) ErrViewLib::vhd(x)))
-    rm(uly)
-    ulx = pnorm(q)
+    # q95 = t(apply(uly, 2, function(x) ErrViewLib::vhd(x)))
+    # rm(uly)
+    # ulx = pnorm(q)
     misCalUp = ErrViewLib::hd(misCal, q = 0.975)
   }
 
@@ -97,16 +97,26 @@ plotPpnorm <- function(
   )
   polygon(
     c(pt,0),c(pe,0),
-    col = cols_tr2[5],
+    col = cols_tr[5],
     border = NA
   )
-  if(plotCI)
-    matlines(
-      ulx, q95,
-      col = cols[6],
-      lwd = lwd,
-      lty = 3
-    )
+  if(plotCI) {
+    lwr = upr = c()
+    for(i in seq_along(pe)) {
+      ci = DescTools::BinomCI(pe[i]*M, M, method = 'wilsoncc')
+      lwr[i] = ci[,2]
+      upr[i] = ci[,3]
+    }
+    matlines(pt,cbind(lwr,upr),col = cols[3], lty = 2, lwd = lwd)
+    # segments(pt,lwr,pt,upr, lwd = lwd, col = cols[3])
+  }
+  # if(plotCI)
+  #   matlines(
+  #     ulx, q95,
+  #     col = cols[6],
+  #     lwd = lwd,
+  #     lty = 3
+  #   )
   box()
   if(score) {
     misCal = trapz(pt,abs(pe-pt))

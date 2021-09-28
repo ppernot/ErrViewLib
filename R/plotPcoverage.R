@@ -12,7 +12,7 @@
 #' @return
 #'
 #' @examples
-predQ = function(
+predIp = function(
   Learn, Test,
   corTrend = FALSE,
   fo       = NA,
@@ -231,8 +231,10 @@ plotPcoverage = function(
       norm = normalp::qnormp(psup, p = shape),
       t    = qt(psup, df = shape)
     )
+    # Rq: upper and lower limits are maintained for
+    # future extension to skewed distribution...
 
-    # Make coverage tests matrix
+    # Generate coverage tests matrix
     tm = matrix(NA,ncol=length(prob),nrow=length(zOrd))
     for (ip in seq_along(prob))
       tm[,ip] = as.numeric(zOrd >= qlow[ip] & zOrd <= qsup[ip])
@@ -274,7 +276,7 @@ plotPcoverage = function(
         Test  = DataOrd[iTest,]
 
         # Prediction of CI over eTest
-        predCI = predQ(
+        predCI = predIp(
           Learn, Test,
           corTrend = corTrend,
           fo = fo,
@@ -421,7 +423,7 @@ plotPcoverage = function(
       pch  = 19,
       ncol = legNcol,
       cex  = 0.8,
-      adj  = 1
+      adj  = 0.2
     )
     box()
 

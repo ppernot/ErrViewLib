@@ -41,9 +41,10 @@ plotPIT = function(
     yaxs = 'i'
   )
 
-  # Uncertainty on uniform histogram
+  # CI on uniform histogram
   v  = length(Z)/breaks
-  uv = sqrt(v)
+  lwr = qpois(0.025, v)
+  upr = qpois(0.975, v)
 
   # Probability Integral Transform
   pit = switch(
@@ -59,14 +60,14 @@ plotPIT = function(
     col=cols_tr2[col],
     xlim = c(0,1),
     xlab = 'PIT',
-    ylim = c(0,1.1*max(c(v+2*uv,h))),
+    ylim = c(0,1.1*max(c(upr,h))),
     breaks = breaks,
     main = title
   )
 
   # 95% CI
   abline(
-    h=c(max(0,v-2*uv),v,v+2*uv),
+    h=c(lwr,v,upr),
     lty=c(2,1,2),
     lwd = lwd,
     col= cols[2]
