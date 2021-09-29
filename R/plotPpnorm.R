@@ -100,6 +100,7 @@ plotPpnorm <- function(
     col = cols_tr[5],
     border = NA
   )
+  misCalUp = NA
   if(plotCI) {
     lwr = upr = c()
     for(i in seq_along(pe)) {
@@ -107,6 +108,7 @@ plotPpnorm <- function(
       lwr[i] = ci[,2]
       upr[i] = ci[,3]
     }
+    misCalUp = trapz(pt,abs(upr-lwr)) / 2
     matlines(pt,cbind(lwr,upr),col = cols[3], lty = 2, lwd = lwd)
     # segments(pt,lwr,pt,upr, lwd = lwd, col = cols[3])
   }
@@ -118,9 +120,10 @@ plotPpnorm <- function(
   #     lty = 3
   #   )
   box()
+
+  misCal = trapz(pt,abs(pe-pt))
+  calErr = sqrt(sum((pt-pe)^2))
   if(score) {
-    misCal = trapz(pt,abs(pe-pt))
-    calErr = sqrt(sum((pt-pe)^2))
     text(
       0.75, 0.1,
       paste0(
@@ -143,7 +146,7 @@ plotPpnorm <- function(
   invisible(
     list(
       misCal = misCal,
-      misCalUp = ifelse(plotCI,misCalUp,NA),
+      misCalUp = misCalUp,
       calErr = calErr
     )
   )

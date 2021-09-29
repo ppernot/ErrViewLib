@@ -255,7 +255,7 @@ plotCalCurve = function(
   box()
   if(score) {
     misCal   = trapz(pt,abs(pe-pt))
-    misCalUp = trapz(pt,abs(upr-lwr))
+    misCalUp = trapz(pt,abs(upr-lwr)) / 2
     calErr   = sqrt(sum((pt-pe)^2))
     text(
       0.75, 0.1,

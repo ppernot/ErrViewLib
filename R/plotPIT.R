@@ -57,7 +57,7 @@ plotPIT = function(
   h = hist(pit, breaks = breaks, plot=FALSE)$counts # To estimate ylim
   hist(
     pit,
-    col=cols_tr2[col],
+    col=cols_tr[col],
     xlim = c(0,1),
     xlab = 'PIT',
     ylim = c(0,1.1*max(c(upr,h))),
