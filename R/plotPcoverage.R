@@ -318,8 +318,13 @@ plotPcoverage = function(
     mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
 
   }
-  meanP = colMeans(tm)/nRepeat
+  S = colSums(tm)/nRepeat
+  ci = DescTools::BinomCI(S, N, method = binomCI)
+  # meanP = colMeans(tm)/nRepeat
+  meanP = ci[,1]
   uMeanP = sqrt(meanP*(1-meanP)/N)
+  loMeanP = ci[,2]
+  upMeanP = ci[,3]
 
   if(plot) {
     # Plot ----
@@ -351,10 +356,11 @@ plotPcoverage = function(
       xlab = xlab,
       ylab = 'Local Coverage Probability',
       xlim = xlim,
+      xaxs = 'i',
       ylim = ylim,
       type = 'b',
       lty = 3,
-      pch = 19,
+      pch = 16,
       lwd = lwd,
       cex = ifelse(slide,0.5,1),
       col  = cols[mycols],
@@ -373,8 +379,9 @@ plotPcoverage = function(
         segments(
           mint[ipl], loP[i,ipl],
           mint[ipl], upP[i,ipl],
-          col = cols[mycols[i]],
-          lwd = 1.5*lwd)
+          col  = cols[mycols[i]],
+          lwd  = 1.5 * lwd,
+          lend = 1)
       }
 
     } else {
@@ -382,8 +389,9 @@ plotPcoverage = function(
         segments(
           mint, loP[i,],
           mint, upP[i,],
-          col = cols[mycols[i]],
-          lwd = 1.5*lwd)
+          col  = cols[mycols[i]],
+          lwd  = 1.5 * lwd,
+          lend = 1)
 
     }
     mtext(text = paste0(prob,' -'),
@@ -398,6 +406,8 @@ plotPcoverage = function(
            lty = 2,
            col = cols[mycols],
            lwd = lwd)
+
+    box()
 
     # Mean coverage proba
     ypos = par("usr")[4]
@@ -415,17 +425,25 @@ plotPcoverage = function(
           cex = 0.75*cex,
           las = 1,
           font = 2)
+    for(i in seq_along(meanP))
+      segments(
+        xlim[2],loMeanP[i],
+        xlim[2],upMeanP[i],
+        col  = cols[mycols][i],
+        lwd  = 6 * lwd,
+        lend = 1
+      )
+
     legend(
       legLoc, bty = 'n',
       legend = paste0('P',round(100*prob)),
       col  = cols[mycols],
       lty  = 1,
-      pch  = 19,
+      pch  = 16,
       ncol = legNcol,
       cex  = 0.8,
       adj  = 0.2
     )
-    box()
 
     if(label > 0)
       mtext(
