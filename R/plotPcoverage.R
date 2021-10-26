@@ -122,7 +122,8 @@ plotPcoverage = function(
   Data,
   corTrend  = FALSE,
   fo        = NA,
-  ordX      = c("C","uP"),
+  # ordX      = c("C","uP"),
+  ordX      = NULL,
   CImeth    = c('eq','pred','dist'),
   prob      = c(0.5,0.75,0.95),
   dist      = c('norm','t'),
@@ -150,7 +151,7 @@ plotPcoverage = function(
   valid   = match.arg(valid)
   CImeth  = match.arg(CImeth)
   binomCI = match.arg(binomCI)
-  ordX    = match.arg(ordX)
+  # ordX    = match.arg(ordX)
 
   if(nRepeat <= 0)
     stop('>>> nRepeat should be > 0')
@@ -173,9 +174,15 @@ plotPcoverage = function(
 
   ord = order(C)
   xOrd = C[ord]
-  if( ordX == "uP" & !is.null(Data$uP)) {
-    ord = order(Data$uP)
-    xOrd = Data$uP[ord]
+  # if( ordX == "uP" & !is.null(Data$uP)) {
+  #   ord = order(Data$uP)
+  #   xOrd = Data$uP[ord]
+  # }
+  if(!is.null(ordX)) {
+    if(length(ordX) != length(C))
+      stop('>>> Inconsistent length for ordX')
+    ord = order(ordX)
+    xOrd = ordX[ord]
   }
   DataOrd = Data[ord,]
 
