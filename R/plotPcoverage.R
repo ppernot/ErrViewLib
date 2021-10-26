@@ -124,6 +124,7 @@ plotPcoverage = function(
   fo        = NA,
   # ordX      = c("C","uP"),
   ordX      = NULL,
+  logX      = FALSE,
   CImeth    = c('eq','pred','dist'),
   prob      = c(0.5,0.75,0.95),
   dist      = c('norm','t'),
@@ -371,7 +372,8 @@ plotPcoverage = function(
       lwd = lwd,
       cex = ifelse(slide,0.5,1),
       col  = cols[mycols],
-      main = title
+      main = title,
+      log = ifelse(logX,'x','')
     )
     grid()
 
