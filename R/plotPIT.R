@@ -46,11 +46,15 @@ plotPIT = function(
   lwr = qpois(0.025, v)
   upr = qpois(0.975, v)
 
-  # Probability Integral Transform
+  # Probability Integral Transform using unit variance hyp.
   pit = switch(
     dist,
-    norm = normalp::pnormp(Z,p=shape),
-    t    = pt(Z,df=shape)
+    norm = normalp::pnormp(
+      Z * sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+      p = shape) ,
+    t    = pt(
+      Z * sqrt(shape / (shape-2)),
+      df = shape)
   )
 
   # Histogram

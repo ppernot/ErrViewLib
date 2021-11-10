@@ -64,8 +64,11 @@ predQ = function(
   } else {
     pfac = switch(
       dist,
-      norm = normalp::qnormp(prob, p = shape),
-      t    = qt(prob, df = shape))
+      norm = normalp::qnormp(prob,p=shape) /
+        sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+      t    = qt(prob,df=shape) /
+        sqrt(shape / (shape-2))
+    )
     # TBD: allow for non-symmetric distribs ?
 
     # Quantiles from pdf hypothesis

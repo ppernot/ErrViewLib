@@ -7,6 +7,8 @@
 #' @param scale
 #' @param plotCI
 #' @param score
+#' @param dist
+#' @param shape
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars
 #'
@@ -21,9 +23,13 @@ plotPpnorm <- function(
   scale  = FALSE,
   plotCI = TRUE,
   score  = TRUE,
+  dist      = c('norm','t'),
+  shape     = 2,
   label  = 0,
   gPars
 ) {
+
+  dist    = match.arg(dist)
 
   trapz = function (
     x,
@@ -39,7 +45,15 @@ plotPpnorm <- function(
   }
 
   q = seq(-6, 6, length.out = 100)
-  pt = c(0,pnorm(q),1)
+  pt = switch(
+    dist,
+    norm = c(0,normalp::pnormp(
+      q * sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+      p = shape),1),
+    t    = c(0,pt(
+      q * sqrt(shape / (shape-2)),
+      df = shape),1)
+  )
 
   if(score) {
     # Monte Carlo estimation of 95% CI
@@ -49,13 +63,16 @@ plotPpnorm <- function(
     # uly = matrix(0, ncol = N, nrow = nMC)
     misCal = c()
     for (i in 1:nMC){
-      pe  = ecdf(rnorm(M))(q)
-      # uly[i, ]  = pe
+      Y = switch(
+        dist,
+        norm = normalp::rnormp(M, p = shape) /
+          sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+        t    = rt(M, df = shape) /
+          sqrt(shape / (shape-2))
+      )
+      pe  = ecdf(Y)(q)
       misCal[i] = trapz(pt,abs(c(0,pe,1)-pt))
     }
-    # q95 = t(apply(uly, 2, function(x) ErrViewLib::vhd(x)))
-    # rm(uly)
-    # ulx = pnorm(q)
     misCalUp = ErrViewLib::hd(misCal, q = 0.975)
   }
 
@@ -110,15 +127,7 @@ plotPpnorm <- function(
     }
     misCalUp = trapz(pt,abs(upr-lwr)) / 2
     matlines(pt,cbind(lwr,upr),col = cols[3], lty = 2, lwd = lwd)
-    # segments(pt,lwr,pt,upr, lwd = lwd, col = cols[3])
   }
-  # if(plotCI)
-  #   matlines(
-  #     ulx, q95,
-  #     col = cols[6],
-  #     lwd = lwd,
-  #     lty = 3
-  #   )
   box()
 
   misCal = trapz(pt,abs(pe-pt))

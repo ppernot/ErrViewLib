@@ -68,10 +68,13 @@ predIp = function(
       stop('CImeth = pred requires corTrend = TRUE')
     }
   } else {
+    # Enlargement factor for unit variance distributions
     pfac = switch(
       dist,
-      norm = normalp::qnormp(psup,p=shape),
-      t    = qt(psup,df=shape)
+      norm = normalp::qnormp(psup,p=shape) /
+        sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+      t    = qt(psup,df=shape) /
+        sqrt(shape / (shape-2))
     ) # TBD: allow for non-symmetric distribs ?
 
     # Uniform CI from pdf hypothesis
@@ -231,13 +234,19 @@ plotPcoverage = function(
     psup  = 1 - alpha / 2
     qlow  = switch(
       dist,
-      norm = normalp::qnormp(plow, p = shape),
-      t    = qt(plow, df = shape)
+      norm = normalp::qnormp(plow,p=shape) /
+        sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+      t    = qt(plow,df=shape) /
+        sqrt(shape / (shape-2))
+
     )
     qsup  = switch(
       dist,
-      norm = normalp::qnormp(psup, p = shape),
-      t    = qt(psup, df = shape)
+      norm = normalp::qnormp(psup,p=shape) /
+        sqrt(shape^(2/shape)*gamma(3/shape)/gamma(1/shape)),
+      t    = qt(psup,df=shape) /
+        sqrt(shape / (shape-2))
+
     )
     # Rq: upper and lower limits are maintained for
     # future extension to skewed distribution...
