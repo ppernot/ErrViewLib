@@ -15,15 +15,9 @@ plotCalCurve(
   valid = c("kfold", "loo"),
   nFold = 10,
   nRepeat = 10,
+  score = TRUE,
   binomCI = c("wilson", "wilsoncc", "clopper-pearson", "agresti-coull", "jeffreys"),
-  plot = TRUE,
-  mycols = 1:length(prob),
-  xlab = "Expected cumulative distribution",
-  xlim = NULL,
-  ylim = c(0, 1),
   title = "",
-  legLoc = "bottom",
-  legNcol = 3,
   label = 0,
   gPars = NULL
 )
@@ -49,12 +43,6 @@ plotCalCurve(
 
 \item{nRepeat}{(integer) number of repeats for k-fold cross-validation}
 
-\item{plot}{(logical) plot the results}
-
-\item{mycols}{(vector) a set of color indexes to gPars colors}
-
-\item{ylim}{(vector) limits of the y axis}
-
 \item{title}{(string) a title to display above the plot}
 
 \item{label}{(integer) index of letter for subplot tag}
@@ -63,9 +51,9 @@ plotCalCurve(
 
 \item{uP}{(vector) a set of prediction uncertainties}
 
-\item{nBin}{(integer) number of intervals for local coverage stats}
+\item{mycols}{(vector) a set of color indexes to gPars colors}
 
-\item{legloc}{(string) location of the legend (default: "bottom")}
+\item{plot}{(logical) plot the results}
 }
 \value{
 Invisibly returns a list of LCP results. Mainly used

@@ -10,6 +10,8 @@ plotPpnorm(
   scale = FALSE,
   plotCI = TRUE,
   score = TRUE,
+  dist = c("norm", "t"),
+  shape = 2,
   label = 0,
   gPars
 )

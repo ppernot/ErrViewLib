@@ -6,6 +6,7 @@
 #' @param nclass
 #' @param xlab
 #' @param ylab
+#' @param logX
 #' @param plotGauss
 #' @param outLiers
 #' @param p
@@ -35,6 +36,7 @@ plotDistHist = function(
   nclass    = NULL,  # Nb class for histogram
   xlab      = 'x',
   ylab      = 'y',
+  logX      = FALSE,
   plotGauss = FALSE, # Plot Gaussian fit of hist.
   outLiers  = FALSE, # Mark outliers
   p         = 0.9,   # Width of proba interval to detect outliers
@@ -170,6 +172,9 @@ plotDistHist = function(
     colp = rep(cols_tr2[2], length(select))
     colp[!select] = cols_tr2[5]
   }
+  log = ''
+  if(logX)
+    log = 'x'
   plot(
     x,
     y,
@@ -178,6 +183,7 @@ plotDistHist = function(
     xlim = xlim,
     ylim = ylim,
     xlab = xlab,
+    log = log,
     yaxt = 'n',
     cex = scalePoints*cex,
     main = NULL
