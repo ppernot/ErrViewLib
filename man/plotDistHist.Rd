@@ -11,6 +11,7 @@ plotDistHist(
   nclass = NULL,
   xlab = "x",
   ylab = "y",
+  logX = FALSE,
   plotGauss = FALSE,
   outLiers = FALSE,
   p = 0.9,

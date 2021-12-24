@@ -14,10 +14,23 @@ varZCI(
 )
 }
 \arguments{
-\item{parallel}{}
+\item{Z}{(vector) a data sample}
+
+\item{method}{(string) one of 'bootstrap' (default), 'cho' and
+'chisq' for the estimation of the statistics}
+
+\item{CImethod}{(string) one of 'bca' (default), 'perc' and 'basic'
+for the CI estimation algorithm from bootstrap sample}
+
+\item{nBoot}{(integer) number of bootstrap repeats}
+
+\item{level}{(numeric) a probability level for CI (defauld: 0.95)}
+
+\item{parallel}{(string) one of 'no' (default) and 'multicore'}
 }
 \value{
-
+A list containing the mean, sd and ci for the variance
+    of the Z sample
 }
 \description{
 Estimate statistics of the variance of a sample

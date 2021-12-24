@@ -1,3 +1,18 @@
+#' Var(Var(Z)) by moments formula from Cho2008
+#'
+#' @param Z
+#'
+#' @return
+#' @export
+#'
+#' @examples
+varvar = function (Z) {
+  # Use formula (1) in CHo2008
+  N = NROW(Z)
+  mu = moments::all.moments(Z ,order.max=4, central=TRUE)[2:5]
+  Vcho = (mu[4] - (N-3)/(N-1) * mu[2]^2 ) / N
+  return(Vcho)
+}
 #' Estimate statistics of the variance of a sample
 #'
 #' @param Z (vector) a data sample

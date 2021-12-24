@@ -11,7 +11,9 @@ plotLZV(
   nBin = NULL,
   plot = TRUE,
   slide = NULL,
-  nBoot = 1000,
+  method = c("bootstrap", "cho", "chisq"),
+  CImethod = c("bca", "perc", "basic"),
+  nBoot = 1500,
   xlab = "Calculated value",
   xlim = NULL,
   ylim = NULL,
@@ -31,15 +33,11 @@ plotLZV(
 
 \item{title}{(string) a title to display above the plot}
 
+\item{legNcol}{}
+
 \item{label}{(integer) index of letter for subplot tag}
 
 \item{gPars}{(list) graphical parameters}
-
-\item{Data}{(data.frame) dataframe with predictor(s) and reference}
-
-\item{uP}{(vector) a set of prediction uncertainties}
-
-\item{legloc}{(string) location of the legend (default: "bottom")}
 }
 \value{
 Invisibly returns a list of LZV results. Mainly used
