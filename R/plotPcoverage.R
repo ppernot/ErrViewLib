@@ -97,7 +97,6 @@ predIp = function(
 #' Plot local coverage probabilities to assess calibration and sharpness
 #'
 #' @param Data (data.frame) dataframe with predictor(s) and reference
-#' @param uP (vector) a set of prediction uncertainties
 #' @param corTrend (logical) flag to correct trend
 #' @param fo (formula) trend correction formula
 #' @param CImeth (string) method to estimate CI limits
@@ -111,13 +110,25 @@ predIp = function(
 #' @param nBin (integer) number of intervals for local coverage stats
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
-#' @param legloc (string) location of the legend (default: "bottom")
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #' @param plot (logical) plot the results
+#' @param ordX  (vector) set of abscissas to order sample
+#' @param logX  (logical) log-transform abscissas
+#' @param binomCI (string) name of method to estimate Binomial Proportion CI
+#' @param slide (logical) use sliding window
+#' @param xlab  (string) abscissa label
+#' @param xlim  (vector) range for abscissa
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
+#' @param legNcol (integer) number of columns for legend
 #'
 #' @return Invisibly returns a list of LCP results. Mainly used
 #'   for its plotting side effect.
+#'
+#' @aliases plotPcoverage plotLCP
+#'
+#' @rdname plotLCP
+#'
 #' @export
 #'
 #' @examples
@@ -125,7 +136,6 @@ plotPcoverage = function(
   Data,
   corTrend  = FALSE,
   fo        = NA,
-  # ordX      = c("C","uP"),
   ordX      = NULL,
   logX      = FALSE,
   CImeth    = c('eq','pred','dist'),
@@ -485,5 +495,64 @@ plotPcoverage = function(
       uMeanP = uMeanP,
       prob   = prob
     )
+  )
+}
+
+#' @rdname plotLCP
+#' @export
+plotLCP = function(
+  Data,
+  corTrend  = FALSE,
+  fo        = NA,
+  ordX      = NULL,
+  logX      = FALSE,
+  CImeth    = c('eq','pred','dist'),
+  prob      = c(0.5,0.75,0.95),
+  dist      = c('norm','t'),
+  shape     = 2,
+  valid     = c("kfold","loo"),
+  nFold     = 10,
+  nRepeat   = 10,
+  nBin      = NULL,
+  binomCI   = c("wilson", "wilsoncc", "clopper-pearson",
+                "agresti-coull", "jeffreys"),
+  plot      = TRUE,
+  slide     = NULL,
+  mycols    = 1:length(prob),
+  xlab      = 'Calculated value',
+  xlim      = NULL,
+  ylim      = c(0,1),
+  title     = '',
+  legLoc    = 'bottom',
+  legNcol   = 3,
+  label     = 0,
+  gPars     = NULL
+) {
+  plotPcoverage(
+    Data,
+    corTrend,
+    fo,
+    ordX,
+    logX,
+    CImeth,
+    prob,
+    dist,
+    shape,
+    valid,
+    nFold,
+    nRepeat,
+    nBin,
+    binomCI,
+    plot,
+    slide,
+    mycols,
+    xlab,
+    xlim,
+    ylim,
+    title,
+    legLoc,
+    legNcol,
+    label,
+    gPars
   )
 }

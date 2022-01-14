@@ -12,28 +12,42 @@ plotLZV(
   plot = TRUE,
   slide = NULL,
   method = c("bootstrap", "cho", "chisq"),
-  CImethod = c("bca", "perc", "basic"),
+  BSmethod = c("bca", "perc", "basic"),
   nBoot = 1500,
   xlab = "Calculated value",
   xlim = NULL,
   ylim = NULL,
   title = "",
-  legLoc = "bottom",
-  legNcol = 3,
   label = 0,
   gPars = NULL
 )
 }
 \arguments{
+\item{X}{(vector) abscissae of the Z values}
+
+\item{Z}{(vector) set of Z values to be tested}
+
+\item{logX}{(logical) log-transform X}
+
 \item{nBin}{(integer) number of intervals for local coverage stats}
 
 \item{plot}{(logical) plot the results}
 
+\item{slide}{(logical) use sliding window for subsetting (X,Z)}
+
+\item{method}{(string) method used to estimate 95% CI on Var(Z)}
+
+\item{BSmethod}{(string) bootstrap variant, if method = 'bootstrap'}
+
+\item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{xlab}{(string) X axis label}
+
+\item{xlim}{(vector) min and max values of X axis}
+
 \item{ylim}{(vector) limits of the y axis}
 
 \item{title}{(string) a title to display above the plot}
-
-\item{legNcol}{}
 
 \item{label}{(integer) index of letter for subplot tag}
 

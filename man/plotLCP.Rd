@@ -2,9 +2,38 @@
 % Please edit documentation in R/plotPcoverage.R
 \name{plotPcoverage}
 \alias{plotPcoverage}
+\alias{plotLCP}
 \title{Plot local coverage probabilities to assess calibration and sharpness}
 \usage{
 plotPcoverage(
+  Data,
+  corTrend = FALSE,
+  fo = NA,
+  ordX = NULL,
+  logX = FALSE,
+  CImeth = c("eq", "pred", "dist"),
+  prob = c(0.5, 0.75, 0.95),
+  dist = c("norm", "t"),
+  shape = 2,
+  valid = c("kfold", "loo"),
+  nFold = 10,
+  nRepeat = 10,
+  nBin = NULL,
+  binomCI = c("wilson", "wilsoncc", "clopper-pearson", "agresti-coull", "jeffreys"),
+  plot = TRUE,
+  slide = NULL,
+  mycols = 1:length(prob),
+  xlab = "Calculated value",
+  xlim = NULL,
+  ylim = c(0, 1),
+  title = "",
+  legLoc = "bottom",
+  legNcol = 3,
+  label = 0,
+  gPars = NULL
+)
+
+plotLCP(
   Data,
   corTrend = FALSE,
   fo = NA,
@@ -39,6 +68,10 @@ plotPcoverage(
 
 \item{fo}{(formula) trend correction formula}
 
+\item{ordX}{(vector) set of abscissas to order sample}
+
+\item{logX}{(logical) log-transform abscissas}
+
 \item{CImeth}{(string) method to estimate CI limits}
 
 \item{prob}{(vector) a set of coverage probabilities to test}
@@ -55,21 +88,29 @@ plotPcoverage(
 
 \item{nBin}{(integer) number of intervals for local coverage stats}
 
+\item{binomCI}{(string) name of method to estimate Binomial Proportion CI}
+
 \item{plot}{(logical) plot the results}
 
+\item{slide}{(logical) use sliding window}
+
 \item{mycols}{(vector) a set of color indexes to gPars colors}
+
+\item{xlab}{(string) abscissa label}
+
+\item{xlim}{(vector) range for abscissa}
 
 \item{ylim}{(vector) limits of the y axis}
 
 \item{title}{(string) a title to display above the plot}
 
+\item{legLoc}{(string) location of legend (see \link[grDevices]{xy.coord})}
+
+\item{legNcol}{(integer) number of columns for legend}
+
 \item{label}{(integer) index of letter for subplot tag}
 
 \item{gPars}{(list) graphical parameters}
-
-\item{uP}{(vector) a set of prediction uncertainties}
-
-\item{legloc}{(string) location of the legend (default: "bottom")}
 }
 \value{
 Invisibly returns a list of LCP results. Mainly used

@@ -7,10 +7,10 @@
 varvar(Z)
 }
 \arguments{
-\item{Z}{}
+\item{Z}{(vector) a data sample}
 }
 \value{
-
+The variance on the sample variance
 }
 \description{
 Var(Var(Z)) by moments formula from Cho2008

@@ -1,8 +1,8 @@
 #' Var(Var(Z)) by moments formula from Cho2008
 #'
-#' @param Z
+#' @param Z (vector) a data sample
 #'
-#' @return
+#' @return The variance on the sample variance
 #' @export
 #'
 #' @examples
@@ -92,23 +92,21 @@ varZCI = function (
 }
 #' Plot local Z-score variance to assess calibration and sharpness
 #'
-#' @param nBin (integer) number of intervals for local coverage stats
-#' @param ylim (vector) limits of the y axis
+#' @param nBin  (integer) number of intervals for local coverage stats
+#' @param ylim  (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
-#' @param plot (logical) plot the results
-#' @param X
-#' @param Z
-#' @param logX
-#' @param slide
-#' @param method
-#' @param CImethod
-#' @param nBoot
-#' @param xlab
-#' @param xlim
-#' @param legLoc
-#' @param legNcol
+#' @param plot  (logical) plot the results
+#' @param X     (vector) abscissae of the Z values
+#' @param Z     (vector) set of Z values to be tested
+#' @param logX  (logical) log-transform X
+#' @param slide (logical) use sliding window for subsetting (X,Z)
+#' @param method (string) method used to estimate 95% CI on Var(Z)
+#' @param BSmethod (string) bootstrap variant, if method = 'bootstrap'
+#' @param nBoot (integer) number of bootstrap replicas
+#' @param xlab (string) X axis label
+#' @param xlim (vector) min and max values of X axis
 #'
 #' @return Invisibly returns a list of LZV results. Mainly used
 #'   for its plotting side effect.
@@ -122,14 +120,12 @@ plotLZV = function(
   plot      = TRUE,
   slide     = NULL,
   method    = c('bootstrap','cho','chisq'),
-  CImethod  = c('bca','perc','basic'),
+  BSmethod  = c('bca','perc','basic'),
   nBoot     = 1500,
   xlab      = 'Calculated value',
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
-  legLoc    = 'bottom',
-  legNcol   = 3,
   label     = 0,
   gPars     = NULL
 ) {
