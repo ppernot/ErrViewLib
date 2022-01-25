@@ -60,14 +60,14 @@ plotRankMat = function (E,
       c("#67001F", "#B2182B", "#D6604D", "#F4A582",
         "#FDDBC7", "#FFFFFF", "#D1E5F0", "#92C5DE",
         "#4393C3", "#2166AC", "#053061"))
-    colors = col2(200)
+    colors = col2(200)[101:200]
 
     if(!show.main)
       mar = c(0,0,0,0) # else mar is provided by gPars
 
     corrplot::corrplot(
       tab$pRank[tab$mRank,],
-      cl.lim = c(0,1),
+      col.lim = c(0,1),
       col = colors,
       is.corr = FALSE,
       diag   = TRUE,

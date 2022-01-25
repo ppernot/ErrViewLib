@@ -133,6 +133,7 @@ predIp = function(
 #'
 #' @examples
 plotPcoverage = function(
+  # Reminder: changes to parameters should be reflected to alias plotLCP
   Data,
   corTrend  = FALSE,
   fo        = NA,
