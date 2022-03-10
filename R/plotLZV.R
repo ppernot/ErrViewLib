@@ -131,7 +131,7 @@ plotLZV = function(
 ) {
 
   method   = match.arg(method)
-  CImethod = match.arg(CImethod)
+  BSmethod = match.arg(BSmethod)
 
   N = length(Z)
 
@@ -184,14 +184,14 @@ plotLZV = function(
     sel = lwindx[i]:upindx[i]
     M = length(sel)
     zLoc = zOrd[sel]
-    zs = varZCI(zLoc, nBoot = nBoot, method = method, CImethod = CImethod)
+    zs = varZCI(zLoc, nBoot = nBoot, method = method, CImethod = BSmethod)
     mV[i]  = zs$mean
     loV[i] = zs$ci[1]
     upV[i] = zs$ci[2]
     mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
 
   }
-  zs = varZCI(zOrd, nBoot = nBoot, method = method, CImethod = CImethod)
+  zs = varZCI(zOrd, nBoot = nBoot, method = method, CImethod = BSmethod)
   mV0 = zs$mean
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
