@@ -1,0 +1,279 @@
+#' Plot local coverage probabilities to assess calibration and sharpness
+#'
+#' @param E (vector) Errors
+#' @param U (matrix) Prediction uncertainties
+#' @param prob (vector) a set of coverage probabilities for the PUs
+#' @param mycols (vector) a set of color indexes to gPars colors
+#' @param nBin (integer) number of intervals for local coverage stats
+#' @param ylim (vector) limits of the y axis
+#' @param title (string) a title to display above the plot
+#' @param label (integer) index of letter for subplot tag
+#' @param gPars (list) graphical parameters
+#' @param plot (logical) plot the results
+#' @param ordX  (vector) set of abscissas to order sample
+#' @param logX  (logical) log-transform abscissas
+#' @param binomCI (string) name of method to estimate Binomial Proportion CI
+#' @param slide (logical) use sliding window
+#' @param xlab  (string) abscissa label
+#' @param xlim  (vector) range for abscissa
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
+#' @param legNcol (integer) number of columns for legend
+#'
+#' @return Invisibly returns a list of LCP results. Mainly used
+#'   for its plotting side effect.
+#'
+#' @export
+#'
+#' @examples
+plotLCP = function(
+  E, U,
+  ordX      = NULL,
+  logX      = FALSE,
+  prob      = c(0.95),
+  nBin      = NULL,
+  binomCI   = c("wilson", "wilsoncc", "clopper-pearson",
+                "agresti-coull", "jeffreys"),
+  plot      = TRUE,
+  slide     = NULL,
+  mycols    = 1:length(prob),
+  xlab      = 'Calculated value',
+  xlim      = NULL,
+  ylim      = c(0,1),
+  title     = '',
+  legLoc    = 'bottom',
+  legNcol   = 3,
+  label     = 0,
+  gPars     = NULL
+) {
+
+  binomCI = match.arg(binomCI)
+
+  N = length(E)
+  if(NCOL(U) > 1) {
+    if(length(prob) != NCOL(U))
+      stop('>>> Provide target probabilities for all columns of U...')
+  } else {
+    U = as.matrix(U,ncol=1)
+  }
+
+  if(is.null(nBin))
+    nBin  = max(min(floor(N/150),15),2)
+  if(nBin <= 0)
+    stop('>>> nBin should be > 0')
+  if(is.null(slide))
+    slide = nBin <= 4
+
+  if(!is.null(ordX)) {
+    if(length(ordX) != length(E))
+      stop('>>> Inconsistent length for ordX')
+    ord = order(ordX)
+    xOrd = ordX[ord]
+  } else {
+    stop('>>> Please provide ordX')
+  }
+  eOrd = E[ord]
+  uOrd = matrix(U[ord,],ncol = NCOL(U))
+
+  # Design local areas
+  if (slide) {
+    # Sliding interval of width nLoc
+    nLoc = floor(N / nBin)
+    # Nbr of intervals
+    nbr  = N - nLoc +1
+    # Lower index of interval in ordered data
+    lwindx = 1:nbr
+    # Upper index
+    upindx = lwindx + nLoc -1
+
+  } else {
+    # Breakpoints of nearly equi-sized intervals
+    p    = seq(0, 1, length.out = nBin + 1)[1:nBin]
+    br   = ErrViewLib::vhd(xOrd, p = p)
+    # Nbr of intervals
+    nbr  = length(br)
+    # Lower index of interval in ordered data
+    lwindx = upindx = c()
+    lwindx[1] = 1
+    for (i in 2:nbr)
+      lwindx[i] = which(xOrd > br[i])[1]
+    # Upper index
+    for (i in 1:(nbr-1))
+      upindx[i] = lwindx[i+1]-1
+    upindx[nbr] = N
+
+    if(min(upindx-lwindx) < N/nBin/2 |
+       sum(upindx-lwindx+1) != N      )
+      stop('>>> Pb in equi-sized intervals design')
+  }
+
+  # Local Coverage stats
+  pP = loP = upP = matrix(NA,nrow=length(prob),ncol=nbr)
+  mint = c()
+  for (i in 1:nbr) {
+    sel = lwindx[i]:upindx[i]
+    err = eOrd[sel]
+    M = length(sel)
+    for (ip in seq_along(prob)) {
+      unc = uOrd[sel,ip]
+      S = sum(abs(err) <= unc)
+      pP[ip,i] = S / M
+      ci = DescTools::BinomCI(S, M, method = binomCI)
+      loP[ip, i] = ci[,2]
+      upP[ip, i] = ci[,3]
+    }
+    mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
+  }
+  # Average coverage
+  S = c()
+  for (ip in seq_along(prob))
+    S[ip] = sum(abs(eOrd) <= uOrd[,ip])
+  ci = DescTools::BinomCI(S, N, method = binomCI)
+  meanP = ci[,1]
+  uMeanP = sqrt(meanP*(1-meanP)/N)
+  loMeanP = ci[,2]
+  upMeanP = ci[,3]
+
+  if(plot) {
+    # Plot ----
+    if(length(gPars) == 0)
+      gPars = ErrViewLib::setgPars()
+
+    for (n in names(gPars))
+      assign(n, rlist::list.extract(gPars, n))
+
+    par(
+      mfrow = c(1, 1),
+      mar = c(mar[1:3],3),
+      mgp = mgp,
+      pty = 's',
+      tcl = tcl,
+      cex = cex,
+      lwd = lwd
+    )
+
+    if(is.null(xlim))
+      xlim = range(xOrd)
+
+    if (any(is.na(ylim)))
+      ylim = range(c(loP, upP))
+
+    matplot(
+      mint,
+      t(pP),
+      xlab = xlab,
+      ylab = 'Local Coverage Probability',
+      xlim = xlim,
+      xaxs = 'i',
+      ylim = ylim,
+      type = 'b',
+      lty = 3,
+      pch = 16,
+      lwd = lwd,
+      cex = ifelse(slide,0.5,1),
+      col  = cols[mycols],
+      main = title,
+      log = ifelse(logX,'x','')
+    )
+    grid()
+
+    if(slide) {
+      ipl = seq(1,length(mint),length.out=nBin)
+      for(i in seq_along(prob)) {
+        polygon(
+          c(mint,rev(mint)),
+          c(loP[i,], rev(upP[i,])),
+          col = cols_tr[mycols[i]],
+          border = NA)
+        segments(
+          mint[ipl], loP[i,ipl],
+          mint[ipl], upP[i,ipl],
+          col  = cols[mycols[i]],
+          lwd  = 1.5 * lwd,
+          lend = 1)
+      }
+
+    } else {
+      for(i in seq_along(prob))
+        segments(
+          mint, loP[i,],
+          mint, upP[i,],
+          col  = cols[mycols[i]],
+          lwd  = 1.5 * lwd,
+          lend = 1)
+
+    }
+    mtext(text = paste0(prob,' -'),
+          side = 2,
+          at = prob,
+          col = cols[mycols],
+          cex = 0.75*cex,
+          las = 1,
+          font = 2)
+    xpos = pretty(xOrd)
+    abline(h   = prob,
+           lty = 2,
+           col = cols[mycols],
+           lwd = lwd)
+
+    box()
+
+    # Mean coverage proba
+    ypos = par("usr")[4]
+    pm = c()
+    for(i in seq_along(meanP)) {
+      if(uMeanP[i] != 0)
+        pm[i] = ErrViewLib::prettyUnc(meanP[i],uMeanP[i],1)
+      else
+        pm[i] = signif(meanP[i],2)
+    }
+    mtext(text = c(' Mean',paste0('- ',pm)),
+          side = 4,
+          at = c(ypos,meanP),
+          col = c(1,cols[mycols]),
+          cex = 0.75*cex,
+          las = 1,
+          font = 2)
+    for(i in seq_along(meanP))
+      segments(
+        xlim[2],loMeanP[i],
+        xlim[2],upMeanP[i],
+        col  = cols[mycols][i],
+        lwd  = 6 * lwd,
+        lend = 1
+      )
+
+    legend(
+      legLoc, bty = 'n',
+      legend = paste0('P',round(100*prob)),
+      col  = cols[mycols],
+      lty  = 1,
+      pch  = 16,
+      ncol = legNcol,
+      cex  = 0.8,
+      adj  = 0.2
+    )
+
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj = 1,
+        cex = cex,
+        line = 0.3)
+
+  }
+
+  invisible(
+    list(
+      mint   = mint,
+      lwindx = lwindx,
+      upindx = upindx,
+      pc     = pP,
+      pcl    = loP,
+      pcu    = upP,
+      meanP  = meanP,
+      uMeanP = uMeanP,
+      prob   = prob
+    )
+  )
+}

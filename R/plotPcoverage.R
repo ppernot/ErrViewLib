@@ -125,10 +125,6 @@ predIp = function(
 #' @return Invisibly returns a list of LCP results. Mainly used
 #'   for its plotting side effect.
 #'
-#' @aliases plotPcoverage plotLCP
-#'
-#' @rdname plotLCP
-#'
 #' @export
 #'
 #' @examples
@@ -496,64 +492,5 @@ plotPcoverage = function(
       uMeanP = uMeanP,
       prob   = prob
     )
-  )
-}
-
-#' @rdname plotLCP
-#' @export
-plotLCP = function(
-  Data,
-  corTrend  = FALSE,
-  fo        = NA,
-  ordX      = NULL,
-  logX      = FALSE,
-  CImeth    = c('eq','pred','dist'),
-  prob      = c(0.5,0.75,0.95),
-  dist      = c('norm','t'),
-  shape     = 2,
-  valid     = c("kfold","loo"),
-  nFold     = 10,
-  nRepeat   = 10,
-  nBin      = NULL,
-  binomCI   = c("wilson", "wilsoncc", "clopper-pearson",
-                "agresti-coull", "jeffreys"),
-  plot      = TRUE,
-  slide     = NULL,
-  mycols    = 1:length(prob),
-  xlab      = 'Calculated value',
-  xlim      = NULL,
-  ylim      = c(0,1),
-  title     = '',
-  legLoc    = 'bottom',
-  legNcol   = 3,
-  label     = 0,
-  gPars     = NULL
-) {
-  plotPcoverage(
-    Data,
-    corTrend,
-    fo,
-    ordX,
-    logX,
-    CImeth,
-    prob,
-    dist,
-    shape,
-    valid,
-    nFold,
-    nRepeat,
-    nBin,
-    binomCI,
-    plot,
-    slide,
-    mycols,
-    xlab,
-    xlim,
-    ylim,
-    title,
-    legLoc,
-    legNcol,
-    label,
-    gPars
   )
 }
