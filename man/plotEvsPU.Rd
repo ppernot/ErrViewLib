@@ -8,7 +8,7 @@ plotEvsPU(
   x,
   y,
   type = c("points", "ext"),
-  xlab = "Pred. unc.",
+  xlab = "Error uncertainty",
   ylab = "Error",
   logX = FALSE,
   title = NULL,

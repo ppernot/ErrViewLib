@@ -198,36 +198,10 @@ plotPcoverage = function(
   DataOrd = Data[ord,]
 
   # Design local areas
-  if (slide) {
-    # Sliding interval of width nLoc
-    nLoc = floor(N / nBin)
-    # Nbr of intervals
-    nbr  = N - nLoc +1
-    # Lower index of interval in ordered data
-    lwindx = 1:nbr
-    # Upper index
-    upindx = lwindx + nLoc -1
-
-  } else {
-    # Breakpoints of nearly equi-sized C intervals
-    p    = seq(0, 1, length.out = nBin + 1)[1:nBin]
-    br   = ErrViewLib::vhd(xOrd, p = p)
-    # Nbr of intervals
-    nbr  = length(br)
-    # Lower index of interval in ordered data
-    lwindx = upindx = c()
-    lwindx[1] = 1
-    for (i in 2:nbr)
-      lwindx[i] = which(xOrd > br[i])[1]
-    # Upper index
-    for (i in 1:(nbr-1))
-      upindx[i] = lwindx[i+1]-1
-    upindx[nbr] = N
-
-    if(min(upindx-lwindx) < N/nBin/2 |
-       sum(upindx-lwindx+1) != N      )
-      stop('>>> Pb in equi-sized intervals design')
-  }
+  intrv  = ErrViewLib::genIntervals(N, nBin, slide)
+  nbr    = intrv$nbr
+  lwindx = intrv$lwindx
+  upindx = intrv$upindx
 
   if(!is.null(Data$uP)) {
     # z-scores ----
@@ -338,13 +312,11 @@ plotPcoverage = function(
       loP[ip, i] = ci[,2]
       upP[ip, i] = ci[,3]
     }
-    # mint[i] = mean(xOrd[sel]) # Barycenter of interval
     mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
 
   }
   S = colSums(tm)/nRepeat
   ci = DescTools::BinomCI(S, N, method = binomCI)
-  # meanP = colMeans(tm)/nRepeat
   meanP = ci[,1]
   uMeanP = sqrt(meanP*(1-meanP)/N)
   loMeanP = ci[,2]

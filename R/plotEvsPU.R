@@ -9,7 +9,7 @@
 #' @param ylab  (string) y axis label. Default 'Error'
 #' @param ylim  (vector) limits of the y axis
 #' @param nBin  (integer) number of intervals for local coverage stats
-#' @param slide (logical) use sliding window for subsetting (X,Z)
+#' @param slide (logical) use sliding window for subsetting (x,y)
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
@@ -23,7 +23,7 @@ plotEvsPU =  function(
   x,
   y,
   type      = c('points','ext'),
-  xlab      = 'Pred. unc.',
+  xlab      = 'Error uncertainty',
   ylab      = 'Error',
   logX      = FALSE,
   title     = NULL,
@@ -32,12 +32,15 @@ plotEvsPU =  function(
   ylim      = NULL,
   scalePoints = 0.75,
   nBin      = NULL,
-  slide     = NULL,
+  slide     = TRUE,
+  label     = 0,
   gPars
 ) {
 
   if (length(x)*length(y) == 0)
     return()
+
+  type = match.arg(type)
 
   # Expose gPars list
   for (n in names(gPars))
@@ -45,15 +48,14 @@ plotEvsPU =  function(
 
   par(
     mfrow = c(1, 1),
+    mar = mar,
     mgp = mgp,
     pty = 's',
     tcl = tcl,
     cex = cex,
-    lwd = lwd
+    lwd = lwd,
+    yaxs = 'i'
   )
-
-  pch = 16
-  colp = cols_tr2[5]
 
   log = ''
   if(logX)
@@ -64,6 +66,9 @@ plotEvsPU =  function(
   if(type == 'points') {
     if(is.null(ylim))
       ylim = 2*max(x)*c(-1,1)
+
+    pch = 16
+    colp = cols_tr2[5]
 
     plot(
       x, y,
@@ -79,31 +84,15 @@ plotEvsPU =  function(
     )
     grid()
     abline(h = 0, lty = 3)
-    suC = sort(x)
-    lines(
-      suC, 2*suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
-    lines(
-      suC, -2*suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
-    lines(
-      suC, suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
-    lines(
-      suC, -suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
+    for (s in c(-3,-2, -1, 1, 2, 3))
+      abline(
+        a = 0,
+        b = s,
+        untf = TRUE,
+        lty = 2,
+        lwd = 1.5 * lwd,
+        col = cols[3]
+      )
     box()
 
   } else {
@@ -119,51 +108,28 @@ plotEvsPU =  function(
     yOrd = y[ord]
 
     # Design local areas
-    if (slide) {
-      # Sliding interval of width nLoc
-      nLoc = floor(N / nBin)
-      # Nbr of intervals
-      nbr  = N - nLoc +1
-      # Lower index of interval in ordered data
-      lwindx = 1:nbr
-      # Upper index
-      upindx = lwindx + nLoc -1
+    intrv = ErrViewLib::genIntervals(N, nBin, slide)
 
-    } else {
-      # Breakpoints of nearly equi-sized C intervals
-      p    = seq(0, 1, length.out = nBin + 1)[1:nBin]
-      br   = ErrViewLib::vhd(xOrd, p = p)
-      # Nbr of intervals
-      nbr  = length(br)
-      # Lower index of interval in ordered data
-      lwindx = upindx = c()
-      lwindx[1] = 1
-      for (i in 2:nbr)
-        lwindx[i] = which(xOrd > br[i])[1]
-      # Upper index
-      for (i in 1:(nbr-1))
-        upindx[i] = lwindx[i+1]-1
-      upindx[nbr] = N
-
-      if(min(upindx-lwindx) < N/nBin/2 |
-         sum(upindx-lwindx+1) != N      )
-        stop('>>> Pb in equi-sized intervals design')
-    }
+    # Local stats
     yext = mint = c()
-    for (i in 1:nbr) {
-      sel = lwindx[i]:upindx[i]
-      M = length(sel)
-      yLoc = yOrd[sel]
-      yext[i] = max(abs(yLoc))
+    for (i in 1:intrv$nbr) {
+      sel = intrv$lwindx[i]:intrv$upindx[i]
+      # Take max within the interval
+      yext[i] = max(abs(yOrd[sel]))
+      # Center of the interval
       mint[i] = 0.5*sum(range(xOrd[sel]))
     }
 
     if(is.null(ylim))
-      ylim = c(0,max(yext))
+      ylim = c(0,1.05*max(yext))
+    if(!any(is.finite(ylim)))
+      ylim = xlim
+
+    colp = cols[2]
 
     plot(
       mint, yext,
-      pch = pch,
+      type = 'l', lwd = 2*lwd,
       col = if(!is.null(colPoints)) colPoints else colp,
       xlim = xlim,
       ylim = ylim,
@@ -174,25 +140,24 @@ plotEvsPU =  function(
       main = title
     )
     grid()
-    suC = sort(x)
-    lines(
-      suC, 3*suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
-    lines(
-      suC, 2*suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
-    lines(
-      suC, suC,
-      lty = 2,
-      lwd = lwd,
-      col = cols[3]
-    )
+    for (s in 1:4)
+      abline(
+        a = 0,
+        b = s,
+        untf = TRUE,
+        lty = 2,
+        lwd = 1.5 * lwd,
+        col = cols[3]
+      )
     box()
   }
+
+  if(label > 0)
+    mtext(
+      text = paste0('(', letters[label], ')'),
+      side = 3,
+      adj = 1,
+      cex = cex,
+      line = 0.3)
+
 }

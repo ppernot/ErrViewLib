@@ -75,42 +75,13 @@ plotLCP = function(
   uOrd = matrix(U[ord,],ncol = NCOL(U))
 
   # Design local areas
-  if (slide) {
-    # Sliding interval of width nLoc
-    nLoc = floor(N / nBin)
-    # Nbr of intervals
-    nbr  = N - nLoc +1
-    # Lower index of interval in ordered data
-    lwindx = 1:nbr
-    # Upper index
-    upindx = lwindx + nLoc -1
-
-  } else {
-    # Breakpoints of nearly equi-sized intervals
-    p    = seq(0, 1, length.out = nBin + 1)[1:nBin]
-    br   = ErrViewLib::vhd(xOrd, p = p)
-    # Nbr of intervals
-    nbr  = length(br)
-    # Lower index of interval in ordered data
-    lwindx = upindx = c()
-    lwindx[1] = 1
-    for (i in 2:nbr)
-      lwindx[i] = which(xOrd > br[i])[1]
-    # Upper index
-    for (i in 1:(nbr-1))
-      upindx[i] = lwindx[i+1]-1
-    upindx[nbr] = N
-
-    if(min(upindx-lwindx) < N/nBin/2 |
-       sum(upindx-lwindx+1) != N      )
-      stop('>>> Pb in equi-sized intervals design')
-  }
+  intrv = ErrViewLib::genIntervals(N, nBin, slide)
 
   # Local Coverage stats
-  pP = loP = upP = matrix(NA,nrow=length(prob),ncol=nbr)
+  pP = loP = upP = matrix(NA,nrow=length(prob),ncol=intrv$nbr)
   mint = c()
-  for (i in 1:nbr) {
-    sel = lwindx[i]:upindx[i]
+  for (i in 1:intrv$nbr) {
+    sel = intrv$lwindx[i]:intrv$upindx[i]
     err = eOrd[sel]
     M = length(sel)
     for (ip in seq_along(prob)) {
@@ -266,8 +237,8 @@ plotLCP = function(
   invisible(
     list(
       mint   = mint,
-      lwindx = lwindx,
-      upindx = upindx,
+      lwindx = intrv$lwindx,
+      upindx = intrv$upindx,
       pc     = pP,
       pcl    = loP,
       pcu    = upP,
