@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotLZV.R
 \name{plotLZV}
 \alias{plotLZV}
-\title{Plot local Z-score variance to assess calibration and sharpness}
+\title{Plot local z-score variance to assess calibration and tightness}
 \usage{
 plotLZV(
   X,
@@ -25,7 +25,7 @@ plotLZV(
 \arguments{
 \item{X}{(vector) abscissae of the Z values}
 
-\item{Z}{(vector) set of Z values to be tested}
+\item{Z}{(vector) set of z-score values to be tested}
 
 \item{logX}{(logical) log-transform X}
 
@@ -35,9 +35,9 @@ plotLZV(
 
 \item{slide}{(logical) use sliding window for subsetting (X,Z)}
 
-\item{method}{(string) method used to estimate 95% CI on Var(Z)}
+\item{method}{(string) method used to estimate 95 percent CI on Var(Z)}
 
-\item{BSmethod}{(string) bootstrap variant, if method = 'bootstrap'}
+\item{BSmethod}{(string) bootstrap variant}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
 
@@ -58,5 +58,5 @@ Invisibly returns a list of LZV results. Mainly used
   for its plotting side effect.
 }
 \description{
-Plot local Z-score variance to assess calibration and sharpness
+Plot local z-score variance to assess calibration and tightness
 }

@@ -24,7 +24,7 @@ for the CI estimation algorithm from bootstrap sample}
 
 \item{nBoot}{(integer) number of bootstrap repeats}
 
-\item{level}{(numeric) a probability level for CI (defauld: 0.95)}
+\item{level}{(numeric) a probability level for CI (default: 0.95)}
 
 \item{parallel}{(string) one of 'no' (default) and 'multicore'}
 }

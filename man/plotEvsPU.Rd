@@ -2,35 +2,40 @@
 % Please edit documentation in R/plotEvsPU.R
 \name{plotEvsPU}
 \alias{plotEvsPU}
-\title{Plot error distribution or extremal errors vs prediction uncertainty}
+\title{Plot error vs predicted value or prediction uncertainty}
 \usage{
 plotEvsPU(
-  x,
-  y,
-  type = c("points", "ext"),
-  xlab = "Error uncertainty",
-  ylab = "Error",
+  X,
+  E,
+  type = c("PU", "PV"),
+  pExt = FALSE,
+  qReg = FALSE,
+  xlab = NULL,
+  ylab = "Error, E",
   logX = FALSE,
   title = NULL,
-  colPoints = NULL,
+  myColors = c(5, 4, 3, 2),
   xlim = NULL,
   ylim = NULL,
-  scalePoints = 0.75,
+  scalePoints = 0.5,
   nBin = NULL,
-  slide = NULL,
+  slide = TRUE,
+  label = 0,
   gPars
 )
 }
 \arguments{
-\item{x}{(vector) prediction uncertainty}
+\item{X}{(vector) predicted value or prediction uncertainty}
 
-\item{y}{(vector) error}
+\item{E}{(vector) error}
 
-\item{type}{(string) plot type. Default 'points'}
+\item{type}{(string) type of plot ('PV' or 'PU')}
 
-\item{xlab}{(string) x axis label. Default 'Pred. unc.'}
+\item{pExt}{(logical) plot extremal points}
 
-\item{ylab}{(string) y axis label. Default 'Error'}
+\item{xlab}{(string) x axis label}
+
+\item{ylab}{(string) y axis label}
 
 \item{logX}{(logical) log-transform x}
 
@@ -44,15 +49,17 @@ plotEvsPU(
 
 \item{nBin}{(integer) number of intervals for local coverage stats}
 
-\item{slide}{(logical) use sliding window for subsetting (X,Z)}
+\item{slide}{(logical) use sliding window for subsetting (X,E)}
+
+\item{label}{(integer) index of letter for subplot tag}
 
 \item{gPars}{(list) graphical parameters}
 
-\item{label}{(integer) index of letter for subplot tag}
+\item{qExt}{(logical) plot quantile regression}
 }
 \value{
-Plots y vs x or extremal values of abs(y) vs x.
+Plots E vs uE.
 }
 \description{
-Plot error distribution or extremal errors vs prediction uncertainty
+Plot error vs predicted value or prediction uncertainty
 }

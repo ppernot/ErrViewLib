@@ -15,9 +15,8 @@ genIntervals(N, nBin, slide = FALSE)
 (default `slide = FALSE`) or gerenate from a sliding window}
 }
 \value{
-A list with `nbr` the number of intervals, `lwindx` a vector of
-   indices for the first point in each interval and `upindx` a vector of
-   indices for the last point in each interval.
+A list with `nbr` the number of intervals, `lwindx` and  `upindx`,
+  vectors of indices for the first and last point of each interval.
 }
 \description{
 Generate intervals for local statistics

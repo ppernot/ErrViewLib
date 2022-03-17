@@ -21,7 +21,7 @@ varvar = function (Z) {
 #' @param CImethod (string) one of 'bca' (default), 'perc' and 'basic'
 #'   for the CI estimation algorithm from bootstrap sample
 #' @param nBoot (integer) number of bootstrap repeats
-#' @param level (numeric) a probability level for CI (defauld: 0.95)
+#' @param level (numeric) a probability level for CI (default: 0.95)
 #' @param parallel (string) one of 'no' (default) and 'multicore'
 #'
 #' @return A list containing the mean, sd and ci for the variance
@@ -90,7 +90,7 @@ varZCI = function (
     }
   )
 }
-#' Plot local Z-score variance to assess calibration and sharpness
+#' Plot local z-score variance to assess calibration and tightness
 #'
 #' @param nBin  (integer) number of intervals for local coverage stats
 #' @param ylim  (vector) limits of the y axis
@@ -99,11 +99,11 @@ varZCI = function (
 #' @param gPars (list) graphical parameters
 #' @param plot  (logical) plot the results
 #' @param X     (vector) abscissae of the Z values
-#' @param Z     (vector) set of Z values to be tested
+#' @param Z     (vector) set of z-score values to be tested
 #' @param logX  (logical) log-transform X
 #' @param slide (logical) use sliding window for subsetting (X,Z)
-#' @param method (string) method used to estimate 95% CI on Var(Z)
-#' @param BSmethod (string) bootstrap variant, if method = 'bootstrap'
+#' @param method (string) method used to estimate 95 percent CI on Var(Z)
+#' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
 #' @param xlab (string) X axis label
 #' @param xlim (vector) min and max values of X axis
@@ -168,7 +168,6 @@ plotLZV = function(
   upV0 = zs$ci[2]
 
   if(plot) {
-    # Plot ----
     if(length(gPars) == 0)
       gPars = ErrViewLib::setgPars()
 
