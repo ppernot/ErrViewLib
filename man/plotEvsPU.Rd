@@ -6,12 +6,12 @@
 \usage{
 plotEvsPU(
   X,
-  E,
+  Y,
   type = c("PU", "PV"),
   pExt = FALSE,
   qReg = FALSE,
   xlab = NULL,
-  ylab = "Error, E",
+  ylab = NULL,
   logX = FALSE,
   title = NULL,
   myColors = c(5, 4, 3, 2),
@@ -27,7 +27,7 @@ plotEvsPU(
 \arguments{
 \item{X}{(vector) predicted value or prediction uncertainty}
 
-\item{E}{(vector) error}
+\item{Y}{(vector) error or z-score}
 
 \item{type}{(string) type of plot ('PV' or 'PU')}
 
@@ -49,7 +49,7 @@ plotEvsPU(
 
 \item{nBin}{(integer) number of intervals for local coverage stats}
 
-\item{slide}{(logical) use sliding window for subsetting (X,E)}
+\item{slide}{(logical) use sliding window for subsetting (X,Y)}
 
 \item{label}{(integer) index of letter for subplot tag}
 
