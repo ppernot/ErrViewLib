@@ -78,8 +78,11 @@ plotLRR = function(
   mint = c()
 
   # Width of p% empirical interval
-  bfun = function(X,ind=1:length(X),p=0.95)
-    diff(ErrViewLib::vhd(X[ind],p = c((1-p)/2,(1+p)/2)))
+  fRR = function(X, ind = 1:NROW(X), p = 0.95) {
+    empi = diff(ErrViewLib::vhd(X[ind, 1], p = c((1 - p) / 2, (1 + p) / 2)))
+    theo = 2 * sqrt(mean(X[ind, 2] ^ 2))
+    return(theo / empi)
+  }
 
   for (i in 1:intrv$nbr) {
     sel = intrv$lwindx[i]:intrv$upindx[i]
@@ -87,15 +90,13 @@ plotLRR = function(
     M = length(sel)
     for (ip in seq_along(prob)) {
       p = prob[ip]
-      empRange = bfun(X=err,p=p)
-      bst = boot::boot(err, bfun, R = 1000, p = p)
+      unc = uOrd[sel,ip]
+      bst = boot::boot(cbind(err,unc), fRR, R = 1000, p = p)
       bci = boot::boot.ci(bst, conf = 0.95, type = 'bca' )
       ci  = bci$bca[1, 4:5]
-      unc = uOrd[sel,ip]
-      piRange   = 2*sqrt(mean(unc^2))
-      pP[ip,i]  = piRange / empRange
-      loP[ip,i] = piRange / ci[2]
-      upP[ip,i] = piRange / ci[1]
+      pP[ip,i]  = bst$t0
+      loP[ip,i] = ci[1]
+      upP[ip,i] = ci[2]
     }
     mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
   }
@@ -147,6 +148,7 @@ plotLRR = function(
       xlim = xlim,
       xaxs = 'i',
       ylim = ylim,
+      yaxs = 'i',
       type = 'b',
       lty = 3,
       pch = 16,
