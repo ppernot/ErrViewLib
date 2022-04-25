@@ -2,36 +2,41 @@
 % Please edit documentation in R/plotEvsPU.R
 \name{plotEvsPU}
 \alias{plotEvsPU}
-\title{Plot error vs predicted value or prediction uncertainty}
+\title{Plot error E vs predicted value V or prediction uncertainty uE}
 \usage{
 plotEvsPU(
   X,
   Y,
-  type = c("PU", "PV"),
-  pExt = FALSE,
-  qReg = FALSE,
+  type = c("prop", "horiz"),
+  runExt = FALSE,
+  runQuant = FALSE,
+  cumMAE = FALSE,
   xlab = NULL,
   ylab = NULL,
   logX = FALSE,
   title = NULL,
-  myColors = c(5, 4, 3, 2),
+  myColors = c(5, 4, 3, 2, 7),
   xlim = NULL,
   ylim = NULL,
   scalePoints = 0.5,
   nBin = NULL,
   slide = TRUE,
   label = 0,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{
-\item{X}{(vector) predicted value or prediction uncertainty}
+\item{X}{(vector) prediction uncertainty, uE, or predicted value, V}
 
 \item{Y}{(vector) error or z-score}
 
-\item{type}{(string) type of plot ('PV' or 'PU')}
+\item{type}{(string) type of guide lines ('prop' or 'horiz')}
 
-\item{pExt}{(logical) plot extremal points}
+\item{runExt}{(logical) plot extremal points}
+
+\item{runQuant}{(logical) plot quantile regression}
+
+\item{cumMAE}{(logical) plot cumulative MAE}
 
 \item{xlab}{(string) x axis label}
 
@@ -54,12 +59,10 @@ plotEvsPU(
 \item{label}{(integer) index of letter for subplot tag}
 
 \item{gPars}{(list) graphical parameters}
-
-\item{qExt}{(logical) plot quantile regression}
 }
 \value{
-Plots E vs uE.
+Plots E vs uE or V
 }
 \description{
-Plot error vs predicted value or prediction uncertainty
+Plot error E vs predicted value V or prediction uncertainty uE
 }

@@ -19,14 +19,14 @@
 #' @examples
 plotPpnorm <- function(
   X,
-  title = '',
+  title  = '',
   scale  = FALSE,
   plotCI = TRUE,
   score  = TRUE,
-  dist      = c('norm','t'),
-  shape     = 2,
+  dist   = c('norm','t'),
+  shape  = 2,
   label  = 0,
-  gPars
+  gPars  = ErrViewLib::setgPars()
 ) {
 
   dist    = match.arg(dist)

@@ -25,7 +25,8 @@ plotLorenz = function(
   identity.grid = FALSE,
   label = 0,
   leg.lwd = 2,
-  gPars) {
+  gPars = ErrViewLib::setgPars()
+) {
 
   # Expose gPars list
   for (n in names(gPars))

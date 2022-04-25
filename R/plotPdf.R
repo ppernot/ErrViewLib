@@ -20,24 +20,26 @@
 #' @export
 #'
 #' @examples
-plotPdf = function(X,
-                   absErrors = TRUE,
-                   adjust = 1,
-                   xlab = NULL,
-                   xmin = 0,
-                   xmax = NULL,
-                   title = '',
-                   show.leg = TRUE,
-                   show.MSE = FALSE,
-                   show.Q95 = TRUE,
-                   Q.algo = 'HD',
-                   col.index = 1:ncol(X),
-                   weights = NULL,
-                   units = 'a.u.',
-                   label = 0,
-                   leg.lwd = 30,
-                   fill = FALSE,
-                   gPars) {
+plotPdf = function(
+  X,
+  absErrors = TRUE,
+  adjust = 1,
+  xlab = NULL,
+  xmin = 0,
+  xmax = NULL,
+  title = '',
+  show.leg = TRUE,
+  show.MSE = FALSE,
+  show.Q95 = TRUE,
+  Q.algo = 'HD',
+  col.index = 1:ncol(X),
+  weights = NULL,
+  units = 'a.u.',
+  label = 0,
+  leg.lwd = 30,
+  fill = FALSE,
+  gPars = ErrViewLib::setgPars()
+) {
   # Expose gPars list
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))

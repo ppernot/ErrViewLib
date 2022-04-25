@@ -1,43 +1,45 @@
-#' Plot error vs predicted value or prediction uncertainty
+#' Plot error E vs predicted value V or prediction uncertainty uE
 #'
-#' @param X     (vector) predicted value or prediction uncertainty
-#' @param Y     (vector) error or z-score
-#' @param type  (string) type of plot ('PV' or 'PU')
-#' @param pExt  (logical) plot extremal points
-#' @param qExt  (logical) plot quantile regression
-#' @param xlab  (string) x axis label
-#' @param xlim  (vector) limits of the x axis
-#' @param logX  (logical) log-transform x
-#' @param ylab  (string) y axis label
-#' @param ylim  (vector) limits of the y axis
-#' @param nBin  (integer) number of intervals for local coverage stats
+#' @param X (vector) prediction uncertainty, uE, or predicted value, V
+#' @param Y (vector) error or z-score
+#' @param type (string) type of guide lines ('prop' or 'horiz')
+#' @param runExt (logical) plot extremal points
+#' @param runQuant (logical) plot quantile regression
+#' @param cumMAE (logical) plot cumulative MAE
+#' @param xlab (string) x axis label
+#' @param xlim (vector) limits of the x axis
+#' @param logX (logical) log-transform x
+#' @param ylab (string) y axis label
+#' @param ylim (vector) limits of the y axis
+#' @param nBin (integer) number of intervals for local coverage stats
 #' @param slide (logical) use sliding window for subsetting (X,Y)
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #' @param scalePoints (numeric) scale factor for points size
 #'
-#' @return Plots E vs uE.
+#' @return Plots E vs uE or V
 #' @export
 #'
 #' @examples
 plotEvsPU =  function(
   X, Y,
-  type      = c('PU','PV'),
-  pExt      = FALSE,
-  qReg      = FALSE,
+  type      = c('prop','horiz'),
+  runExt    = FALSE,
+  runQuant  = FALSE,
+  cumMAE    = FALSE,
   xlab      = NULL,
   ylab      = NULL,
   logX      = FALSE,
   title     = NULL,
-  myColors  = c(5,4,3,2),
+  myColors  = c(5,4,3,2,7),
   xlim      = NULL,
   ylim      = NULL,
   scalePoints = 0.5,
   nBin      = NULL,
   slide     = TRUE,
   label     = 0,
-  gPars
+  gPars     = ErrViewLib::setgPars()
 ) {
 
   if (length(X)*length(Y) == 0)
@@ -61,7 +63,7 @@ plotEvsPU =  function(
     cex.main = 1
   )
 
-  if(pExt | qReg) {
+  if(runExt | runQuant) {
     N = length(Y)
 
     if(is.null(nBin))
@@ -87,7 +89,7 @@ plotEvsPU =  function(
       # Take min & max within the interval
       ymin[i] = min(y)
       ymax[i] = max(y)
-      if(qReg) {
+      if(runQuant) {
         q = ErrViewLib::vhd(y)
         qmin[i] = q[1]
         qmax[i] = q[2]
@@ -95,6 +97,13 @@ plotEvsPU =  function(
       # Center of the interval
       mint[i] = 0.5*sum(range(xOrd[sel]))
     }
+  }
+
+  if(cumMAE) {
+    ord  = order(X)
+    xOrd = X[ord]
+    yOrd = Y[ord]
+    cMAE = cumsum(abs(yOrd)) / 1:length(yOrd)
   }
 
   log = ''
@@ -127,6 +136,7 @@ plotEvsPU =  function(
   cole = cols[myColors[2]]     # Extremal lines
   colr = cols[myColors[3]]     # Quantile reg
   colg = cols[myColors[4]]     # Guide lines
+  colc = cols[myColors[5]]     # Cum. MAE
 
   plot(
     X, Y,
@@ -144,7 +154,7 @@ plotEvsPU =  function(
   # Guide lines
   abline(h = 0, lty = 3)
   for (s in c(-3,-2, -1, 1, 2, 3))
-    if(type == 'PV') {
+    if(type == 'horiz') {
       abline(
         h = s,
         lty = 2,
@@ -162,12 +172,12 @@ plotEvsPU =  function(
       )
     }
 
-  legs = 'Error'
+  legs = 'Data'
   pleg = pch
   cleg = colp
   tleg = NA
 
-  if(pExt) {
+  if(runExt) {
     matlines(
       mint, cbind(ymin,ymax),
       lty = 1,
@@ -179,7 +189,7 @@ plotEvsPU =  function(
     tleg = c(tleg,1)
   }
 
-  if(qReg) {
+  if(runQuant) {
     matlines(
       mint, cbind(qmin,qmax),
       lty = 1,
@@ -188,6 +198,18 @@ plotEvsPU =  function(
     legs = c(legs,'Quantiles')
     pleg = c(pleg,NA)
     cleg = c(cleg,colr)
+    tleg = c(tleg,1)
+  }
+
+  if(cumMAE) {
+    matlines(
+      xOrd,cMAE,
+      lty = 1,
+      lwd = 2*lwd,
+      col = colc)
+    legs = c(legs,'Cum. MAE')
+    pleg = c(pleg,NA)
+    cleg = c(cleg,colc)
     tleg = c(tleg,1)
   }
 

@@ -14,13 +14,15 @@
 #' @export
 #'
 #' @examples
-plotSIPMat = function(X,
-                      method = 'circle',
-                      order = TRUE,
-                      main  = '',
-                      label  = 0,
-                      cex.lab = 1,
-                      gPars){
+plotSIPMat = function(
+  X,
+  method = 'circle',
+  order = TRUE,
+  main = '',
+  label  = 0,
+  cex.lab = 1,
+  gPars = ErrViewLib::setgPars()
+){
 
   # Expose gPars list
   for (n in names(gPars))

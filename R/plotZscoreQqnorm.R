@@ -23,7 +23,7 @@ plotZscoreQqnorm = function(
   markOutliers = FALSE,
   labels = 1:length(R),
   title = '',
-  gPars
+  gPars = ErrViewLib::setgPars()
 ) {
 
   if(plotCI) {

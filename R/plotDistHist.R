@@ -54,7 +54,7 @@ plotDistHist = function(
   ylim      = range(y),
   scaleLegBA = 0.75,
   scalePoints = 0.75,
-  gPars
+  gPars    = ErrViewLib::setgPars()
 ) {
 
   if (length(x)*length(y) == 0)

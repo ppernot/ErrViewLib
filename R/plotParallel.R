@@ -28,7 +28,7 @@ plotParallel = function (X, maxPoints = nrow(X),
                          ylim = NULL,
                          units = 'a.u.',
                          ylab = "Errors",
-                         gPars) {
+                         gPars = ErrViewLib::setgPars()) {
   # Driver for paraPlot
 
   ## Recast data to matrix

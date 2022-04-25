@@ -34,7 +34,7 @@ plotDeltaCDF <- function(
   showMLG  = TRUE,
   showDmue = TRUE,
   showCI   = TRUE,
-  gPars
+  gPars = ErrViewLib::setgPars()
 ) {
   # Expose gPars list
   for (n in names(gPars))

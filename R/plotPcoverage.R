@@ -155,7 +155,7 @@ plotPcoverage = function(
   legLoc    = 'bottom',
   legNcol   = 3,
   label     = 0,
-  gPars     = NULL
+  gPars     = ErrViewLib::setgPars()
 ) {
 
   dist    = match.arg(dist)

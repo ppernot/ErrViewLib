@@ -20,7 +20,7 @@ plotCorMat = function(X,
                       main  = NULL,
                       label  = 0,
                       cex.lab = 1,
-                      gPars){
+                      gPars = ErrViewLib::setgPars()){
 
   # Expose gPars list
   for (n in names(gPars))

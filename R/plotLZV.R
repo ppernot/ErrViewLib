@@ -127,7 +127,7 @@ plotLZV = function(
   ylim      = NULL,
   title     = '',
   label     = 0,
-  gPars     = NULL
+  gPars     = ErrViewLib::setgPars()
 ) {
 
   method   = match.arg(method)

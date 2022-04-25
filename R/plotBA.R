@@ -15,7 +15,7 @@ plotBA = function(
   data2,
   ylim = NULL,
   title = '',
-  gPars
+  gPars = ErrViewLib::setgPars()
 ) {
 
   # Bootstapped version of the Bland-Altman graph

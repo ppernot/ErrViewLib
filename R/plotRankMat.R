@@ -18,18 +18,20 @@
 #' @export
 #'
 #' @examples
-plotRankMat = function (E,
-                        tab = NULL,
-                        score='mue',
-                        type = 'levels',
-                        method = 'square',
-                        nMC = 1000,
-                        cex.lab = 1,
-                        show.main = TRUE,
-                        offset = 0.7,
-                        M = nrow(E),
-                        label  = 0,
-                        gPars) {
+plotRankMat = function (
+  E,
+  tab = NULL,
+  score='mue',
+  type = 'levels',
+  method = 'square',
+  nMC = 1000,
+  cex.lab = 1,
+  show.main = TRUE,
+  offset = 0.7,
+  M = nrow(E),
+  label  = 0,
+  gPars = ErrViewLib::setgPars()
+) {
 
   # Expose gPars list
   for (n in names(gPars))

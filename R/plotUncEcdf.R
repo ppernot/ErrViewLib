@@ -18,22 +18,24 @@
 #' @export
 #'
 #' @examples
-plotUncEcdf = function(X,
-                       absErrors = TRUE,
-                       xlab = NULL,
-                       xmin = 0,
-                       xmax = NULL,
-                       title = '',
-                       show.leg = TRUE,
-                       show.MAE = FALSE,
-                       show.Q95 = TRUE,
-                       Q.algo = 'HD',
-                       col.index = 1:ncol(X),
-                       weights = NULL,
-                       units = 'a.u.',
-                       label = 0,
-                       leg.lwd = 30,
-                       gPars) {
+plotUncEcdf = function(
+  X,
+  absErrors = TRUE,
+  xlab = NULL,
+  xmin = 0,
+  xmax = NULL,
+  title = '',
+  show.leg = TRUE,
+  show.MAE = FALSE,
+  show.Q95 = TRUE,
+  Q.algo = 'HD',
+  col.index = 1:ncol(X),
+  weights = NULL,
+  units = 'a.u.',
+  label = 0,
+  leg.lwd = 30,
+  gPars = ErrViewLib::setgPars()
+) {
   # Expose gPars list
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
