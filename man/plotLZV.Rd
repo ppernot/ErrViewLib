@@ -19,7 +19,7 @@ plotLZV(
   ylim = NULL,
   title = "",
   label = 0,
-  gPars = NULL
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

@@ -11,7 +11,7 @@ plotClusters(
   xlim = NULL,
   ylim = NULL,
   cex.lab = 1,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

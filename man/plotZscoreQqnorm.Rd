@@ -13,7 +13,7 @@ plotZscoreQqnorm(
   markOutliers = FALSE,
   labels = 1:length(R),
   title = "",
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

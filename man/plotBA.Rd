@@ -4,7 +4,7 @@
 \alias{plotBA}
 \title{Bland-Altman-type plot of error samples}
 \usage{
-plotBA(data1, data2, ylim = NULL, title = "", gPars)
+plotBA(data1, data2, ylim = NULL, title = "", gPars = ErrViewLib::setgPars())
 }
 \arguments{
 \item{gPars}{}

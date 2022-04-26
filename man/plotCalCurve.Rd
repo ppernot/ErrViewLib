@@ -19,7 +19,7 @@ plotCalCurve(
   binomCI = c("wilson", "wilsoncc", "clopper-pearson", "agresti-coull", "jeffreys"),
   title = "",
   label = 0,
-  gPars = NULL
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

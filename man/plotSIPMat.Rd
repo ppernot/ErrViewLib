@@ -11,7 +11,7 @@ plotSIPMat(
   main = "",
   label = 0,
   cex.lab = 1,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

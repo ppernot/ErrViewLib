@@ -19,7 +19,7 @@ plotParallel(
   ylim = NULL,
   units = "a.u.",
   ylab = "Errors",
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

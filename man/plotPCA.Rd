@@ -4,7 +4,14 @@
 \alias{plotPCA}
 \title{Plot Principal Component Analysis results}
 \usage{
-plotPCA(X, labels, xlim = NULL, ylim = NULL, cex.lab = 1, gPars)
+plotPCA(
+  X,
+  labels,
+  xlim = NULL,
+  ylim = NULL,
+  cex.lab = 1,
+  gPars = ErrViewLib::setgPars()
+)
 }
 \arguments{
 \item{X}{a numeric matrix}

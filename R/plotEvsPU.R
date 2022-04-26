@@ -32,7 +32,7 @@ plotEvsPU =  function(
   ylab      = NULL,
   logX      = FALSE,
   title     = NULL,
-  myColors  = c(5,4,3,2,7),
+  myColors  = c(5,4,3,1,2),
   xlim      = NULL,
   ylim      = NULL,
   scalePoints = 0.5,
@@ -140,17 +140,15 @@ plotEvsPU =  function(
 
   plot(
     X, Y,
-    pch = pch,
-    col = colp,
+    type = 'n',
     xlim = xlim,
     ylim = ylim,
     xlab = xlab,
     ylab = ylab,
     log = log,
-    cex = scalePoints*cex,
     main = title
   )
-  # grid()
+  grid()
   # Guide lines
   abline(h = 0, lty = 3)
   for (s in c(-3,-2, -1, 1, 2, 3))
@@ -158,7 +156,6 @@ plotEvsPU =  function(
       abline(
         h = s,
         lty = 2,
-        lwd = 2*lwd,
         col = colg
       )
     } else {
@@ -167,10 +164,15 @@ plotEvsPU =  function(
         b = s,
         untf = TRUE,
         lty = 2,
-        lwd = 2*lwd,
         col = colg
       )
     }
+  points(
+    X, Y,
+    pch = pch,
+    col = colp,
+    cex = scalePoints*cex
+  )
 
   legs = 'Data'
   pleg = pch

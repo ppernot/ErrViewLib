@@ -14,7 +14,7 @@ plotLorenz(
   identity.grid = FALSE,
   label = 0,
   leg.lwd = 2,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

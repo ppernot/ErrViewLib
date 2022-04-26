@@ -22,7 +22,7 @@ plotLCP(
   legLoc = "bottom",
   legNcol = 3,
   label = 0,
-  gPars = NULL
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

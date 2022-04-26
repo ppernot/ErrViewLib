@@ -15,7 +15,7 @@ plotEvsPU(
   ylab = NULL,
   logX = FALSE,
   title = NULL,
-  myColors = c(5, 4, 3, 2, 7),
+  myColors = c(5, 4, 3, 2, 1),
   xlim = NULL,
   ylim = NULL,
   scalePoints = 0.5,

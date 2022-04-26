@@ -20,7 +20,7 @@ plotUncEcdf(
   units = "a.u.",
   label = 0,
   leg.lwd = 30,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

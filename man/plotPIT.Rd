@@ -12,7 +12,7 @@ plotPIT(
   breaks = 10,
   title = "",
   label = 0,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

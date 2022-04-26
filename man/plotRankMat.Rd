@@ -16,7 +16,7 @@ plotRankMat(
   offset = 0.7,
   M = nrow(E),
   label = 0,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

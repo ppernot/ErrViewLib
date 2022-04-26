@@ -29,7 +29,7 @@ plotDistHist(
   ylim = range(y),
   scaleLegBA = 0.75,
   scalePoints = 0.75,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

@@ -22,7 +22,7 @@ plotPdf(
   label = 0,
   leg.lwd = 30,
   fill = FALSE,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

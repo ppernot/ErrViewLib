@@ -13,7 +13,7 @@ plotPpnorm(
   dist = c("norm", "t"),
   shape = 2,
   label = 0,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

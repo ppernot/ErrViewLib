@@ -20,7 +20,7 @@ plotDeltaCDF(
   showMLG = TRUE,
   showDmue = TRUE,
   showCI = TRUE,
-  gPars
+  gPars = ErrViewLib::setgPars()
 )
 }
 \arguments{

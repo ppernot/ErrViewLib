@@ -181,7 +181,8 @@ plotLZV = function(
       pty = 's',
       tcl = tcl,
       cex = cex,
-      lwd = lwd
+      lwd = lwd,
+      cex.main = 1
     )
 
     if(is.null(xlim))
