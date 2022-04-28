@@ -118,15 +118,15 @@ plotEvsPU =  function(
 
   if(is.null(xlab))
     xlab = ifelse(
-      type == 'PV',
+      type == 'horiz',
       'Predicted Value, V',
       'Prediction Uncertainty, uE'
     )
 
   if(is.null(ylab))
     ylab = ifelse(
-      type == 'PV',
-      'z-score, E/uE',
+      type == 'horiz',
+      'Z-score',
       'Error, E'
     )
 
