@@ -42,7 +42,7 @@ plotEvsPU =  function(
   gPars     = ErrViewLib::setgPars()
 ) {
 
-  if (length(X)*length(Y) == 0)
+  if (as.numeric(length(X))*as.numeric(length(Y)) == 0)
     return()
 
   type = match.arg(type)
