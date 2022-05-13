@@ -25,9 +25,9 @@ plotConfidence = function(
   oracle = TRUE,
   col    = 2,
   add    = FALSE,
-  xlab   = '% discarded',
+  xlab   = 'k% discarded',
   xlim   = NULL,
-  ylab   = 'MUE',
+  ylab   = 'MAE / MAE0',
   ylim   = NULL,
   title  = NULL,
   label  = 0,
@@ -67,23 +67,25 @@ plotConfidence = function(
   M = length(uE)
   pcVec = 1:100 # Vector of percentages
 
+  S0 = stat(E)
   vstat = vora = rep(NA,length(pcVec))
   for (i in seq_along(pcVec)) {
     k = pcVec[i]
     sel = 1:floor(k * M / 100)
     if(length(sel) == 0)
       break()
-    vstat[i] = stat(E[-sel])
+    vstat[i] = stat(E[-sel]) / S0
     if(oracle)
-      vora[i]  = stat(O[-sel])
+      vora[i]  = stat(O[-sel]) / S0
   }
   # Add 0% point
   pcVec = c(0,pcVec)
-  vstat = c(stat(E),vstat)
+  vstat = c(1,vstat)
   if(oracle)
-    vora = c(stat(O),vora)
+    vora = c(1,vora)
 
   if(add) {
+
     lines(pcVec, vstat,
           lwd = 2 * lwd,
           col = cols[col])
@@ -94,7 +96,7 @@ plotConfidence = function(
       xlim = range(pcVec)
 
     if (is.null(ylim))
-      ylim = c(0, 1.1 * max(vstat, na.rm = TRUE))
+      ylim = c(0, 1)
 
     plot(
       pcVec, vstat,

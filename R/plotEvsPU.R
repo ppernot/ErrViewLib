@@ -111,7 +111,7 @@ plotEvsPU =  function(
     log = 'x'
 
   if(is.null(xlim))
-    xlim = c(0, 1.1*max(X))
+    xlim = c(max(0,min(X)), 1.1*max(X))
 
   if(is.null(ylim))
     ylim = c(-max(abs(Y)), max(abs(Y)))
