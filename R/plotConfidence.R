@@ -11,6 +11,7 @@
 #' @param ylab (string) y axis label
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
+#' @param legend (string) legend for the dataset
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #'
@@ -30,6 +31,7 @@ plotConfidence = function(
   ylim   = NULL,
   title  = NULL,
   label  = 0,
+  legend = NULL,
   gPars  = ErrViewLib::setgPars()
 ) {
 
@@ -82,7 +84,9 @@ plotConfidence = function(
     vora = c(stat(O),vora)
 
   if(add) {
-    lines(pcVec, vstat, col = cols[col])
+    lines(pcVec, vstat,
+          lwd = 2 * lwd,
+          col = cols[col])
 
   } else {
 
@@ -95,6 +99,8 @@ plotConfidence = function(
     plot(
       pcVec, vstat,
       type = 'l',
+      lty  = 1,
+      lwd  = 2*lwd,
       col  = cols[col],
       xlab = xlab,
       xlim = xlim,
@@ -104,15 +110,18 @@ plotConfidence = function(
     )
     grid()
     if(oracle)
-      lines(pcVec, vora, lty=2, col=cols[1])
+      lines(pcVec, vora, lty=2, lwd = 2*lwd, col=cols[1])
 
-    legend(
-      'bottomleft', bty = 'n', inset = 0.05,
-      legend = c('Oracle','Data'),
-      lty = c(2,1),
-      col = cols[c(1,col)],
-      pch = NA
-    )
+    if(!is.null(legend))
+      legend(
+        'bottomleft', bty = 'n', inset = 0.05,
+        legend = if(oracle) c('Oracle',legend) else legend,
+        lty = if(oracle) c(2,1) else 1,
+        lwd = 2*lwd,
+        col = if(oracle) cols[c(1,col)] else cols[col],
+        pch = NA
+      )
+
     box()
 
     if(label > 0)

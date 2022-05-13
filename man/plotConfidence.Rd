@@ -17,6 +17,7 @@ plotConfidence(
   ylim = NULL,
   title = NULL,
   label = 0,
+  legend = NULL,
   gPars = ErrViewLib::setgPars()
 )
 }
@@ -44,6 +45,8 @@ plotConfidence(
 \item{title}{(string) a title to display above the plot}
 
 \item{label}{(integer) index of letter for subplot tag}
+
+\item{legend}{(string) legend for the dataset}
 
 \item{gPars}{(list) graphical parameters}
 }
