@@ -5,6 +5,7 @@
 #' @param stat (function) statistic to use
 #' @param oracle (logical) plot oracle curve
 #' @param col (integer) color index for the curve
+#' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
 #' @param xlab (string) x axis label
 #' @param xlim (vector) limits of the x axis
@@ -24,6 +25,7 @@ plotConfidence = function(
   stat   = ErrViewLib::mue,
   oracle = TRUE,
   col    = 2,
+  type   = c('l','p'),
   add    = FALSE,
   xlab   = 'k% discarded',
   xlim   = NULL,
@@ -34,6 +36,8 @@ plotConfidence = function(
   legend = NULL,
   gPars  = ErrViewLib::setgPars()
 ) {
+
+  type = match.arg(type)
 
   if (as.numeric(length(E))*as.numeric(length(uE)) == 0)
     return()
@@ -87,6 +91,8 @@ plotConfidence = function(
   if(add) {
 
     lines(pcVec, vstat,
+          type = type,
+          pch = 16,
           lwd = 2 * lwd,
           col = cols[col])
 
@@ -100,8 +106,9 @@ plotConfidence = function(
 
     plot(
       pcVec, vstat,
-      type = 'l',
+      type = type,
       lty  = 1,
+      pch  = 16,
       lwd  = 2*lwd,
       col  = cols[col],
       xlab = xlab,
@@ -114,14 +121,20 @@ plotConfidence = function(
     if(oracle)
       lines(pcVec, vora, lty=2, lwd = 2*lwd, col=cols[1])
 
+    lty = if(type == 'l') 1 else NA
+    pch = if(type == 'l') NA else 16
+    if(oracle) {
+      lty = c(2,lty)
+      pch = c(NA,pch)
+    }
     if(!is.null(legend))
       legend(
         'bottomleft', bty = 'n', inset = 0.05,
         legend = if(oracle) c('Oracle',legend) else legend,
-        lty = if(oracle) c(2,1) else 1,
+        lty = lty,
         lwd = 2*lwd,
         col = if(oracle) cols[c(1,col)] else cols[col],
-        pch = NA
+        pch = pch
       )
 
     box()

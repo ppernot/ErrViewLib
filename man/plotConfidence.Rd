@@ -10,10 +10,11 @@ plotConfidence(
   stat = ErrViewLib::mue,
   oracle = TRUE,
   col = 2,
+  type = c("l", "p"),
   add = FALSE,
-  xlab = "\% discarded",
+  xlab = "k\% discarded",
   xlim = NULL,
-  ylab = "MUE",
+  ylab = "MAE / MAE0",
   ylim = NULL,
   title = NULL,
   label = 0,
@@ -31,6 +32,8 @@ plotConfidence(
 \item{oracle}{(logical) plot oracle curve}
 
 \item{col}{(integer) color index for the curve}
+
+\item{type}{(string) curve type: line ('l') or points ('p')}
 
 \item{add}{(logical) add confidence curve to previous plot}
 
