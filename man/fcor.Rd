@@ -7,6 +7,10 @@
 fcor(X, index = 1:length(X), ...)
 }
 \arguments{
+\item{X}{-}
+
+\item{index}{-}
+
 \item{...}{}
 }
 \value{

@@ -1,4 +1,4 @@
-#' Plot variance calibration curve
+#' Plot variance calibration curve (reliability diagram)
 #'
 #' @param nBin  (integer) number of intervals for local coverage stats
 #' @param ylim  (vector) limits of the y axis
@@ -13,12 +13,17 @@
 #' @param nBoot (integer) number of bootstrap replicas
 #' @param xlim (vector) min and max values of X axis
 #' @param add (logical) add to previous graph ?
-#' @param col (interger) color index of curve to add
+#' @param col (integer) color index of curve to add
 #'
 #' @return Used for its plotting side effect.
 #' @export
 #'
 #' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+#'   plotCalVar(uE, E, nBin = 6, nBoot = 500)
+#' }
 plotCalVar = function(
   X, Y,
   logX      = FALSE,

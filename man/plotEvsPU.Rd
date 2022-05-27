@@ -66,3 +66,10 @@ Plots E vs uE or V
 \description{
 Plot error E vs predicted value V or prediction uncertainty uE
 }
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+  plotEvsPU(uE, E, runQuant = TRUE)
+}
+}

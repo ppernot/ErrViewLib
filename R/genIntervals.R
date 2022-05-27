@@ -10,7 +10,6 @@
 #'
 #' @export
 #'
-#' @examples
 genIntervals = function(
   N,
   nBin,

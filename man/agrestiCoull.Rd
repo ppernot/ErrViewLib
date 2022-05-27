@@ -7,7 +7,9 @@
 agrestiCoull(X, n)
 }
 \arguments{
-\item{n}{}
+\item{X}{-}
+
+\item{n}{-}
 }
 \value{
 

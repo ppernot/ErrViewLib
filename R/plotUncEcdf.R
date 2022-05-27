@@ -1,23 +1,22 @@
 #' Plot of a set of ECDFs
 #'
-#' @param X
-#' @param absErrors
-#' @param xlab
-#' @param xmax
-#' @param title
-#' @param show.leg
-#' @param show.MAE
-#' @param col.index
-#' @param weights
-#' @param units
-#' @param label
-#' @param leg.lwd
-#' @param gPars
+#' @param X -
+#' @param absErrors -
+#' @param xlab -
+#' @param xmax -
+#' @param title -
+#' @param show.leg -
+#' @param show.MAE -
+#' @param col.index -
+#' @param weights -
+#' @param units -
+#' @param label -
+#' @param leg.lwd -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotUncEcdf = function(
   X,
   absErrors = TRUE,

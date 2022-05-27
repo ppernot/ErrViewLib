@@ -13,7 +13,6 @@
 #' @return a plot
 #' @export
 #'
-#' @examples
 plotClusters <- function(
   X,
   type   = c("systems","methods"),

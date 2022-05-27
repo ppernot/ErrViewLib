@@ -7,7 +7,6 @@
 #' @return A quantile.
 #' @export
 #'
-#' @examples
 hd = function (x, q = 0.5, na.rm = TRUE){
   # Extracted from package WRS2 which does not export it.
   # Mair, P., & Wilcox, R. R. (2019). "Robust Statistical Methods
@@ -32,7 +31,6 @@ hd = function (x, q = 0.5, na.rm = TRUE){
 #' @return A vector of quantiles.
 #' @export
 #'
-#' @examples
 vhd = function(x, p=c(0.025,0.975), na.rm = TRUE) {
   # Calculate quantiles by hd for a vector of probabilities
   q = vector(length=length(p))
@@ -46,7 +44,6 @@ vhd = function(x, p=c(0.025,0.975), na.rm = TRUE) {
 #'
 #' @return
 #'
-#' @examples
 elimna = function (m){
   # Used by hd().
   # Extracted from package WRS2 which does not export it.

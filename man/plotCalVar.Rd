@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotCalVar.R
 \name{plotCalVar}
 \alias{plotCalVar}
-\title{Plot variance calibration curve}
+\title{Plot variance calibration curve (reliability diagram)}
 \usage{
 plotCalVar(
   X,
@@ -46,7 +46,7 @@ plotCalVar(
 
 \item{add}{(logical) add to previous graph ?}
 
-\item{col}{(interger) color index of curve to add}
+\item{col}{(integer) color index of curve to add}
 
 \item{gPars}{(list) graphical parameters}
 }
@@ -54,5 +54,12 @@ plotCalVar(
 Used for its plotting side effect.
 }
 \description{
-Plot variance calibration curve
+Plot variance calibration curve (reliability diagram)
+}
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+  plotCalVar(uE, E, nBin = 6, nBoot = 500)
+}
 }

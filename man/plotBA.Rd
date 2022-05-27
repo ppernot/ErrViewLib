@@ -7,7 +7,15 @@
 plotBA(data1, data2, ylim = NULL, title = "", gPars = ErrViewLib::setgPars())
 }
 \arguments{
-\item{gPars}{}
+\item{data1}{-}
+
+\item{data2}{-}
+
+\item{ylim}{-}
+
+\item{title}{-}
+
+\item{gPars}{-}
 }
 \value{
 

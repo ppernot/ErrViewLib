@@ -12,7 +12,7 @@
 #'     's' generates a square plotting region and 'm' generates the maximal
 #'     plotting region (default: 's')}
 #'   \item{mar}{Margins around the plot. The default is c(3,3,3,.5).
-#'     See \link{graphics::par}.
+#'     See \link{graphics::par}}.
 #'   \item{mgp}{The margin line (in mex units) for the axis title,
 #'     axis labels and axis line. The default is c(2,.75,0).}
 #'   \item{tcl}{The length of tick marks as a fraction of the height
@@ -30,7 +30,6 @@
 #'
 #' @export
 #'
-#' @examples
 setgPars = function(
   type = c('plot','publish','shiny'),
   gPars = list()

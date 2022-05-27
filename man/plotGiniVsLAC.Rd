@@ -16,7 +16,21 @@ plotGiniVsLAC(
 )
 }
 \arguments{
-\item{gPars}{}
+\item{X}{-}
+
+\item{title}{-}
+
+\item{show.norm}{-}
+
+\item{show.leg}{-}
+
+\item{col.index}{-}
+
+\item{label}{-}
+
+\item{leg.lwd}{-}
+
+\item{gPars}{-}
 }
 \value{
 

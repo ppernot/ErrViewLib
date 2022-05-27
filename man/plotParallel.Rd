@@ -23,7 +23,25 @@ plotParallel(
 )
 }
 \arguments{
-\item{gPars}{}
+\item{X}{-}
+
+\item{maxPoints}{-}
+
+\item{labels}{-}
+
+\item{lab.thresh}{-}
+
+\item{colors}{-}
+
+\item{rescale}{-}
+
+\item{scramble}{-}
+
+\item{outliers}{-}
+
+\item{ylab}{-}
+
+\item{gPars}{-}
 }
 \value{
 

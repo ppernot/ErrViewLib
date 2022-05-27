@@ -18,7 +18,25 @@ plotLorenz(
 )
 }
 \arguments{
-\item{gPars}{}
+\item{X}{-}
+
+\item{var}{-}
+
+\item{title}{-}
+
+\item{show.norm}{-}
+
+\item{show.leg}{-}
+
+\item{col.index}{-}
+
+\item{identity.grid}{-}
+
+\item{label}{-}
+
+\item{leg.lwd}{-}
+
+\item{gPars}{-}
 }
 \value{
 

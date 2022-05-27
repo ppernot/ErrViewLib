@@ -7,7 +7,11 @@
 fcov(X, index = 1:length(X), ...)
 }
 \arguments{
-\item{...}{}
+\item{X}{-}
+
+\item{index}{-}
+
+\item{...}{-}
 }
 \value{
 

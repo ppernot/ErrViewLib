@@ -1,4 +1,4 @@
-#' Estimate benchmarking statistics and their uncertainty by bootstraping
+#' Estimate benchmarking statistics and their uncertainty by bootstrapping
 #'
 #' @param error (list)
 #' @param props (strings; optional) a vector of statistics to compute.
@@ -11,7 +11,6 @@
 #' @return
 #' @export
 #'
-#' @examples
 estBS1 = function(error,
                   props = c('mue',
                             'mse',

@@ -18,7 +18,7 @@ plotLRR(
   xlim = NULL,
   ylim = NULL,
   title = "",
-  legend = "P95",
+  legend = paste0("P", round(100 * prob)),
   legLoc = "bottom",
   legNcol = 3,
   add = FALSE,
@@ -71,4 +71,11 @@ Invisibly returns a list of LCP results. Mainly used
 }
 \description{
 Plot local range ratios
+}
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+  plotLRR(E, 1.96*uE, ordX = uE, xlab = 'Uncertainty, uE', ylim = c(0,2))
+}
 }

@@ -7,7 +7,13 @@
 fsi(X, index = 1:nrow(X), uX = 0, ...)
 }
 \arguments{
-\item{...}{}
+\item{X}{-}
+
+\item{index}{-}
+
+\item{uX}{-}
+
+\item{...}{-}
 }
 \value{
 

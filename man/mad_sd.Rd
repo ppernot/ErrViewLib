@@ -7,7 +7,9 @@
 mad_sd(X, index = 1:length(X), ...)
 }
 \arguments{
-\item{index}{}
+\item{X}{-}
+
+\item{index}{-}
 }
 \value{
 

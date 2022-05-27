@@ -1,17 +1,16 @@
 #' Auxillary function for plotPcoverage
 #'
-#' @param cLearn
-#' @param rLearn
-#' @param cTest
-#' @param rTest
-#' @param corTrend
-#' @param fo
-#' @param prob
-#' @param CImeth
+#' @param cLearn -
+#' @param rLearn -
+#' @param cTest -
+#' @param rTest -
+#' @param corTrend -
+#' @param fo -
+#' @param prob -
+#' @param CImeth -
 #'
 #' @return
 #'
-#' @examples
 predIp = function(
   Learn, Test,
   corTrend = FALSE,
@@ -127,7 +126,6 @@ predIp = function(
 #'
 #' @export
 #'
-#' @examples
 plotPcoverage = function(
   # Reminder: changes to parameters should be reflected to alias plotLCP
   Data,

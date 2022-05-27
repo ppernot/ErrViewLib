@@ -7,7 +7,7 @@
 my5num(X)
 }
 \arguments{
-\item{X}{}
+\item{X}{-}
 }
 \value{
 

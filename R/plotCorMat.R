@@ -2,18 +2,17 @@
 #'
 #' Interface to \code{corrplot::corrplot()}
 #'
-#' @param X
-#' @param method
-#' @param order
-#' @param main
-#' @param label
-#' @param cex.lab
-#' @param gPars
+#' @param X -
+#' @param method -
+#' @param order -
+#' @param main -
+#' @param label -
+#' @param cex.lab -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotCorMat = function(X,
                       method = "ellipse",
                       order  = "original",

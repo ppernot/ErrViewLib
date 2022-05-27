@@ -1,19 +1,18 @@
 #' plotZscoreQqnorm
 #'
-#' @param R
-#' @param sig
-#' @param lim
-#' @param title
-#' @param gPars
-#' @param plotCI
-#' @param plotReg
-#' @param markOutliers
-#' @param labels
+#' @param R -
+#' @param sig -
+#' @param lim -
+#' @param title -
+#' @param gPars -
+#' @param plotCI -
+#' @param plotReg -
+#' @param markOutliers -
+#' @param labels -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotZscoreQqnorm = function(
   R,
   sig,

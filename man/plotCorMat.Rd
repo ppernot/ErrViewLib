@@ -15,7 +15,19 @@ plotCorMat(
 )
 }
 \arguments{
-\item{gPars}{}
+\item{X}{-}
+
+\item{method}{-}
+
+\item{order}{-}
+
+\item{main}{-}
+
+\item{label}{-}
+
+\item{cex.lab}{-}
+
+\item{gPars}{-}
 }
 \value{
 

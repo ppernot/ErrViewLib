@@ -22,6 +22,11 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+#'   plotEvsPU(uE, E, runQuant = TRUE)
+#' }
 plotEvsPU =  function(
   X, Y,
   type      = c('prop','horiz'),

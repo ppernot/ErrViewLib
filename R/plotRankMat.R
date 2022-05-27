@@ -2,22 +2,21 @@
 #'
 #' Interface to \code{corrplot::corrplot()} or mode/CI graph
 #'
-#' @param E
-#' @param tab
-#' @param score
-#' @param type
-#' @param method
-#' @param nMC
-#' @param cex.lab
-#' @param show.main
-#' @param offset
-#' @param M
-#' @param gPars
+#' @param E -
+#' @param tab -
+#' @param score -
+#' @param type -
+#' @param method -
+#' @param nMC -
+#' @param cex.lab -
+#' @param show.main -
+#' @param offset -
+#' @param M -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotRankMat = function (
   E,
   tab = NULL,

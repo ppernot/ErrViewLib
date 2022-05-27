@@ -33,11 +33,65 @@ plotDistHist(
 )
 }
 \arguments{
-\item{gPars}{}
+\item{x}{-}
+
+\item{y}{-}
+
+\item{uy}{-}
+
+\item{nclass}{-}
+
+\item{xlab}{-}
+
+\item{ylab}{-}
+
+\item{logX}{-}
+
+\item{plotGauss}{-}
+
+\item{outLiers}{-}
+
+\item{p}{-}
+
+\item{labels}{-}
+
+\item{select}{-}
+
+\item{main}{-}
+
+\item{plotReg}{-}
+
+\item{plotConf}{-}
+
+\item{degree}{-}
+
+\item{colPoints}{-}
+
+\item{plotBA}{-}
+
+\item{plotBAci}{-}
+
+\item{topMar}{-}
+
+\item{xlim}{-}
+
+\item{ylim}{-}
+
+\item{scaleLegBA}{-}
+
+\item{gPars}{-}
 }
 \value{
 
 }
 \description{
 Scatter plot of an error set with marginal histogram
+}
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+  V   = 1:length(E)
+  plotDistHist(V, E, uE, xlab = 'V', ylab='E',ylim = c(-12,12))
+}
 }

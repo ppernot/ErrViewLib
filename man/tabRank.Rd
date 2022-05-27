@@ -7,7 +7,11 @@
 tabRank(E, scores = c("mue", "q95hd"), nMC = 1000)
 }
 \arguments{
-\item{nMC}{}
+\item{E}{-}
+
+\item{scores}{-}
+
+\item{nMC}{-}
 }
 \value{
 

@@ -1,18 +1,17 @@
 #' Auxillary function for plotCalCurve
 #' Predicted quantiles of errors
 #'
-#' @param cLearn
-#' @param rLearn
-#' @param cTest
-#' @param rTest
-#' @param corTrend
-#' @param fo
-#' @param prob
-#' @param CImeth
+#' @param cLearn -
+#' @param rLearn -
+#' @param cTest -
+#' @param rTest -
+#' @param corTrend -
+#' @param fo -
+#' @param prob -
+#' @param CImeth -
 #'
 #' @return
 #'
-#' @examples
 predQ = function(
   Learn, Test,
   corTrend = FALSE,
@@ -109,7 +108,6 @@ predQ = function(
 #'   for its plotting side effect.
 #' @export
 #'
-#' @examples
 plotCalCurve = function(
   Data,
   corTrend  = FALSE,

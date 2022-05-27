@@ -1,9 +1,9 @@
 #' Generate results table from benchmarking statistics generated
 #' by 'estBS()'
 #'
-#' @param S
-#' @param comp
-#' @param ref
+#' @param S -
+#' @param comp -
+#' @param ref -
 #' @param numDig (integer) number of digits to keep for uncertainty display.
 #' @param units (string) units of the data.
 #' @param short (logical) use parenthetic notation to display uncertainty.
@@ -11,7 +11,6 @@
 #' @return A dataframe.
 #' @export
 #'
-#' @examples
 genTabStat = function(
   S,
   comp    = TRUE,
@@ -157,19 +156,17 @@ genTabStat = function(
 #' @return a p-value
 #' @export
 #'
-#' @examples
 genpval = function(X) {
   ps = (sum(X < 0) + 0.5 * sum(X == 0)) / length(X)
   2 * min(ps, 1 - ps)
 }
 #' Title
 #'
-#' @param x
+#' @param x -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 pval = function(x) {
   2*pnorm(x, lower.tail = FALSE)
 }
@@ -181,7 +178,6 @@ pval = function(x) {
 #' @return A probability.
 #' @export
 #'
-#' @examples
 pinv = function (X,d0) {
   # The zeros (sign = 0) are subtracted
   A = sum( sign(X) != sign(d0) )
@@ -197,7 +193,6 @@ pinv = function (X,d0) {
 #' @return A list with strings of truncated values of `y` and `uy`.
 #' @export
 #'
-#' @examples
 formatUnc = function(y, uy, numDig = 2) {
 
   if (!is.finite(y) | !is.finite(uy) | uy <= 0)
@@ -235,7 +230,6 @@ formatUnc = function(y, uy, numDig = 2) {
 #' @return A string.
 #' @export
 #'
-#' @examples
 prettyUnc = function(y, uy, numDig = 2) {
 
   if (!is.finite(uy) |

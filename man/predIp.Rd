@@ -16,7 +16,21 @@ predIp(
 )
 }
 \arguments{
-\item{CImeth}{}
+\item{corTrend}{-}
+
+\item{fo}{-}
+
+\item{prob}{-}
+
+\item{CImeth}{-}
+
+\item{cLearn}{-}
+
+\item{rLearn}{-}
+
+\item{cTest}{-}
+
+\item{rTest}{-}
 }
 \value{
 

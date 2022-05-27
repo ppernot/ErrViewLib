@@ -69,3 +69,10 @@ Invisibly returns a list of LCP results. Mainly used
 \description{
 Plot local coverage probabilities to assess calibration and sharpness
 }
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+  plotLCP(E, cbind(0.32*uE, uE, 1.96*uE), prob=c(0.25,0.67,0.95), ordX = uE)
+}
+}

@@ -67,3 +67,10 @@ Invisibly returns a list of LZV results. Mainly used
 \description{
 Plot local z-score variance to assess calibration and tightness
 }
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+  plotLZV(uE, E/uE, method = 'cho', ylim = c(0,2))
+}
+}

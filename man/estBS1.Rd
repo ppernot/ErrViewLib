@@ -2,7 +2,7 @@
 % Please edit documentation in R/estBS.R
 \name{estBS1}
 \alias{estBS1}
-\title{Estimate benchmarking statistics and their uncertainty by bootstraping}
+\title{Estimate benchmarking statistics and their uncertainty by bootstrapping}
 \usage{
 estBS1(
   error,
@@ -33,5 +33,5 @@ estBS1(
 
 }
 \description{
-Estimate benchmarking statistics and their uncertainty by bootstraping
+Estimate benchmarking statistics and their uncertainty by bootstrapping
 }

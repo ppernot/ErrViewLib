@@ -11,7 +11,6 @@
 #' @return a plot
 #' @export
 #'
-#' @examples
 plotPCA <- function(
   X,
   labels,

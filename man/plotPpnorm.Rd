@@ -17,9 +17,23 @@ plotPpnorm(
 )
 }
 \arguments{
+\item{X}{-}
+
+\item{title}{-}
+
+\item{scale}{-}
+
+\item{plotCI}{-}
+
+\item{score}{-}
+
+\item{dist}{-}
+
+\item{shape}{-}
+
 \item{label}{(integer) index of letter for subplot tag}
 
-\item{gPars}{}
+\item{gPars}{-}
 }
 \value{
 a plot and an invisible list of metrics `misCal`, `misCalUp`

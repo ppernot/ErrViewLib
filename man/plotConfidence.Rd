@@ -54,8 +54,16 @@ plotConfidence(
 \item{gPars}{(list) graphical parameters}
 }
 \value{
-Plot confidence curve for (uE,E) set
+Plot confidence curve for (E,uE) set
 }
 \description{
 Plot confidence curve for (uE,E) set
+}
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+  plotConfidence(E,uE)
+}
+
 }

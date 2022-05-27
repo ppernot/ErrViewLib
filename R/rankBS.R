@@ -1,13 +1,12 @@
 #' N-out of-N Bootstrap of order statistics
 #'
-#' @param E
-#' @param score
-#' @param nMC
+#' @param E -
+#' @param score -
+#' @param nMC -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 rankBS = function(E, score = 'mue', nMC = 1000) {
   # Bootstrap rank statistics
   # (based on boot::boot)
@@ -47,15 +46,14 @@ rankBS = function(E, score = 'mue', nMC = 1000) {
 }
 #' M-out of-N Bootstrap of order statistics
 #'
-#' @param E
-#' @param score
-#' @param nMC
-#' @param M
+#' @param E -
+#' @param score -
+#' @param nMC -
+#' @param M -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 rankBS2 = function(E, score = 'mue', nMC = 1000, M = nrow(E)) {
   # Bootstrap rank statistics
   # Option for M-outof-N bs (based on distillery::booter)
@@ -97,13 +95,12 @@ rankBS2 = function(E, score = 'mue', nMC = 1000, M = nrow(E)) {
 }
 #' Results table for ranking probabilities
 #'
-#' @param E
-#' @param scores
-#' @param nMC
+#' @param E -
+#' @param scores -
+#' @param nMC -
 #'
 #' @return
 #'
-#' @examples
 tabRank = function (E, scores=c('mue','q95hd'), nMC=1000) {
   r = list()
   for (score in scores) {

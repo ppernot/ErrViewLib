@@ -7,7 +7,13 @@
 forder(data, index = 1:nrow(data), fscore, ...)
 }
 \arguments{
-\item{...}{}
+\item{data}{-}
+
+\item{index}{-}
+
+\item{fscore}{-}
+
+\item{...}{-}
 }
 \value{
 

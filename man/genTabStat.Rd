@@ -8,6 +8,12 @@ by 'estBS()'}
 genTabStat(S, comp = TRUE, ref = 0, numDig = 1, units = "a.u.", short = TRUE)
 }
 \arguments{
+\item{S}{-}
+
+\item{comp}{-}
+
+\item{ref}{-}
+
 \item{numDig}{(integer) number of digits to keep for uncertainty display.}
 
 \item{units}{(string) units of the data.}

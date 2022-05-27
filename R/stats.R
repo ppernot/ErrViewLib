@@ -2,13 +2,12 @@
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 mse = function(X, index = 1:length(X),...) {
   mean(X[index])
 }
@@ -16,13 +15,12 @@ mse = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 hrmode = function(X, index = 1:length(X), ...) {
   genefilter::half.range.mode(X[index])
 }
@@ -30,13 +28,12 @@ hrmode = function(X, index = 1:length(X), ...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 hsmode = function(X, index = 1:length(X), ...) {
   modeest::hsm(X[index],bw=0.5)
 }
@@ -44,13 +41,12 @@ hsmode = function(X, index = 1:length(X), ...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 rmsd = function(X, index = 1:length(X),...) {
   sd(X[index])
 }
@@ -58,13 +54,12 @@ rmsd = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 mad_sd = function(X, index = 1:length(X),...) {
   mad(X[index])
 }
@@ -72,13 +67,12 @@ mad_sd = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 skew = function(X, index = 1:length(X),...) {
   moments::skewness(X[index])
 }
@@ -86,13 +80,12 @@ skew = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 skewgm = function(X, index = 1:length(X), ...) {
   X = X[index]
   m = hd(X, 0.5)
@@ -102,13 +95,12 @@ skewgm = function(X, index = 1:length(X), ...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 kurt = function(X, index = 1:length(X),...) {
   moments::kurtosis(X[index])
 }
@@ -116,13 +108,12 @@ kurt = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 kurtcs = function(X, index = 1:length(X), ...) {
   # Formula KR4 from Kim2004
   x = X[index]
@@ -137,13 +128,12 @@ kurtcs = function(X, index = 1:length(X), ...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 mue = function(X, index = 1:length(X),...) {
   mean(abs(X[index]))
 }
@@ -151,13 +141,12 @@ mue = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 q95 = function(X, index = 1:length(X),...) {
   quantile(abs(X[index]), 0.95)
 }
@@ -165,13 +154,12 @@ q95 = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 q95hd = function(X, index = 1:length(X),...){
   # Quantile estimate by Harrell & Davis 1982
   hd(abs(X[index]), 0.95)
@@ -180,13 +168,12 @@ q95hd = function(X, index = 1:length(X),...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 gini = function(X, index = 1:length(X),...){
   ineq::Gini(abs(X[index]))
 }
@@ -194,13 +181,12 @@ gini = function(X, index = 1:length(X),...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 gimc = function(X, index = 1:length(X), ...) {
   X = X[index]
   ineq::Gini(abs(X - hrmode(X)))
@@ -210,13 +196,12 @@ gimc = function(X, index = 1:length(X), ...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 pietra = function(X, index = 1:length(X),...){
   ineq::RS(abs(X[index]))
 }
@@ -224,13 +209,12 @@ pietra = function(X, index = 1:length(X),...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 lasym = function(X, index = 1:length(X),...){
   ineq::Lasym(abs(X[index]))
 }
@@ -238,13 +222,12 @@ lasym = function(X, index = 1:length(X),...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 Zanardi = function(X, index = 1:length(X), ...) {
   # Estimate Zanardi index (Clementi2019)
 
@@ -305,27 +288,25 @@ Zanardi = function(X, index = 1:length(X), ...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 P1 = function(X, index = 1:length(X), eps) {
-  sum(abs(X[index]) < eps) / length(index)
+  mean(abs(X[index]) < eps)
 }
 #' Normality index of a sample by the Shapiro test
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 W = function(X, index = 1:length(X),...) {
   if (length(index) > 5000)
     index = sample(index, 5000)
@@ -335,15 +316,14 @@ W = function(X, index = 1:length(X),...) {
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param data
-#' @param index
-#' @param fscore
-#' @param ...
+#' @param data -
+#' @param index -
+#' @param fscore -
+#' @param ... -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 forder = function(data,index=1:nrow(data),fscore,...){
   S = apply(data[index,],2, fscore)
   # Rq: might use rank instead of order, but the pRank matrix
@@ -354,14 +334,13 @@ forder = function(data,index=1:nrow(data),fscore,...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param data
-#' @param index
+#' @param data -
+#' @param index -
 #' @param ...
 #'
 #' @return
 #' @export
 #'
-#' @examples
 fOrderMSIP = function(data, index=1:nrow(data), ...){
   nm  = ncol(data)
   N   = nrow(data)
@@ -381,14 +360,13 @@ fOrderMSIP = function(data, index=1:nrow(data), ...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
+#' @param X -
+#' @param index -
 #' @param ...
 #'
 #' @return
 #' @export
 #'
-#' @examples
 fcor = function(X, index=1:length(X),...){
   cor(X[index,1],X[index,2])
 }
@@ -396,14 +374,13 @@ fcor = function(X, index=1:length(X),...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
-#' @param ...
+#' @param X -
+#' @param index -
+#' @param ... -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 fcov = function(X, index=1:length(X),...){
   cov(X[index,1],X[index,2])
 }
@@ -411,26 +388,24 @@ fcov = function(X, index=1:length(X),...){
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'
 #'
-#' @param X
-#' @param index
-#' @param fscore
-#' @param ...
+#' @param X -
+#' @param index -
+#' @param fscore -
+#' @param ... -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 fdif = function(X, index=1:nrow(X),fscore,...){
   fscore(X[,1],index,...) - fscore(X[,2],index,...)
 }
 #' 5-numbers summary of sample
 #'
-#' @param X
+#' @param X -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 my5num = function(X) {
   c(
     hd(X, 0.05),
@@ -442,36 +417,33 @@ my5num = function(X) {
 }
 #' Mean of the Folded Normal distribution
 #'
-#' @param x
+#' @param x -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 muF = function(x) {
   mu=x[1]; sig=x[2]
   sig*sqrt(2/pi)*exp(-mu^2/(2*sig^2)) -mu*erf(-mu/(sqrt(2)*sig))
 }
 #' CDF of the Folded Normal distribution
 #'
-#' @param x
+#' @param x -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 cdfF = function(x) {
   u = x[1]; mu = x[2]; sig = x[3]
   (erf((u+mu)/(sqrt(2)*sig))+erf((u-mu)/(sqrt(2)*sig)))/2
 }
 #' Q95 statistics of the Folded Normal distribution
 #'
-#' @param x
+#' @param x -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 q95F = function(x) {
   mu=x[1]; sig=x[2]
   fz = function(x,mu,sig,prob) {
@@ -483,25 +455,23 @@ q95F = function(x) {
 }
 #' Agresti-Coull estimation of uncertainty on CDF
 #'
-#' @param X
-#' @param n
+#' @param X -
+#' @param n -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 agrestiCoull = function(X,n) {
   p=(X+1/2)/(n+1)
   return(sqrt(p*(1-p)/(n+1)))
 }
 #' Erf function
 #'
-#' @param x
+#' @param x -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 erf = function(x) {
   2 * pnorm(x * sqrt(2)) - 1
 }

@@ -1,20 +1,19 @@
 #' Parallel plot of datasets with outliers detection features
 #'
-#' @param X
-#' @param maxPoints
-#' @param labels
-#' @param lab.thresh
-#' @param colors
-#' @param rescale
-#' @param scramble
-#' @param outliers
-#' @param ylab
-#' @param gPars
+#' @param X -
+#' @param maxPoints -
+#' @param labels -
+#' @param lab.thresh -
+#' @param colors -
+#' @param rescale -
+#' @param scramble -
+#' @param outliers -
+#' @param ylab -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotParallel = function (X, maxPoints = nrow(X),
                          labels = NULL,
                          lab.thresh = 0,
@@ -93,11 +92,10 @@ plotParallel = function (X, maxPoints = nrow(X),
 }
 #' Title
 #'
-#' @param x
+#' @param x -
 #'
 #' @return
 #'
-#' @examples
 rescaleFun = function(x) {
   # Rescale to [-1,1]
   2*((x - min(x, na.rm = TRUE)) /
@@ -105,23 +103,22 @@ rescaleFun = function(x) {
 }
 #' Title
 #'
-#' @param x
-#' @param col
-#' @param lty
-#' @param pch
-#' @param las
-#' @param var.label
-#' @param lab.thresh
-#' @param rescale
-#' @param scramble
-#' @param outliers
-#' @param ylab
-#' @param cols_tr2
-#' @param ...
+#' @param x -
+#' @param col -
+#' @param lty -
+#' @param pch -
+#' @param las -
+#' @param var.label -
+#' @param lab.thresh -
+#' @param rescale -
+#' @param scramble -
+#' @param outliers -
+#' @param ylab -
+#' @param cols_tr2 -
+#' @param ... -
 #'
 #' @return
 #'
-#' @examples
 paraPlot = function (x,
                      col = 1,
                      lty = 1,

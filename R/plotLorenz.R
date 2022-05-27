@@ -1,20 +1,19 @@
 #' Plot of a set of Lorenz curves
 #'
-#' @param X
-#' @param var
-#' @param title
-#' @param show.leg
-#' @param show.norm
-#' @param col.index
-#' @param identity.grid
-#' @param label
-#' @param leg.lwd
-#' @param gPars
+#' @param X -
+#' @param var -
+#' @param title -
+#' @param show.leg -
+#' @param show.norm -
+#' @param col.index -
+#' @param identity.grid -
+#' @param label -
+#' @param leg.lwd -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotLorenz = function(
   X,
   var = FALSE,

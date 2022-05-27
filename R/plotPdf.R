@@ -1,25 +1,24 @@
 #' Plot of a set of PDFs
 #'
-#' @param X
-#' @param absErrors
-#' @param xlab
-#' @param adjust
-#' @param xmax
-#' @param title
-#' @param show.leg
-#' @param show.MSE
-#' @param col.index
-#' @param weights
-#' @param units
-#' @param label
-#' @param leg.lwd
-#' @param fill
-#' @param gPars
+#' @param X -
+#' @param absErrors -
+#' @param xlab -
+#' @param adjust -
+#' @param xmax -
+#' @param title -
+#' @param show.leg -
+#' @param show.MSE -
+#' @param col.index -
+#' @param weights -
+#' @param units -
+#' @param label -
+#' @param leg.lwd -
+#' @param fill -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotPdf = function(
   X,
   absErrors = TRUE,

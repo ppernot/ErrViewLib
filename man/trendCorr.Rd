@@ -7,7 +7,11 @@
 trendCorr(Data, Errors, degree = 0)
 }
 \arguments{
-\item{degree}{}
+\item{Data}{-}
+
+\item{Errors}{-}
+
+\item{degree}{-}
 }
 \value{
 

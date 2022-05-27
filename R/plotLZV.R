@@ -5,7 +5,6 @@
 #' @return The variance on the sample variance
 #' @export
 #'
-#' @examples
 varvar = function (Z) {
   # Use formula (1) in CHo2008
   N = NROW(Z)
@@ -28,7 +27,6 @@ varvar = function (Z) {
 #'     of the Z sample
 #' @export
 #'
-#' @examples
 varZCI = function (
   Z,
   method = c('bootstrap','cho','chisq'),
@@ -115,6 +113,11 @@ varZCI = function (
 #' @export
 #'
 #' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+#'   plotLZV(uE, E/uE, method = 'cho', ylim = c(0,2))
+#' }
 plotLZV = function(
   X, Z,
   varZ      = 1,

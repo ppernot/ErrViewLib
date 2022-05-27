@@ -7,7 +7,9 @@
 P1(X, index = 1:length(X), eps)
 }
 \arguments{
-\item{index}{}
+\item{X}{-}
+
+\item{index}{-}
 }
 \value{
 

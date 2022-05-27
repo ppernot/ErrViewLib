@@ -26,6 +26,11 @@
 #' @export
 #'
 #' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+#'   plotLRR(E, 1.96*uE, ordX = uE, xlab = 'Uncertainty, uE', ylim = c(0,2))
+#' }
 plotLRR = function(
   E, U,
   ordX      = NULL,

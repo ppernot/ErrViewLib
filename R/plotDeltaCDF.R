@@ -2,22 +2,21 @@
 #'
 #'Plots also auxiliary statistics (SIP, MG, ML) with bootstrapped CIs.
 #'
-#' @param err
-#' @param meth1
-#' @param meth2
-#' @param eps
-#' @param xmax
-#' @param xlab
-#' @param units
-#' @param main
-#' @param nboot
-#' @param label
-#' @param gPars
+#' @param err -
+#' @param meth1 -
+#' @param meth2 -
+#' @param eps -
+#' @param xmax -
+#' @param xlab -
+#' @param units -
+#' @param main -
+#' @param nboot -
+#' @param label -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotDeltaCDF <- function(
   err,
   meth1,
@@ -209,14 +208,13 @@ plotDeltaCDF <- function(
 }
 #' Title
 #'
-#' @param X
-#' @param index
-#' @param uX
-#' @param ...
+#' @param X -
+#' @param index -
+#' @param uX -
+#' @param ... -
 #'
 #' @return
 #'
-#' @examples
 fsi = function(X, index=1:nrow(X), uX = 0,...){
   # SIP
   v1 = abs(X[index,1])
@@ -241,14 +239,13 @@ fsi = function(X, index=1:nrow(X), uX = 0,...){
 }
 #' Title
 #'
-#' @param X
-#' @param index
-#' @param uX
-#' @param ...
+#' @param X -
+#' @param index -
+#' @param uX -
+#' @param ... -
 #'
 #' @return
 #'
-#' @examples
 dmue = function(X, index=1:nrow(X), uX = 0,...){
   v1 = abs(X[index,1])
   v2 = abs(X[index,2])

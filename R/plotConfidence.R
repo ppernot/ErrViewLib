@@ -16,9 +16,16 @@
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #'
-#' @return Plot confidence curve for (uE,E) set
+#' @return Plot confidence curve for (E,uE) set
 
 #' @export
+#'
+#' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+#'   plotConfidence(E,uE)
+#' }
 #'
 plotConfidence = function(
   E, uE,

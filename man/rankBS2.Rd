@@ -7,7 +7,13 @@
 rankBS2(E, score = "mue", nMC = 1000, M = nrow(E))
 }
 \arguments{
-\item{M}{}
+\item{E}{-}
+
+\item{score}{-}
+
+\item{nMC}{-}
+
+\item{M}{-}
 }
 \value{
 

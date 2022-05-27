@@ -1,15 +1,14 @@
 #' Bland-Altman-type plot of error samples
 #'
-#' @param data1
-#' @param data2
-#' @param ylim
-#' @param title
-#' @param gPars
+#' @param data1 -
+#' @param data2 -
+#' @param ylim -
+#' @param title -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotBA = function(
   data1,
   data2,
@@ -94,7 +93,7 @@ plotBA = function(
     line=0.25
   )
 
-  q = function(x,i) ErrViewLib::hd(x[i],p=0.025)
+  q = function(x,i) ErrViewLib::hd(x[i],0.025)
   nBoot = max(1000, length(delta) + 1) # Needed for boot.ci
   loas.boot = boot::boot(delta, q, stype = 'i', R = nBoot)
   loas.ci   = boot::boot.ci(loas.boot, conf=0.95, type="bca")
@@ -103,7 +102,7 @@ plotBA = function(
             loas.ci$basic[5], loas.ci$basic[5]),
           col = cols_tr2[2], border = NA)
 
-  q = function(x,i) ErrViewLib::hd(x[i],p=0.975)
+  q = function(x,i) ErrViewLib::hd(x[i],0.975)
   loas.boot = boot::boot(delta, q, stype = 'i', R = nBoot)
   loas.ci   = boot::boot.ci(loas.boot, conf = 0.95, type = "bca")
   polygon(polygonXlimits,

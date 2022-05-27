@@ -7,7 +7,13 @@
 fdif(X, index = 1:nrow(X), fscore, ...)
 }
 \arguments{
-\item{...}{}
+\item{X}{-}
+
+\item{index}{-}
+
+\item{fscore}{-}
+
+\item{...}{-}
 }
 \value{
 

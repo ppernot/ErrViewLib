@@ -1,34 +1,40 @@
 #' Scatter plot of an error set with marginal histogram
 #'
-#' @param x
-#' @param y
-#' @param uy
-#' @param nclass
-#' @param xlab
-#' @param ylab
-#' @param logX
-#' @param plotGauss
-#' @param outLiers
-#' @param p
-#' @param labels
-#' @param select
-#' @param main
-#' @param colPoints
-#' @param plotReg
-#' @param plotConf
-#' @param degree
-#' @param plotBA
-#' @param plotBAci
-#' @param topMar
-#' @param xlim
-#' @param ylim
-#' @param scaleLegBA
-#' @param gPars
+#' @param x -
+#' @param y -
+#' @param uy -
+#' @param nclass -
+#' @param xlab -
+#' @param ylab -
+#' @param logX -
+#' @param plotGauss -
+#' @param outLiers -
+#' @param p -
+#' @param labels -
+#' @param select -
+#' @param main -
+#' @param colPoints -
+#' @param plotReg -
+#' @param plotConf -
+#' @param degree -
+#' @param plotBA -
+#' @param plotBAci -
+#' @param topMar -
+#' @param xlim -
+#' @param ylim -
+#' @param scaleLegBA -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+#'   V   = 1:length(E)
+#'   plotDistHist(V, E, uE, xlab = 'V', ylab='E',ylim = c(-12,12))
+#' }
 plotDistHist = function(
   x,
   y,
@@ -329,32 +335,31 @@ plotDistHist = function(
 }
 #' Scatter plot of an error set with marginal histogram (plotly version)
 #'
-#' @param x
-#' @param y
-#' @param uy
-#' @param nclass
-#' @param xlab
-#' @param ylab
-#' @param plotGauss
-#' @param outLiers
-#' @param p
-#' @param labels
-#' @param select
-#' @param main
-#' @param plotReg
-#' @param plotConf
-#' @param degree
-#' @param plotBA
-#' @param plotBAci
-#' @param xlim
-#' @param ylim
-#' @param scaleLegBA
-#' @param gPars
+#' @param x -
+#' @param y -
+#' @param uy -
+#' @param nclass -
+#' @param xlab -
+#' @param ylab -
+#' @param plotGauss -
+#' @param outLiers -
+#' @param p -
+#' @param labels -
+#' @param select -
+#' @param main -
+#' @param plotReg -
+#' @param plotConf -
+#' @param degree -
+#' @param plotBA -
+#' @param plotBAci -
+#' @param xlim -
+#' @param ylim -
+#' @param scaleLegBA -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotlyDistHist = function(
   x,
   y,

@@ -1,18 +1,17 @@
 #' Plot Gini vs. LAC coefs
 #'
-#' @param X
-#' @param title
-#' @param show.leg
-#' @param show.norm
-#' @param col.index
-#' @param label
-#' @param leg.lwd
-#' @param gPars
+#' @param X -
+#' @param title -
+#' @param show.leg -
+#' @param show.norm -
+#' @param col.index -
+#' @param label -
+#' @param leg.lwd -
+#' @param gPars -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 plotGiniVsLAC = function(
   X,
   title = '',

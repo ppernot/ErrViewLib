@@ -1,13 +1,12 @@
 #' trendCorr
 #'
-#' @param Data
-#' @param Errors
-#' @param degree
+#' @param Data -
+#' @param Errors -
+#' @param degree -
 #'
 #' @return
 #' @export
 #'
-#' @examples
 trendCorr <- function(Data, Errors, degree = 0) {
 
   # Build regression formula

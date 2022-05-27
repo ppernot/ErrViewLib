@@ -2,21 +2,20 @@
 #'
 #' Deviation of ECDF from normality
 #'
-#' @param X
-#' @param title
-#' @param scale
-#' @param plotCI
-#' @param score
-#' @param dist
-#' @param shape
+#' @param X -
+#' @param title -
+#' @param scale -
+#' @param plotCI -
+#' @param score -
+#' @param dist -
+#' @param shape -
 #' @param label (integer) index of letter for subplot tag
-#' @param gPars
+#' @param gPars -
 #'
 #' @return a plot and an invisible list of metrics `misCal`, `misCalUp`
 #'   and `calErr`
 #' @export
 #'
-#' @examples
 plotPpnorm <- function(
   X,
   title  = '',

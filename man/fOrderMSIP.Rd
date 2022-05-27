@@ -7,6 +7,10 @@
 fOrderMSIP(data, index = 1:nrow(data), ...)
 }
 \arguments{
+\item{data}{-}
+
+\item{index}{-}
+
 \item{...}{}
 }
 \value{

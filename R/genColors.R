@@ -4,7 +4,6 @@
 #'
 #' @return
 #'
-#' @examples
 genColors = function(sample) {
   ncols=length(sample)
   co=(    sample -min(sample))/
@@ -20,7 +19,6 @@ genColors = function(sample) {
 #'
 #' @return
 #'
-#' @examples
 genColorsSample = function(sample) {
   ncols=128
   co=(    sample -min(sample))/

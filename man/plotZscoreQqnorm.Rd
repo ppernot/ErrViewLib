@@ -17,7 +17,23 @@ plotZscoreQqnorm(
 )
 }
 \arguments{
-\item{labels}{}
+\item{R}{-}
+
+\item{sig}{-}
+
+\item{lim}{-}
+
+\item{plotCI}{-}
+
+\item{plotReg}{-}
+
+\item{markOutliers}{-}
+
+\item{labels}{-}
+
+\item{title}{-}
+
+\item{gPars}{-}
 }
 \value{
 

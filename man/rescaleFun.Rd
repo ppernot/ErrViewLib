@@ -7,7 +7,7 @@
 rescaleFun(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{-}
 }
 \value{
 
