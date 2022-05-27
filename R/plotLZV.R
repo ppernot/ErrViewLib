@@ -107,6 +107,8 @@ varZCI = function (
 #' @param nBoot (integer) number of bootstrap replicas
 #' @param xlab (string) X axis label
 #' @param xlim (vector) min and max values of X axis
+#' @param add (logical) add to previous graph ?
+#' @param col (interger) color index of curve to add
 #'
 #' @return Invisibly returns a list of LZV results. Mainly used
 #'   for its plotting side effect.
@@ -115,6 +117,7 @@ varZCI = function (
 #' @examples
 plotLZV = function(
   X, Z,
+  varZ      = 1,
   logX      = FALSE,
   nBin      = NULL,
   plot      = TRUE,
@@ -126,6 +129,8 @@ plotLZV = function(
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
+  add       = FALSE,
+  col       = 5,
   label     = 0,
   gPars     = ErrViewLib::setgPars()
 ) {
@@ -174,53 +179,80 @@ plotLZV = function(
     for (n in names(gPars))
       assign(n, rlist::list.extract(gPars, n))
 
-    par(
-      mfrow = c(1, 1),
-      mar = c(mar[1:3],3), # Reserve of right margin space
-      mgp = mgp,
-      pty = 's',
-      tcl = tcl,
-      cex = cex,
-      lwd = lwd,
-      cex.main = 1
-    )
-
     if(is.null(xlim))
       xlim = range(xOrd)
 
-    if(is.null(ylim))
-      ylim = range(c(loV, upV))
+    if(!add) {
+      par(
+        mfrow = c(1, 1),
+        mar = c(mar[1:3],3), # Reserve of right margin space
+        mgp = mgp,
+        pty = 's',
+        tcl = tcl,
+        cex = cex,
+        lwd = lwd,
+        cex.main = 1
+      )
 
-    matplot(
-      mint,
-      mV,
-      xlab = xlab,
-      ylab = 'Local Z-score variance',
-      xlim = xlim,
-      xaxs = 'i',
-      ylim = ylim,
-      type = 'b',
-      lty  = 3,
-      pch  = 16,
-      lwd  = lwd,
-      cex  = ifelse(slide,0.5,1),
-      col  = cols[5],
-      main = title,
-      log  = ifelse(logX,'x','')
-    )
-    grid()
+
+      if(is.null(ylim))
+        ylim = range(c(loV, upV))
+
+      matplot(
+        mint,
+        mV,
+        xlab = xlab,
+        ylab = 'Local Z-score variance',
+        xlim = xlim,
+        xaxs = 'i',
+        ylim = ylim,
+        type = 'b',
+        lty  = 3,
+        pch  = 16,
+        lwd  = lwd,
+        cex  = ifelse(slide,0.5,1),
+        col  = cols[col],
+        main = title,
+        log  = ifelse(logX,'x','')
+      )
+      grid(equilogs = FALSE)
+      abline(h   = varZ,
+             lty = 2,
+             col = cols[1],
+             lwd = lwd)
+      mtext(text = paste0(signif(varZ,2),' -'),
+            side = 2,
+            at = varZ,
+            col = cols[1],
+            cex = 0.75*cex,
+            las = 1,
+            adj = 1,
+            font = 2)
+
+    } else {
+      lines(
+        mint,
+        mV,
+        type = 'b',
+        lty  = 3,
+        pch  = 16,
+        lwd  = lwd,
+        cex  = ifelse(slide,0.5,1),
+        col  = cols[col]
+      )
+    }
 
     if(slide) {
       ipl = seq(1,length(mint),length.out=nBin)
       polygon(
         c(mint,rev(mint)),
         c(loV, rev(upV)),
-        col = cols_tr[5],
+        col = cols_tr[col],
         border = NA)
       segments(
         mint[ipl], loV[ipl],
         mint[ipl], upV[ipl],
-        col  = cols[5],
+        col  = cols[col],
         lwd  = 1.5 * lwd,
         lend = 1)
 
@@ -228,17 +260,12 @@ plotLZV = function(
       segments(
         mint, loV,
         mint, upV,
-        col  = cols[5],
+        col  = cols[col],
         lwd  = 1.5 * lwd,
         lend = 1)
 
     }
     xpos = pretty(xOrd)
-    abline(h   = 1,
-           lty = 2,
-           col = cols[5],
-           lwd = lwd)
-
     box()
 
     # Mean variance
@@ -247,14 +274,14 @@ plotLZV = function(
     mtext(text = c(' Mean',paste0('- ',pm)),
           side = 4,
           at = c(ypos,mV0),
-          col = c(1,cols[5]),
+          col = c(1,cols[col]),
           cex = 0.75*cex,
           las = 1,
           font = 2)
     segments(
       xlim[2],loV0,
       xlim[2],upV0,
-      col  = cols[5],
+      col  = cols[col],
       lwd  = 6 * lwd,
       lend = 1
     )

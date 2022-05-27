@@ -42,23 +42,6 @@ plotConfidence = function(
   if (as.numeric(length(E))*as.numeric(length(uE)) == 0)
     return()
 
-  # Expose gPars list
-  for (n in names(gPars))
-    assign(n, rlist::list.extract(gPars, n))
-
-  par(
-    mfrow = c(1, 1),
-    mar = mar,
-    mgp = mgp,
-    pty = 's',
-    tcl = tcl,
-    cex = cex,
-    lwd = lwd,
-    xaxs = 'i',
-    yaxs = 'i',
-    cex.main = 1
-  )
-
   # Reorder data
   io  = order(uE, decreasing = TRUE)
   uE  = uE[io]
@@ -88,6 +71,10 @@ plotConfidence = function(
   if(oracle)
     vora = c(1,vora)
 
+  # Expose gPars list
+  for (n in names(gPars))
+    assign(n, rlist::list.extract(gPars, n))
+
   if(add) {
 
     lines(pcVec, vstat,
@@ -97,6 +84,19 @@ plotConfidence = function(
           col = cols[col])
 
   } else {
+
+    par(
+      mfrow = c(1, 1),
+      mar = mar,
+      mgp = mgp,
+      pty = 's',
+      tcl = tcl,
+      cex = cex,
+      lwd = lwd,
+      xaxs = 'i',
+      yaxs = 'i',
+      cex.main = 1
+    )
 
     if (is.null(xlim))
       xlim = range(pcVec)

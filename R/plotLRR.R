@@ -15,8 +15,10 @@
 #' @param slide (logical) use sliding window
 #' @param xlab  (string) abscissa label
 #' @param xlim  (vector) range for abscissa
+#' @param legend (string) legend for the dataset
 #' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
 #' @param legNcol (integer) number of columns for legend
+#' @param add (logical) add to previous graph ?
 #'
 #' @return Invisibly returns a list of LCP results. Mainly used
 #'   for its plotting side effect.
@@ -37,8 +39,10 @@ plotLRR = function(
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
+  legend    = paste0('P',round(100*prob)),
   legLoc    = 'bottom',
   legNcol   = 3,
+  add       = FALSE,
   label     = 0,
   gPars     = ErrViewLib::setgPars()
 ) {
@@ -100,21 +104,6 @@ plotLRR = function(
     }
     mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
   }
-  # # Average coverage
-  # meanP = uMeanP = loMeanP = upMeanP = c()
-  # for (ip in seq_along(prob)) {
-  #   empRange = bfun(X=eOrd,p=p)
-  #   bst = boot::boot(eOrd, bfun, R = 1000, p = p)
-  #   uEmpRange = sd(bst$t)
-  #   bci = boot::boot.ci(bst, conf = 0.95, type = 'bca' )
-  #   ci  = bci$bca[1, 4:5]
-  #   unc = uOrd[,ip]
-  #   piRange     = 2*sqrt(mean(unc^2))
-  #   meanP[ip]   = piRange / empRange
-  #   uMeanP[ip]  = meanP[ip] * uEmpRange / empRange
-  #   loMeanP[ip] = piRange / ci[2]
-  #   upMeanP[ip] = piRange / ci[1]
-  # }
 
   if(plot) {
     # Plot ----
@@ -124,41 +113,59 @@ plotLRR = function(
     for (n in names(gPars))
       assign(n, rlist::list.extract(gPars, n))
 
-    par(
-      mfrow = c(1, 1),
-      mar = mar, #c(mar[1:3],3),
-      mgp = mgp,
-      pty = 's',
-      tcl = tcl,
-      cex = cex,
-      lwd = lwd
-    )
+    if(!add) {
+      par(
+        mfrow = c(1, 1),
+        mar = mar, #c(mar[1:3],3),
+        mgp = mgp,
+        pty = 's',
+        tcl = tcl,
+        cex = cex,
+        lwd = lwd
+      )
 
-    if(is.null(xlim))
-      xlim = range(xOrd)
+      if(is.null(xlim))
+        xlim = range(xOrd)
 
-    if(is.null(ylim))
-      ylim = range(c(loP, upP))
+      if(is.null(ylim))
+        ylim = range(c(loP, upP))
 
-    matplot(
-      mint,
-      t(pP),
-      xlab = xlab,
-      ylab = 'Local Range Ratio',
-      xlim = xlim,
-      xaxs = 'i',
-      ylim = ylim,
-      yaxs = 'i',
-      type = 'b',
-      lty = 3,
-      pch = 16,
-      lwd = lwd,
-      cex = ifelse(slide,0.5,1),
-      col  = cols[mycols],
-      main = title,
-      log = ifelse(logX,'x','')
-    )
-    grid()
+      matplot(
+        mint,
+        t(pP),
+        xlab = xlab,
+        ylab = 'Local Range Ratio',
+        xlim = xlim,
+        xaxs = 'i',
+        ylim = ylim,
+        yaxs = 'i',
+        type = 'b',
+        lty = 3,
+        pch = 16,
+        lwd = lwd,
+        cex = ifelse(slide,0.5,1),
+        col  = cols[mycols],
+        main = title,
+        log = ifelse(logX,'x','')
+      )
+      grid(equilogs = FALSE)
+      abline(h   = 1,
+             lty = 2,
+             col = cols[1],
+             lwd = lwd)
+
+    } else {
+      lines(
+        mint,
+        t(pP),
+        type = 'b',
+        lty = 3,
+        pch = 16,
+        lwd = lwd,
+        cex = ifelse(slide,0.5,1),
+        col  = cols[mycols]
+      )
+    }
 
     if(slide) {
       ipl = seq(1,length(mint),length.out=nBin)
@@ -187,57 +194,20 @@ plotLRR = function(
 
     }
 
-    # mtext(text = paste0(prob,' -'),
-    #       side = 2,
-    #       at = prob,
-    #       col = cols[mycols],
-    #       cex = 0.75*cex,
-    #       las = 1,
-    #       font = 2)
+    if(!add) {
+      box()
+      legend(
+        legLoc, bty = 'n',
+        legend = legend,
+        col  = cols[mycols],
+        lty  = 1,
+        pch  = 16,
+        ncol = legNcol,
+        cex  = 0.8,
+        adj  = 0.2
+      )
 
-    xpos = pretty(xOrd)
-    abline(h   = 1,
-           lty = 2,
-           col = cols[1],
-           lwd = lwd)
-
-    box()
-
-    # # Mean coverage proba
-    # ypos = par("usr")[4]
-    # pm = c()
-    # for(i in seq_along(meanP)) {
-    #   if(uMeanP[i] != 0)
-    #     pm[i] = ErrViewLib::prettyUnc(meanP[i],uMeanP[i],1)
-    #   else
-    #     pm[i] = signif(meanP[i],2)
-    # }
-    # mtext(text = c(' Mean',paste0('- ',pm)),
-    #       side = 4,
-    #       at = c(ypos,meanP),
-    #       col = c(1,cols[mycols]),
-    #       cex = 0.75*cex,
-    #       las = 1,
-    #       font = 2)
-    # for(i in seq_along(meanP))
-    #   segments(
-    #     xlim[2],loMeanP[i],
-    #     xlim[2],upMeanP[i],
-    #     col  = cols[mycols][i],
-    #     lwd  = 6 * lwd,
-    #     lend = 1
-    #   )
-
-    legend(
-      legLoc, bty = 'n',
-      legend = paste0('P',round(100*prob)),
-      col  = cols[mycols],
-      lty  = 1,
-      pch  = 16,
-      ncol = legNcol,
-      cex  = 0.8,
-      adj  = 0.2
-    )
+    }
 
     if(label > 0)
       mtext(

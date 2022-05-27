@@ -7,6 +7,7 @@
 plotLZV(
   X,
   Z,
+  varZ = 1,
   logX = FALSE,
   nBin = NULL,
   plot = TRUE,
@@ -18,6 +19,8 @@ plotLZV(
   xlim = NULL,
   ylim = NULL,
   title = "",
+  add = FALSE,
+  col = 5,
   label = 0,
   gPars = ErrViewLib::setgPars()
 )
@@ -48,6 +51,10 @@ plotLZV(
 \item{ylim}{(vector) limits of the y axis}
 
 \item{title}{(string) a title to display above the plot}
+
+\item{add}{(logical) add to previous graph ?}
+
+\item{col}{(interger) color index of curve to add}
 
 \item{label}{(integer) index of letter for subplot tag}
 

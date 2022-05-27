@@ -16,6 +16,8 @@ plotCalVar(
   ylim = NULL,
   title = "",
   label = 0,
+  add = FALSE,
+  col = 5,
   gPars = ErrViewLib::setgPars()
 )
 }
@@ -42,11 +44,11 @@ plotCalVar(
 
 \item{label}{(integer) index of letter for subplot tag}
 
-\item{gPars}{(list) graphical parameters}
-
 \item{add}{(logical) add to previous graph ?}
 
 \item{col}{(interger) color index of curve to add}
+
+\item{gPars}{(list) graphical parameters}
 }
 \value{
 Used for its plotting side effect.

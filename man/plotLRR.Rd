@@ -18,8 +18,10 @@ plotLRR(
   xlim = NULL,
   ylim = NULL,
   title = "",
+  legend = "P95",
   legLoc = "bottom",
   legNcol = 3,
+  add = FALSE,
   label = 0,
   gPars = ErrViewLib::setgPars()
 )
@@ -51,9 +53,13 @@ plotLRR(
 
 \item{title}{(string) a title to display above the plot}
 
+\item{legend}{(string) legend for the dataset}
+
 \item{legLoc}{(string) location of legend (see \link[grDevices]{xy.coord})}
 
 \item{legNcol}{(integer) number of columns for legend}
+
+\item{add}{(logical) add to previous graph ?}
 
 \item{label}{(integer) index of letter for subplot tag}
 
