@@ -10,10 +10,13 @@ plotEvsPU(
   type = c("prop", "horiz"),
   runExt = FALSE,
   runQuant = FALSE,
+  runMode = FALSE,
   cumMAE = FALSE,
+  probs = c(0.95),
   xlab = NULL,
   ylab = NULL,
   logX = FALSE,
+  logY = FALSE,
   title = NULL,
   myColors = c(5, 4, 3, 1, 2),
   xlim = NULL,
@@ -36,17 +39,23 @@ plotEvsPU(
 
 \item{runQuant}{(logical) plot quantile regression}
 
+\item{runMode}{(logical) plot running mode of distribution}
+
 \item{cumMAE}{(logical) plot cumulative MAE}
+
+\item{probs}{(vector) probability levels for quantile-bases confidence intervals}
 
 \item{xlab}{(string) x axis label}
 
 \item{ylab}{(string) y axis label}
 
-\item{logX}{(logical) log-transform x}
+\item{logX}{(logical) log-transform X}
+
+\item{logY}{(logical) log-transform Y after taking absolute value}
 
 \item{title}{(string) a title to display above the plot}
 
-\item{xlim}{(vector) limits of the x axis}
+\item{xlim}{(vector) limits of the X axis}
 
 \item{ylim}{(vector) limits of the y axis}
 

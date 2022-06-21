@@ -5,10 +5,13 @@
 #' @param type (string) type of guide lines ('prop' or 'horiz')
 #' @param runExt (logical) plot extremal points
 #' @param runQuant (logical) plot quantile regression
+#' @param runMode (logical) plot running mode of distribution
+#' @param probs (vector) probability levels for quantile-bases confidence intervals
 #' @param cumMAE (logical) plot cumulative MAE
 #' @param xlab (string) x axis label
-#' @param xlim (vector) limits of the x axis
-#' @param logX (logical) log-transform x
+#' @param xlim (vector) limits of the X axis
+#' @param logX (logical) log-transform X
+#' @param logY (logical) log-transform Y after taking absolute value
 #' @param ylab (string) y axis label
 #' @param ylim (vector) limits of the y axis
 #' @param nBin (integer) number of intervals for local coverage stats
@@ -32,10 +35,13 @@ plotEvsPU =  function(
   type      = c('prop','horiz'),
   runExt    = FALSE,
   runQuant  = FALSE,
+  runMode   = FALSE,
   cumMAE    = FALSE,
+  probs     = c(0.95),
   xlab      = NULL,
   ylab      = NULL,
   logX      = FALSE,
+  logY      = FALSE,
   title     = NULL,
   myColors  = c(5,4,3,1,2),
   xlim      = NULL,
@@ -46,6 +52,11 @@ plotEvsPU =  function(
   label     = 0,
   gPars     = ErrViewLib::setgPars()
 ) {
+
+  getmode = function(X) {
+    d <- density(X)
+    d$x[which.max(d$y)]
+  }
 
   if (as.numeric(length(X))*as.numeric(length(Y)) == 0)
     return()
@@ -68,7 +79,10 @@ plotEvsPU =  function(
     cex.main = 1
   )
 
-  if(runExt | runQuant) {
+  if(logY)
+    Y = log(abs(Y))
+
+  if(runExt | runQuant | runMode) {
     N = length(Y)
 
     if(is.null(nBin))
@@ -85,7 +99,9 @@ plotEvsPU =  function(
     intrv = ErrViewLib::genIntervals(N, nBin, slide)
 
     # Local stats
-    ymin = ymax = qmin = qmax = mint = c()
+    ymin = ymax = ymode = mint = c()
+    nq = length(probs)
+    qmin = qmax = matrix(NA,ncol=nq,nrow=intrv$nbr)
     for (i in 1:intrv$nbr) {
       # Subsetting
       sel = intrv$lwindx[i]:intrv$upindx[i]
@@ -95,10 +111,17 @@ plotEvsPU =  function(
       ymin[i] = min(y)
       ymax[i] = max(y)
       if(runQuant) {
-        q = ErrViewLib::vhd(y)
-        qmin[i] = q[1]
-        qmax[i] = q[2]
+        for (j in seq_along(probs)) {
+          p = probs[j]
+          alpha = c((1 - p)/2, (1 + p)/2)
+          q = ErrViewLib::vhd(y, p = alpha)
+          qmin[i, j] = q[1]
+          qmax[i, j] = q[2]
+        }
       }
+      if(runMode)
+        ymode[i] = getmode(y)
+
       # Center of the interval
       mint[i] = 0.5*sum(range(xOrd[sel]))
     }
@@ -118,8 +141,12 @@ plotEvsPU =  function(
   if(is.null(xlim))
     xlim = c(max(0,min(X)), 1.1*max(X))
 
-  if(is.null(ylim))
-    ylim = c(-max(abs(Y)), max(abs(Y)))
+  if(is.null(ylim)){
+    if(logY)
+      ylim = range(Y)
+    else
+      ylim = c(-max(abs(Y)), max(abs(Y)))
+  }
 
   if(is.null(xlab))
     xlab = ifelse(
@@ -142,6 +169,7 @@ plotEvsPU =  function(
   colr = cols[myColors[3]]     # Quantile reg
   colg = cols[myColors[4]]     # Guide lines
   colc = cols[myColors[5]]     # Cum. MAE
+  colm = cols[myColors[3]]     # Mode
 
   plot(
     X, Y,
@@ -156,23 +184,33 @@ plotEvsPU =  function(
   )
   grid()
   # Guide lines
-  abline(h = 0, lty = 3)
-  for (s in c(-3,-2, -1, 1, 2, 3))
-    if(type == 'horiz') {
-      abline(
-        h = s,
-        lty = 2,
-        col = colg
-      )
-    } else {
-      abline(
-        a = 0,
-        b = s,
-        untf = TRUE,
-        lty = 2,
-        col = colg
-      )
-    }
+  if(logY) {
+    lines(
+      X,
+      log(X),
+      lty = 2,
+      col = colg
+    )
+  } else {
+    abline(h = 0, lty = 3)
+    klev = c(-3,-2, -1, 1, 2, 3)
+    for (s in klev)
+      if(type == 'horiz') {
+        abline(
+          h = s,
+          lty = 2,
+          col = colg
+        )
+      } else {
+        abline(
+          a = 0,
+          b = s,
+          untf = TRUE,
+          lty = 2,
+          col = colg
+        )
+      }
+  }
   points(
     X, Y,
     pch = pch,
@@ -198,14 +236,28 @@ plotEvsPU =  function(
   }
 
   if(runQuant) {
-    matlines(
-      mint, cbind(qmin,qmax),
-      lty = 1,
-      lwd = 2*lwd,
-      col = colr)
+    for (j in seq_along(probs)){
+      matlines(
+        mint, cbind(qmin[,j],qmax[,j]),
+        lty = 1,
+        lwd = 2*lwd,
+        col = colr)
+    }
     legs = c(legs,'Quantiles')
     pleg = c(pleg,NA)
     cleg = c(cleg,colr)
+    tleg = c(tleg,1)
+  }
+
+  if(runMode) {
+    lines(
+      mint, ymode,
+      lty = 1,
+      lwd = 2*lwd,
+      col = colm)
+    legs = c(legs,'Mode')
+    pleg = c(pleg,NA)
+    cleg = c(cleg,colm)
     tleg = c(tleg,1)
   }
 
