@@ -274,7 +274,7 @@ plotLZV = function(
     # Mean variance
     ypos = par("usr")[4]
     pm = signif(mV0,2)
-    mtext(text = c(' Mean',paste0('- ',pm)),
+    mtext(text = c(' Average',paste0('- ',pm)),
           side = 4,
           at = c(ypos,mV0),
           col = c(1,cols[col]),

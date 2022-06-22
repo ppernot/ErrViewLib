@@ -202,7 +202,7 @@ plotLCP = function(
       else
         pm[i] = signif(meanP[i],2)
     }
-    mtext(text = c(' Mean',paste0('- ',pm)),
+    mtext(text = c(' Average',paste0('- ',pm)),
           side = 4,
           at = c(ypos,meanP),
           col = c(1,cols[mycols]),
