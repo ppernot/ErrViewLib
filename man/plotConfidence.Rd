@@ -9,9 +9,10 @@ plotConfidence(
   uE,
   stat = ErrViewLib::mue,
   oracle = TRUE,
-  normal = FALSE,
-  conf_normal = FALSE,
-  rep_normal = 100,
+  ideal = FALSE,
+  conf_ideal = FALSE,
+  dist_ideal = "Normal",
+  rep_ideal = 100,
   col = 2,
   type = c("l", "p"),
   add = FALSE,
@@ -32,13 +33,15 @@ plotConfidence(
 
 \item{stat}{(function) statistic to use}
 
-\item{oracle}{(logical) plot oracle curve}
+\item{oracle}{(logical) plot Oracle curve}
 
-\item{normal}{(logical) plot normal curve}
+\item{ideal}{(logical) plot Ideal curve}
 
-\item{conf_normal}{(logical) plot confidence band around normal}
+\item{conf_ideal}{(logical) plot confidence band around Ideal curve}
 
-\item{rep_normal}{(integer) sampling repetitions for normal curve}
+\item{dist_ideal}{(string) model error distribution to generate Ideal curve}
+
+\item{rep_ideal}{(integer) sampling repetitions for normal curve}
 
 \item{col}{(integer) color index for the curve}
 

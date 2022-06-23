@@ -3,10 +3,11 @@
 #' @param E (vector) prediction uncertainty, uE, or predicted value, V
 #' @param uE (vector) error or z-score
 #' @param stat (function) statistic to use
-#' @param oracle (logical) plot oracle curve
-#' @param normal (logical) plot normal curve
-#' @param conf_normal (logical) plot confidence band around normal
-#' @param rep_normal (integer) sampling repetitions for normal curve
+#' @param oracle (logical) plot Oracle curve
+#' @param ideal (logical) plot Ideal curve
+#' @param conf_ideal (logical) plot confidence band around Ideal curve
+#' @param dist_ideal (string) model error distribution to generate Ideal curve
+#' @param rep_ideal (integer) sampling repetitions for normal curve
 #' @param col (integer) color index for the curve
 #' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
@@ -34,9 +35,10 @@ plotConfidence = function(
   E, uE,
   stat   = ErrViewLib::mue,
   oracle = TRUE,
-  normal = FALSE,
-  conf_normal = FALSE,
-  rep_normal = 100,
+  ideal = FALSE,
+  conf_ideal = FALSE,
+  dist_ideal = 'Normal',
+  rep_ideal = 100,
   col    = 2,
   type   = c('l','p'),
   add    = FALSE,
@@ -50,6 +52,7 @@ plotConfidence = function(
   gPars  = ErrViewLib::setgPars()
 ) {
 
+  # Internal functions...
   Sconf = function(X,pcVec=0:100) {
     S0 = stat(X)
     vstat = rep(0.0,length(pcVec))
@@ -65,6 +68,18 @@ plotConfidence = function(
     # Add 0% point
     return(vstat)
   }
+  # Unit-variance distributions
+  Normal = function(N)
+    rnorm(N)
+  T4 = function(N,df=4)
+    rt(N, df = df) / sqrt(df/(df-2))
+  Uniform = function(N)
+    runif(N, -sqrt(3), sqrt(3))
+  Laplace = function(N, df = 1)
+    normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
+  Normp4 = function(N, df = 4)
+    normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
+
 
   type = match.arg(type)
 
@@ -88,16 +103,17 @@ plotConfidence = function(
   if(oracle)
     vora = Sconf(O,pcVec)
 
-  if(normal) {
-    nrun = rep_normal
+  if(ideal) {
+    nrun = rep_ideal
     vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
+    fun = get(dist_ideal)
     for (i in 1:nrun) {
-      X = rnorm(uE, 0, uE)
+      X = uE * fun(M)
       vnorm[, i] = Sconf(X)
     }
     vnorm_mu = c()
     vnorm_mu[1] = 1
-    if (conf_normal) {
+    if (conf_ideal) {
       vnorm_lw = vnorm_up = c()
       vnorm_lw[1] = 1
       vnorm_up[1] = 1
@@ -105,7 +121,7 @@ plotConfidence = function(
     for (i in 2:length(pcVec)) {
       X = vnorm[i, ]
       vnorm_mu[i] = mean(X)
-      if (conf_normal) {
+      if (conf_ideal) {
         ci = ErrViewLib::vhd(X)
         vnorm_lw[i] = ci[1]
         vnorm_up[i] = ci[2]
@@ -144,11 +160,11 @@ plotConfidence = function(
       xlim = range(pcVec)
 
     if (is.null(ylim))
-      ylim = c(0, 1)
+      ylim = c(0, max(vstat[is.finite(vstat)]))
 
     plot(
       pcVec, vstat,
-      type = type,
+      type = 'n',
       lty  = 1,
       pch  = 16,
       lwd  = 2*lwd,
@@ -161,12 +177,14 @@ plotConfidence = function(
     )
     grid()
 
-    if(oracle)
-      lines(pcVec, vora, lty=2, lwd = 2*lwd, col=cols[1])
+    abline(h = 1, lwd = 2 * lwd, col = cols[1])
 
-    if(normal) {
+    if(oracle)
+      lines(pcVec, vora, lty = 2, lwd = 2*lwd, col=cols[1])
+
+    if(ideal) {
       lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[1])
-      if(conf_normal) {
+      if(conf_ideal) {
         polygon(
           c(pcVec,rev(pcVec)),
           c(vnorm_up,rev(vnorm_lw)),
@@ -174,6 +192,14 @@ plotConfidence = function(
           border = NA)
       }
     }
+
+    lines(
+      pcVec, vstat,
+      type = type,
+      lty  = 1,
+      pch  = 16,
+      lwd  = 2*lwd,
+      col  = cols[col])
 
     lty = if(type == 'l') 1 else NA
     pch = if(type == 'l') NA else 16
@@ -186,8 +212,8 @@ plotConfidence = function(
       pch = c(NA,pch)
       lcol = c(1,lcol)
     }
-    if(normal) {
-      legend = c('Normal',legend)
+    if(ideal) {
+      legend = c('Ideal',legend)
       lty = c(3,lty)
       pch = c(NA,pch)
       lcol = c(1,lcol)
