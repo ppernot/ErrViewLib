@@ -4,6 +4,9 @@
 #' @param uE (vector) error or z-score
 #' @param stat (function) statistic to use
 #' @param oracle (logical) plot oracle curve
+#' @param normal (logical) plot normal curve
+#' @param conf_normal (logical) plot confidence band around normal
+#' @param rep_normal (integer) sampling repetitions for normal curve
 #' @param col (integer) color index for the curve
 #' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
@@ -31,6 +34,9 @@ plotConfidence = function(
   E, uE,
   stat   = ErrViewLib::mue,
   oracle = TRUE,
+  normal = FALSE,
+  conf_normal = FALSE,
+  rep_normal = 100,
   col    = 2,
   type   = c('l','p'),
   add    = FALSE,
@@ -43,6 +49,22 @@ plotConfidence = function(
   legend = NULL,
   gPars  = ErrViewLib::setgPars()
 ) {
+
+  Sconf = function(X,pcVec=0:100) {
+    S0 = stat(X)
+    vstat = rep(0.0,length(pcVec))
+    vstat[1] = 1.0
+    for (i in 2:length(pcVec)) {
+      k = pcVec[i]
+      sel = 1:floor(k * M / 100)
+      if(length(sel) == 0)
+        vstat[i] = NA
+      else
+        vstat[i] = stat(X[-sel]) / S0
+    }
+    # Add 0% point
+    return(vstat)
+  }
 
   type = match.arg(type)
 
@@ -59,24 +81,37 @@ plotConfidence = function(
   }
 
   M = length(uE)
-  pcVec = 1:100 # Vector of percentages
+  pcVec = 0:100 # Vector of percentages
 
-  S0 = stat(E)
-  vstat = vora = rep(NA,length(pcVec))
-  for (i in seq_along(pcVec)) {
-    k = pcVec[i]
-    sel = 1:floor(k * M / 100)
-    if(length(sel) == 0)
-      break()
-    vstat[i] = stat(E[-sel]) / S0
-    if(oracle)
-      vora[i]  = stat(O[-sel]) / S0
-  }
-  # Add 0% point
-  pcVec = c(0,pcVec)
-  vstat = c(1,vstat)
+  vstat = Sconf(E,pcVec)
+
   if(oracle)
-    vora = c(1,vora)
+    vora = Sconf(O,pcVec)
+
+  if(normal) {
+    nrun = rep_normal
+    vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
+    for (i in 1:nrun) {
+      X = rnorm(uE, 0, uE)
+      vnorm[, i] = Sconf(X)
+    }
+    vnorm_mu = c()
+    vnorm_mu[1] = 1
+    if (conf_normal) {
+      vnorm_lw = vnorm_up = c()
+      vnorm_lw[1] = 1
+      vnorm_up[1] = 1
+    }
+    for (i in 2:length(pcVec)) {
+      X = vnorm[i, ]
+      vnorm_mu[i] = mean(X)
+      if (conf_normal) {
+        ci = ErrViewLib::vhd(X)
+        vnorm_lw[i] = ci[1]
+        vnorm_up[i] = ci[2]
+      }
+    }
+  }
 
   # Expose gPars list
   for (n in names(gPars))
@@ -125,24 +160,46 @@ plotConfidence = function(
       main = title
     )
     grid()
+
     if(oracle)
       lines(pcVec, vora, lty=2, lwd = 2*lwd, col=cols[1])
 
+    if(normal) {
+      lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[1])
+      if(conf_normal) {
+        polygon(
+          c(pcVec,rev(pcVec)),
+          c(vnorm_up,rev(vnorm_lw)),
+          col = cols_tr[1],
+          border = NA)
+      }
+    }
+
     lty = if(type == 'l') 1 else NA
     pch = if(type == 'l') NA else 16
+    lcol = col
+    if(is.null(legend))
+      legend = 'Data'
     if(oracle) {
+      legend = c('Oracle',legend)
       lty = c(2,lty)
       pch = c(NA,pch)
+      lcol = c(1,lcol)
     }
-    if(!is.null(legend))
-      legend(
-        'bottomleft', bty = 'n', inset = 0.05,
-        legend = if(oracle) c('Oracle',legend) else legend,
-        lty = lty,
-        lwd = 2*lwd,
-        col = if(oracle) cols[c(1,col)] else cols[col],
-        pch = pch
-      )
+    if(normal) {
+      legend = c('Normal',legend)
+      lty = c(3,lty)
+      pch = c(NA,pch)
+      lcol = c(1,lcol)
+    }
+    legend(
+      'bottomleft', bty = 'n', inset = 0.05,
+      legend = legend,
+      lty = lty,
+      lwd = 2*lwd,
+      col = cols[lcol],
+      pch = pch
+    )
 
     box()
 
