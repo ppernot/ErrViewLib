@@ -80,7 +80,7 @@ plotEvsPU =  function(
   )
 
   if(logY)
-    Y = log(abs(Y))
+    Y = log10(abs(Y))
 
   if(runExt | runQuant | runMode) {
     N = length(Y)
@@ -138,8 +138,12 @@ plotEvsPU =  function(
   if(logX)
     log = 'x'
 
-  if(is.null(xlim))
-    xlim = c(max(0,min(X)), 1.1*max(X))
+  if(is.null(xlim)){
+    if(type == 'prop')
+      xlim = c(max(0,min(X)), 1.1*max(X))
+    else
+      xlim = range(X)
+  }
 
   if(is.null(ylim)){
     if(logY)
@@ -186,8 +190,8 @@ plotEvsPU =  function(
   # Guide lines
   if(logY) {
     lines(
-      X,
-      log(X),
+      xOrd,
+      log(xOrd),
       lty = 2,
       col = colg
     )
