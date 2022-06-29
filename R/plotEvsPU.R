@@ -191,7 +191,7 @@ plotEvsPU =  function(
   if(logY) {
     lines(
       xOrd,
-      log(xOrd),
+      log10(xOrd),
       lty = 2,
       col = colg
     )

@@ -148,7 +148,7 @@ mue = function(X, index = 1:length(X),...) {
 #' @export
 #'
 q95 = function(X, index = 1:length(X),...) {
-  quantile(abs(X[index]), 0.95)
+  quantile(abs(X[index]), 0.95, na.rm = TRUE)
 }
 #' 95th Quantile of absolute errors using the HD algorithm (Q95HD)
 #'

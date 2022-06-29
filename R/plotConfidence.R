@@ -4,10 +4,10 @@
 #' @param uE (vector) error or z-score
 #' @param stat (function) statistic to use
 #' @param oracle (logical) plot Oracle curve
-#' @param ideal (logical) plot Ideal curve
-#' @param conf_ideal (logical) plot confidence band around Ideal curve
-#' @param dist_ideal (string) model error distribution to generate Ideal curve
-#' @param rep_ideal (integer) sampling repetitions for normal curve
+#' @param probref (logical) plot probabilistic reference (probref) curve
+#' @param conf_probref (logical) plot confidence band around probref curve
+#' @param dist_probref (string) model error distribution to generate Ideal curve
+#' @param rep_probref (integer) sampling repetitions for normal curve
 #' @param col (integer) color index for the curve
 #' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
@@ -17,6 +17,7 @@
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param legend (string) legend for the dataset
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #'
@@ -35,10 +36,10 @@ plotConfidence = function(
   E, uE,
   stat   = ErrViewLib::mue,
   oracle = TRUE,
-  ideal = FALSE,
-  conf_ideal = FALSE,
-  dist_ideal = 'Normal',
-  rep_ideal = 100,
+  probref = FALSE,
+  conf_probref = FALSE,
+  dist_probref = 'Normal',
+  rep_probref = 100,
   col    = 2,
   type   = c('l','p'),
   add    = FALSE,
@@ -49,6 +50,7 @@ plotConfidence = function(
   title  = NULL,
   label  = 0,
   legend = NULL,
+  legLoc = 'bottomleft',
   gPars  = ErrViewLib::setgPars()
 ) {
 
@@ -103,17 +105,17 @@ plotConfidence = function(
   if(oracle)
     vora = Sconf(O,pcVec)
 
-  if(ideal) {
-    nrun = rep_ideal
+  if(probref) {
+    nrun = rep_probref
     vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
-    fun = get(dist_ideal)
+    fun = get(dist_probref)
     for (i in 1:nrun) {
       X = uE * fun(M)
       vnorm[, i] = Sconf(X)
     }
     vnorm_mu = c()
     vnorm_mu[1] = 1
-    if (conf_ideal) {
+    if (conf_probref) {
       vnorm_lw = vnorm_up = c()
       vnorm_lw[1] = 1
       vnorm_up[1] = 1
@@ -121,7 +123,7 @@ plotConfidence = function(
     for (i in 2:length(pcVec)) {
       X = vnorm[i, ]
       vnorm_mu[i] = mean(X)
-      if (conf_ideal) {
+      if (conf_probref) {
         ci = ErrViewLib::vhd(X)
         vnorm_lw[i] = ci[1]
         vnorm_up[i] = ci[2]
@@ -182,9 +184,9 @@ plotConfidence = function(
     if(oracle)
       lines(pcVec, vora, lty = 2, lwd = 2*lwd, col=cols[1])
 
-    if(ideal) {
+    if(probref) {
       lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[1])
-      if(conf_ideal) {
+      if(conf_probref) {
         polygon(
           c(pcVec,rev(pcVec)),
           c(vnorm_up,rev(vnorm_lw)),
@@ -212,14 +214,14 @@ plotConfidence = function(
       pch = c(NA,pch)
       lcol = c(1,lcol)
     }
-    if(ideal) {
-      legend = c('Ideal',legend)
+    if(probref) {
+      legend = c('Prob. ref.',legend)
       lty = c(3,lty)
       pch = c(NA,pch)
       lcol = c(1,lcol)
     }
     legend(
-      'bottomleft', bty = 'n', inset = 0.05,
+      legLoc, bty = 'n', inset = 0.05,
       legend = legend,
       lty = lty,
       lwd = 2*lwd,
