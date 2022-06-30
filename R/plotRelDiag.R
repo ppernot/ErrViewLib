@@ -1,4 +1,4 @@
-#' Plot variance calibration curve (reliability diagram)
+#' Plot reliability diagram
 #'
 #' @param nBin  (integer) number of intervals for local coverage stats
 #' @param ylim  (vector) limits of the y axis
@@ -22,9 +22,9 @@
 #' \donttest{
 #'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
 #'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
-#'   plotCalVar(uE, E, nBin = 6, nBoot = 500)
+#'   plotRelDiag(uE, E, nBin = 6, nBoot = 500)
 #' }
-plotCalVar = function(
+plotRelDiag = function(
   X, Y,
   logX      = FALSE,
   nBin      = NULL,

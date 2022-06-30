@@ -9,10 +9,10 @@ plotConfidence(
   uE,
   stat = ErrViewLib::mue,
   oracle = TRUE,
-  ideal = FALSE,
-  conf_ideal = FALSE,
-  dist_ideal = "Normal",
-  rep_ideal = 100,
+  probref = FALSE,
+  conf_probref = FALSE,
+  dist_probref = "Normal",
+  rep_probref = 100,
   col = 2,
   type = c("l", "p"),
   add = FALSE,
@@ -23,6 +23,7 @@ plotConfidence(
   title = NULL,
   label = 0,
   legend = NULL,
+  legLoc = "bottomleft",
   gPars = ErrViewLib::setgPars()
 )
 }
@@ -35,13 +36,13 @@ plotConfidence(
 
 \item{oracle}{(logical) plot Oracle curve}
 
-\item{ideal}{(logical) plot Ideal curve}
+\item{probref}{(logical) plot probabilistic reference (probref) curve}
 
-\item{conf_ideal}{(logical) plot confidence band around Ideal curve}
+\item{conf_probref}{(logical) plot confidence band around probref curve}
 
-\item{dist_ideal}{(string) model error distribution to generate Ideal curve}
+\item{dist_probref}{(string) model error distribution to generate Ideal curve}
 
-\item{rep_ideal}{(integer) sampling repetitions for normal curve}
+\item{rep_probref}{(integer) sampling repetitions for normal curve}
 
 \item{col}{(integer) color index for the curve}
 
@@ -62,6 +63,8 @@ plotConfidence(
 \item{label}{(integer) index of letter for subplot tag}
 
 \item{legend}{(string) legend for the dataset}
+
+\item{legLoc}{(string) location of legend (see \link[grDevices]{xy.coord})}
 
 \item{gPars}{(list) graphical parameters}
 }
