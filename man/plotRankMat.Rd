@@ -42,9 +42,6 @@ plotRankMat(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Interface to \code{corrplot::corrplot()} or mode/CI graph
 }

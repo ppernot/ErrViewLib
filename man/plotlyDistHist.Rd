@@ -72,9 +72,6 @@ plotlyDistHist(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Scatter plot of an error set with marginal histogram (plotly version)
 }

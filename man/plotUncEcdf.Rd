@@ -50,9 +50,6 @@ plotUncEcdf(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Plot of a set of ECDFs
 }

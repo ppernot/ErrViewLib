@@ -9,9 +9,6 @@ muF(x)
 \arguments{
 \item{x}{-}
 }
-\value{
-
-}
 \description{
 Mean of the Folded Normal distribution
 }

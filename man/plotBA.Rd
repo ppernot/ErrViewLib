@@ -17,9 +17,6 @@ plotBA(data1, data2, ylim = NULL, title = "", gPars = ErrViewLib::setgPars())
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Bland-Altman-type plot of error samples
 }

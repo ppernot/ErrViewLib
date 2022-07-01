@@ -11,9 +11,6 @@ kurtcs(X, index = 1:length(X), ...)
 
 \item{index}{-}
 }
-\value{
-
-}
 \description{
 Auxiliary function for bootstrap by 'boot::boot()'
 }

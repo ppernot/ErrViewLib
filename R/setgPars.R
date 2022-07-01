@@ -39,9 +39,9 @@ setgPars = function(
 
   # Defaults
   gParsDef = list(
-    cols     = rev(inlmisc::GetColors(8))[1:7],
-    cols_tr  = rev(inlmisc::GetColors(8, alpha = 0.2))[1:7],
-    cols_tr2 = rev(inlmisc::GetColors(8, alpha = 0.5))[1:7],
+    cols     = rev(myGetColors(8))[1:7],
+    cols_tr  = rev(myGetColors(8, alpha = 0.2))[1:7],
+    cols_tr2 = rev(myGetColors(8, alpha = 0.5))[1:7],
     pty      = 's',
     mar      = c(3,3,3,.5),
     mgp      = c(2,.75,0),

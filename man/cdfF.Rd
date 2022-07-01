@@ -9,9 +9,6 @@ cdfF(x)
 \arguments{
 \item{x}{-}
 }
-\value{
-
-}
 \description{
 CDF of the Folded Normal distribution
 }

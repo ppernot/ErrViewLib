@@ -13,9 +13,6 @@ fcor(X, index = 1:length(X), ...)
 
 \item{...}{}
 }
-\value{
-
-}
 \description{
 Auxiliary function for bootstrap by 'boot::boot()'
 }

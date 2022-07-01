@@ -9,9 +9,6 @@ my5num(X)
 \arguments{
 \item{X}{-}
 }
-\value{
-
-}
 \description{
 5-numbers summary of sample
 }

@@ -9,9 +9,6 @@ elimna(m)
 \arguments{
 \item{m}{}
 }
-\value{
-
-}
 \description{
 Eliminate NA's
 }

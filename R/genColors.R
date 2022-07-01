@@ -10,7 +10,8 @@ genColors = function(sample) {
     (max(sample)-min(sample))
   indx=round(1+(ncols-1)*co)
   # cols=fields::two.colors(ncols,start="blue",middle="yellow",end="red")[indx]
-  cols = inlmisc:: GetColors(ncols,scheme = 'sunset', alpha=0.8)[indx]
+  # cols = inlmisc::GetColors(ncols,scheme = 'sunset', alpha=0.8)[indx]
+  cols = myGetColors(ncols,alpha=0.8)[indx] # relieve inlmisc dependency
   return(cols)
 }
 #' Color palette for parallel plots

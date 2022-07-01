@@ -15,9 +15,6 @@ dmue(X, index = 1:nrow(X), uX = 0, ...)
 
 \item{...}{-}
 }
-\value{
-
-}
 \description{
 Title
 }

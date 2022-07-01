@@ -29,9 +29,6 @@ estBS1(
 
 \item{silent}{(logical; optional) flag to hide progress messages.}
 }
-\value{
-
-}
 \description{
 Estimate benchmarking statistics and their uncertainty by bootstrapping
 }

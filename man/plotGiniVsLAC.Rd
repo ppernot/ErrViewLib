@@ -32,9 +32,6 @@ plotGiniVsLAC(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Plot Gini vs. LAC coefs
 }

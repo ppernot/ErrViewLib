@@ -38,9 +38,6 @@ plotLorenz(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Plot of a set of Lorenz curves
 }

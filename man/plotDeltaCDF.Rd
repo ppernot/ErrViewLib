@@ -46,9 +46,6 @@ plotDeltaCDF(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Plots also auxiliary statistics (SIP, MG, ML) with bootstrapped CIs.
 }

@@ -9,9 +9,6 @@ erf(x)
 \arguments{
 \item{x}{-}
 }
-\value{
-
-}
 \description{
 Erf function
 }

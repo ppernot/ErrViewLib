@@ -9,9 +9,6 @@ genColorsSample(sample)
 \arguments{
 \item{sample}{}
 }
-\value{
-
-}
 \description{
 Color palette for parallel plots
 }

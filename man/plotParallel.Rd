@@ -43,9 +43,6 @@ plotParallel(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Parallel plot of datasets with outliers detection features
 }

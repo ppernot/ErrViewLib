@@ -15,9 +15,6 @@ forder(data, index = 1:nrow(data), fscore, ...)
 
 \item{...}{-}
 }
-\value{
-
-}
 \description{
 Auxiliary function for bootstrap by 'boot::boot()'
 }

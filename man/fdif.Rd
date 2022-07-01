@@ -15,9 +15,6 @@ fdif(X, index = 1:nrow(X), fscore, ...)
 
 \item{...}{-}
 }
-\value{
-
-}
 \description{
 Auxiliary function for bootstrap by 'boot::boot()'
 }

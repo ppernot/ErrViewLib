@@ -13,9 +13,6 @@ fOrderMSIP(data, index = 1:nrow(data), ...)
 
 \item{...}{}
 }
-\value{
-
-}
 \description{
 Auxiliary function for bootstrap by 'boot::boot()'
 }

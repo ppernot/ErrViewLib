@@ -13,9 +13,6 @@ tabRank(E, scores = c("mue", "q95hd"), nMC = 1000)
 
 \item{nMC}{-}
 }
-\value{
-
-}
 \description{
 Results table for ranking probabilities
 }

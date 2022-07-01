@@ -51,9 +51,6 @@ paraPlot(
 
 \item{...}{-}
 }
-\value{
-
-}
 \description{
 Title
 }

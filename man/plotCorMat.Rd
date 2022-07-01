@@ -29,9 +29,6 @@ plotCorMat(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 Interface to \code{corrplot::corrplot()}
 }

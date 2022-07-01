@@ -11,9 +11,6 @@ agrestiCoull(X, n)
 
 \item{n}{-}
 }
-\value{
-
-}
 \description{
 Agresti-Coull estimation of uncertainty on CDF
 }

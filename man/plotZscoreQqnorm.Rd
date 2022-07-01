@@ -35,9 +35,6 @@ plotZscoreQqnorm(
 
 \item{gPars}{-}
 }
-\value{
-
-}
 \description{
 plotZscoreQqnorm
 }

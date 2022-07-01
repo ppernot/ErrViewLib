@@ -32,9 +32,6 @@ predIp(
 
 \item{rTest}{-}
 }
-\value{
-
-}
 \description{
 Auxillary function for plotPcoverage
 }

@@ -11,9 +11,6 @@ P1(X, index = 1:length(X), eps)
 
 \item{index}{-}
 }
-\value{
-
-}
 \description{
 Auxiliary function for bootstrap by 'boot::boot()'
 }

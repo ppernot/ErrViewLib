@@ -13,9 +13,6 @@ trendCorr(Data, Errors, degree = 0)
 
 \item{degree}{-}
 }
-\value{
-
-}
 \description{
 trendCorr
 }

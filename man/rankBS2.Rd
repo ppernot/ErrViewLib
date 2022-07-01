@@ -15,9 +15,6 @@ rankBS2(E, score = "mue", nMC = 1000, M = nrow(E))
 
 \item{M}{-}
 }
-\value{
-
-}
 \description{
 M-out of-N Bootstrap of order statistics
 }

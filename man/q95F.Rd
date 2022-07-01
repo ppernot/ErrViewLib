@@ -9,9 +9,6 @@ q95F(x)
 \arguments{
 \item{x}{-}
 }
-\value{
-
-}
 \description{
 Q95 statistics of the Folded Normal distribution
 }
