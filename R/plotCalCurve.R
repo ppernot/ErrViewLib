@@ -50,12 +50,25 @@ predQ = function(
     if (corTrend) {
       # Account for regression uncertainty
       for(k in seq_along(prob)) {
-        df = ciTools::add_quantile(
-          Test,
-          reg,
-          p=prob[k],
-          name='Q')
-        eqLwr[k, ] = df[,'Q'] - eP
+        # df = ciTools::add_quantile(
+        #   Test,
+        #   reg,
+        #   p=prob[k],
+        #   name='Q')
+        #   eqLwr[k, ] = df[,'Q'] - eP
+        #   # Avoid ciTools because of build problems in docker
+        out <- predict(
+          reg, newdata = Test,
+          interval = "prediction",
+          se.fit = TRUE)
+        fitted <- out$fit[,1]
+        residual_df <- out$df
+        se_fitted <- out$se.fit
+        resid_var <- out$residual.scale^2
+        se_pred <- sqrt(resid_var + se_fitted^2)
+        t_quantile <- qt(p = prob[k], df = residual_df)
+        out_quantiles <- fitted + se_pred * t_quantile
+        eqLwr[k, ] = out_quantiles - eP
       }
     } else {
       stop('"CImeth = pred" requires "corTrend = TRUE"')
