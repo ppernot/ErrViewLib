@@ -8,6 +8,7 @@ plotConfidence(
   E,
   uE,
   stat = ErrViewLib::mue,
+  normalize = TRUE,
   oracle = TRUE,
   probref = FALSE,
   conf_probref = FALSE,
@@ -18,10 +19,11 @@ plotConfidence(
   add = FALSE,
   xlab = "k\% discarded",
   xlim = NULL,
-  ylab = "MAE / MAE0",
+  ylab = ifelse(normalize, "MAE / MAE0", "MAE"),
   ylim = NULL,
   title = NULL,
   label = 0,
+  showLegend = TRUE,
   legend = NULL,
   legLoc = "bottomleft",
   gPars = ErrViewLib::setgPars()
@@ -33,6 +35,8 @@ plotConfidence(
 \item{uE}{(vector) error or z-score}
 
 \item{stat}{(function) statistic to use}
+
+\item{normalize}{(logical) use normalized statistic}
 
 \item{oracle}{(logical) plot Oracle curve}
 
@@ -61,6 +65,8 @@ plotConfidence(
 \item{title}{(string) a title to display above the plot}
 
 \item{label}{(integer) index of letter for subplot tag}
+
+\item{showLegend}{(logical) display legend}
 
 \item{legend}{(string) legend for the dataset}
 

@@ -1,7 +1,50 @@
+#' Auxilliary function for plotConfidence²
+#'
+#' @param X (vector) errors
+#' @param pcVec (vector) percentages
+#' @param stat (function) statistiv
+#' @param normalize (logical) normalize statistic
+#'
+#' @return Vector of CC stats
+#' @export
+#'
+#' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+#'   plotConfidence(E,uE)
+#' }
+Sconf = function(
+  X,
+  pcVec = 0:100,
+  stat = ErrViewLib::mue,
+  normalize = TRUE
+) {
+  M = length(X)
+  S0 = stat(X)
+  vstat = rep(0.0, length(pcVec))
+  vstat[1] = S0
+  if(normalize)
+    vstat[1] = 1
+  for (i in 2:length(pcVec)) {
+    k = pcVec[i]
+    sel = 1:floor(k * M / 100)
+    if (length(sel) == 0) {
+      vstat[i] = NA
+    } else {
+      vstat[i] = stat(X[-sel])
+      if(normalize)
+        vstat[i] = vstat[i] / S0
+    }
+
+  }
+  return(vstat)
+}
 #' Plot confidence curve for (uE,E) set
 #'
 #' @param E (vector) prediction uncertainty, uE, or predicted value, V
 #' @param uE (vector) error or z-score
+#' @param normalize (logical) use normalized statistic
 #' @param stat (function) statistic to use
 #' @param oracle (logical) plot Oracle curve
 #' @param probref (logical) plot probabilistic reference (probref) curve
@@ -16,6 +59,7 @@
 #' @param ylab (string) y axis label
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
+#' @param showLegend (logical) display legend
 #' @param legend (string) legend for the dataset
 #' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
 #' @param label (integer) index of letter for subplot tag
@@ -35,7 +79,8 @@
 plotConfidence = function(
   E, uE,
   stat   = ErrViewLib::mue,
-  oracle = TRUE,
+  normalize = TRUE,
+  oracle  = TRUE,
   probref = FALSE,
   conf_probref = FALSE,
   dist_probref = 'Normal',
@@ -45,31 +90,21 @@ plotConfidence = function(
   add    = FALSE,
   xlab   = 'k% discarded',
   xlim   = NULL,
-  ylab   = 'MAE / MAE0',
+  ylab   = ifelse(normalize,'MAE / MAE0','MAE'),
   ylim   = NULL,
   title  = NULL,
   label  = 0,
+  showLegend = TRUE,
   legend = NULL,
   legLoc = 'bottomleft',
   gPars  = ErrViewLib::setgPars()
 ) {
 
-  # Internal functions...
-  Sconf = function(X,pcVec=0:100) {
-    S0 = stat(X)
-    vstat = rep(0.0,length(pcVec))
-    vstat[1] = 1.0
-    for (i in 2:length(pcVec)) {
-      k = pcVec[i]
-      sel = 1:floor(k * M / 100)
-      if(length(sel) == 0)
-        vstat[i] = NA
-      else
-        vstat[i] = stat(X[-sel]) / S0
-    }
-    # Add 0% point
-    return(vstat)
-  }
+  type = match.arg(type)
+
+  if (as.numeric(length(E))*as.numeric(length(uE)) == 0)
+    return()
+
   # Unit-variance distributions
   Normal = function(N)
     rnorm(N)
@@ -81,12 +116,6 @@ plotConfidence = function(
     normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
   Normp4 = function(N, df = 4)
     normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
-
-
-  type = match.arg(type)
-
-  if (as.numeric(length(E))*as.numeric(length(uE)) == 0)
-    return()
 
   # Reorder data
   io  = order(uE, decreasing = TRUE)
@@ -100,34 +129,30 @@ plotConfidence = function(
   M = length(uE)
   pcVec = 0:100 # Vector of percentages
 
-  vstat = Sconf(E,pcVec)
+  # Statistics for data
+  vstat = ErrViewLib::Sconf(E, pcVec, stat, normalize)
 
+  # Statistics for oracle
   if(oracle)
-    vora = Sconf(O,pcVec)
+    vora = ErrViewLib::Sconf(O, pcVec, stat, normalize)
 
+  # Statistics for probabilistic reference
+  # 1 - Draw samples of errors from uncertainties
+  # 2 - Estimate Sconf over sample
+  # 3 - Estimate mean and CI
   if(probref) {
     nrun = rep_probref
     vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
     fun = get(dist_probref)
     for (i in 1:nrun) {
       X = uE * fun(M)
-      vnorm[, i] = Sconf(X)
+      vnorm[, i] = ErrViewLib::Sconf(X, pcVec, stat, normalize)
     }
-    vnorm_mu = c()
-    vnorm_mu[1] = 1
+    vnorm_mu = apply(vnorm, 1, mean, na.rm = TRUE)
     if (conf_probref) {
-      vnorm_lw = vnorm_up = c()
-      vnorm_lw[1] = 1
-      vnorm_up[1] = 1
-    }
-    for (i in 2:length(pcVec)) {
-      X = vnorm[i, ]
-      vnorm_mu[i] = mean(X)
-      if (conf_probref) {
-        ci = ErrViewLib::vhd(X)
-        vnorm_lw[i] = ci[1]
-        vnorm_up[i] = ci[2]
-      }
+      ci = apply(vnorm, 1, ErrViewLib::vhd)
+      vnorm_lw = ci[1,]
+      vnorm_up = ci[2,]
     }
   }
 
@@ -137,6 +162,16 @@ plotConfidence = function(
 
   if(add) {
 
+    if(probref) {
+      lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
+      if(conf_probref) {
+        polygon(
+          c(pcVec,rev(pcVec)),
+          c(vnorm_up,rev(vnorm_lw)),
+          col = cols_tr[col],
+          border = NA)
+      }
+    }
     lines(pcVec, vstat,
           type = type,
           pch = 16,
@@ -161,8 +196,14 @@ plotConfidence = function(
     if (is.null(xlim))
       xlim = range(pcVec)
 
-    if (is.null(ylim))
-      ylim = c(0, max(vstat[is.finite(vstat)]))
+    if (is.null(ylim)) {
+      vs = vstat[is.finite(vstat)]
+      ylim = c(0, max(vs))
+      if(oracle)
+        ylim = range(c(ylim,vora[is.finite(vora)]))
+      if(probref)
+        ylim = range(c(ylim,vnorm_mu[is.finite(vnorm_mu)]))
+    }
 
     plot(
       pcVec, vstat,
@@ -179,19 +220,21 @@ plotConfidence = function(
     )
     grid()
 
-    abline(h = 1, lwd = 2 * lwd, col = cols[1])
+    if(normalize)
+      abline(h = 1, lwd = 2 * lwd, col = cols[1])
 
     if(oracle)
       lines(pcVec, vora, lty = 2, lwd = 2*lwd, col=cols[1])
 
     if(probref) {
-      lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[1])
+      lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
       if(conf_probref) {
         polygon(
           c(pcVec,rev(pcVec)),
           c(vnorm_up,rev(vnorm_lw)),
-          col = cols_tr[1],
-          border = NA)
+          col = cols_tr[col],
+          border = NA
+        )
       }
     }
 
@@ -201,36 +244,43 @@ plotConfidence = function(
       lty  = 1,
       pch  = 16,
       lwd  = 2*lwd,
-      col  = cols[col])
-
-    lty = if(type == 'l') 1 else NA
-    pch = if(type == 'l') NA else 16
-    lcol = col
-    if(is.null(legend))
-      legend = 'Data'
-    if(oracle) {
-      legend = c('Oracle',legend)
-      lty = c(2,lty)
-      pch = c(NA,pch)
-      lcol = c(1,lcol)
-    }
-    if(probref) {
-      legend = c('Prob. ref.',legend)
-      lty = c(3,lty)
-      pch = c(NA,pch)
-      lcol = c(1,lcol)
-    }
-    legend(
-      legLoc, bty = 'n', inset = 0.05,
-      legend = legend,
-      lty = lty,
-      lwd = 2*lwd,
-      col = cols[lcol],
-      pch = pch
+      col  = cols[col]
     )
+
+    # Build and display legend
+    if(showLegend) {
+      lty = if(type == 'l') 1 else NA
+      pch = if(type == 'l') NA else 16
+      lcol = col
+
+      if(is.null(legend))
+        legend = 'Data'
+
+      if(oracle) {
+        legend = c('Oracle',legend)
+        lty    = c(2,lty)
+        pch    = c(NA,pch)
+        lcol   = c(1,lcol)
+      }
+      if(probref) {
+        legend = c('Prob. ref.',legend)
+        lty    = c(3,lty)
+        pch    = c(NA,pch)
+        lcol   = c(1,lcol)
+      }
+      legend(
+        legLoc, bty = 'n', inset = 0.05,
+        legend = legend,
+        lty    = lty,
+        lwd    = 2*lwd,
+        col    = cols[lcol],
+        pch    = pch
+      )
+    }
 
     box()
 
+    # Display subfigure label
     if(label > 0)
       mtext(
         text = paste0('(', letters[label], ')'),
