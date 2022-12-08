@@ -9,9 +9,14 @@ plotRelDiag(
   Y,
   logX = FALSE,
   nBin = NULL,
-  slide = NULL,
+  equiPop = TRUE,
+  popMin = 30,
+  logBin = TRUE,
+  intrv = NULL,
+  method = c("bootstrap", "cho"),
   BSmethod = c("bca", "perc", "basic"),
-  nBoot = 0,
+  nBoot = 500,
+  slide = FALSE,
   xlim = NULL,
   ylim = NULL,
   title = "",
@@ -30,11 +35,22 @@ plotRelDiag(
 
 \item{nBin}{(integer) number of intervals for local coverage stats}
 
-\item{slide}{(logical) use sliding window for subsetting (X,Z)}
+\item{equiPop}{(logical) generate intervals  with equal bin counts
+(default: `equiPop = TRUE`)}
+
+\item{popMin}{(integer) minimal bin count in an interval}
+
+\item{logBin}{(logical) if `equiPop = FALSE`, one can choose between
+equal range intervals, or equal log-range intervals
+(default `logBin = TRUE`)}
+
+\item{method}{(string) one of 'bootstrap' (default) and 'cho'}
 
 \item{BSmethod}{(string) bootstrap variant}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{slide}{(logical) use sliding window for subsetting (X,Z)}
 
 \item{xlim}{(vector) min and max values of X axis}
 

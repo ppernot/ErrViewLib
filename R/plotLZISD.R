@@ -1,35 +1,20 @@
-#' Var(Var(Z)) by moments formula from Cho2008
+#' Estimate statistics of the inverse of SD of a sample
 #'
 #' @param Z (vector) a data sample
-#'
-#' @return The variance on the sample variance
-#' @export
-#'
-varvar = function (Z) {
-  # Use formula (1) in Cho2008
-  N = NROW(Z)
-  mu = moments::all.moments(Z ,order.max=4, central=TRUE)[2:5]
-  Vcho = (mu[4] - (N-3)/(N-1) * mu[2]^2 ) / N
-  return(Vcho)
-}
-#' Estimate statistics of the variance of a sample
-#'
-#' @param Z (vector) a data sample
-#' @param method (string) one of 'bootstrap' (default), 'cho' and
-#'   'chisq' for the estimation of the statistics
+#' @param method (string) one of 'bootstrap' (default) and 'cho'
 #' @param CImethod (string) one of 'bca' (default), 'perc' and 'basic'
 #'   for the CI estimation algorithm from bootstrap sample
 #' @param nBoot (integer) number of bootstrap repeats
 #' @param level (numeric) a probability level for CI (default: 0.95)
 #' @param parallel (string) one of 'no' (default) and 'multicore'
 #'
-#' @return A list containing the mean, sd and ci for the variance
+#' @return A list containing the mean, sd and ci for the SD^-1
 #'     of the Z sample
 #' @export
 #'
-varZCI = function (
+rsdZCI = function (
   Z,
-  method = c('bootstrap','cho','chisq'),
+  method = c('bootstrap','cho'),
   CImethod = c('bca','perc','basic'),
   nBoot = 1500,
   level = 0.95,
@@ -40,10 +25,13 @@ varZCI = function (
   CImethod = match.arg(CImethod)
   parallel = match.arg(parallel)
 
+  wtd.sd = function(x,weights=NULL,normwt=TRUE)
+    1 / sqrt(Hmisc::wtd.var(x,weights=weights,normwt=normwt))
+
   switch (
     method,
     bootstrap = {
-      bst = boot::boot(Z, Hmisc::wtd.var, R = nBoot, stype = 'f',
+      bst = boot::boot(Z, wtd.sd, R = nBoot, stype = 'f',
                        parallel = parallel, normwt = TRUE)
       bci = boot::boot.ci(bst, conf = level, type = CImethod )
       ci = switch(
@@ -62,39 +50,27 @@ varZCI = function (
       )
     },
     cho = {
+      # LUP formula for y = 1/sqrt(Var(X))
       V  = var(Z)
-      SD = sqrt(varvar(Z))
+      S  = 1 / sqrt(V)
+      SD = sqrt(ErrViewLib::varvar(Z)) / (2*V^(3/2))
       list(
-        mean   = V,
+        mean   = S,
         sd     = SD,
-        ci     = V + qnorm((1 + level) / 2) * c(-1, 1) * SD,
-        method = method,
-        level  = level
-      )
-    },
-    chisq = {
-      N = NROW(Z)
-      V = var(Z)
-      list(
-        mean   = V,
-        sd     = sqrt(2 / (N - 1)),
-        ci     = c(
-          qchisq((1 - level) / 2, df = N - 1) / (N - 1),
-          qchisq((1 + level) / 2, df = N - 1) / (N - 1)
-        ),
+        ci     = S + qnorm((1 + level) / 2) * c(-1, 1) * SD,
         method = method,
         level  = level
       )
     }
   )
 }
-#' Plot local z-score variance to assess calibration and tightness
+#' Plot local inverse of z-score standard deviation 1/SD(Z)
 #'
 #' @param X (vector) abscissae of the Z values
 #' @param Z (vector) set of z-score values to be tested
-#' @param varZ (numeric) target value for Var(Z) (default `1`)
+#' @param sdZ (numeric) target value for 1/SD(Z) (default `1`)
 #' @param logX (logical) log-transform X
-#' @param method (string) method used to estimate 95 percent CI on Var(Z)
+#' @param method (string) method used to estimate 95 percent CI on 1/SD(Z)
 #' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
 #' @param nBin (integer) number of intervals for local coverage stats
@@ -115,7 +91,7 @@ varZCI = function (
 #' @param add (logical) add to previous graph ?
 #' @param col (integer) color index of curve to add
 #'
-#' @return Invisibly returns a list of LZV results. Mainly used
+#' @return Invisibly returns a list of LZISD results. Mainly used
 #'   for its plotting side effect.
 #' @export
 #'
@@ -123,20 +99,17 @@ varZCI = function (
 #' \donttest{
 #'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
 #'   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
-#'   plotLZV(uE, E/uE, method = 'cho', ylim = c(0,2))
+#'   plotLZISD(uE, E/uE, method = 'cho', ylim = c(0,2))
 #' }
-plotLZV = function(
+plotLZISD = function(
   X, Z,
-  varZ      = 1,
+  sdZ       = 1,
   logX      = FALSE,
   nBin      = NULL,
-  equiPop   = TRUE,
-  popMin    = 30,
-  logBin    = TRUE,
   intrv     = NULL,
   plot      = TRUE,
   slide     = NULL,
-  method    = c('bootstrap','cho','chisq'),
+  method    = c('cho','bootstrap'),
   BSmethod  = c('bca','perc','basic'),
   nBoot     = 500,
   xlab      = 'Calculated value',
@@ -160,9 +133,6 @@ plotLZV = function(
 
   # Design local areas
   if(is.null(intrv)) {
-    # if(is.null(slide))
-    #   slide = nBin <= 4
-
     if(is.null(nBin))
       nBin  = max(min(floor(N/150),15),2)
     if(nBin <= 0)
@@ -174,28 +144,30 @@ plotLZV = function(
   }
   nBin = intrv$nbr
 
+  # if(is.null(slide))
+  #   slide = intrv$nbr <= 4
+
   # LZV values
   mV = loV = upV = mint = c()
   for (i in 1:nBin) {
-    sel  = intrv$lwindx[i]:intrv$upindx[i]
-    M    = length(sel)
-    zLoc = zOrd[sel]
-    zs   = varZCI(
-      zLoc,
-      nBoot = max(nBoot, M),
-      method = method,
-      CImethod = BSmethod
-    )
-    mV[i]   = zs$mean
-    loV[i]  = zs$ci[1]
-    upV[i]  = zs$ci[2]
+    sel = intrv$lwindx[i]:intrv$upindx[i]
+    M      = length(sel)
+    zLoc   = zOrd[sel]
+    zs     = rsdZCI(zLoc,
+                    nBoot = max(nBoot, M),
+                    method = method,
+                    CImethod = BSmethod)
+    mV[i]  = zs$mean
+    loV[i] = zs$ci[1]
+    upV[i] = zs$ci[2]
     mint[i] = mean(range(xOrd[sel])) # Center of interval
-
   }
-  zs = varZCI(zOrd,
-              nBoot = max(nBoot, N),
-              method = method,
-              CImethod = BSmethod)
+  zs = rsdZCI(
+    zOrd,
+    nBoot = max(nBoot, N),
+    method = method,
+    CImethod = BSmethod
+  )
   mV0 = zs$mean
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
@@ -222,7 +194,6 @@ plotLZV = function(
         cex.main = 1
       )
 
-
       if(is.null(ylim))
         ylim = range(c(loV, upV))
 
@@ -230,7 +201,7 @@ plotLZV = function(
         mint,
         mV,
         xlab = xlab,
-        ylab = 'Local Z-score variance',
+        ylab = 'Local Z-score Inverse SD',
         xlim = xlim,
         xaxs = 'i',
         ylim = ylim,
@@ -241,23 +212,34 @@ plotLZV = function(
         cex  = ifelse(slide,0.5,1),
         col  = cols[col],
         main = title,
-        log  = ifelse(logX,'x','')
+        log  = ifelse(logX,'xy','y')
       )
       grid(equilogs = FALSE)
-      abline(h   = varZ,
+      abline(h   = sdZ,
              lty = 2,
              col = cols[1],
              lwd = lwd)
-      mtext(text = paste0(signif(varZ,2),' -'),
+      mtext(text = paste0(signif(sdZ,2),' -'),
             side = 2,
-            at = varZ,
+            at = sdZ,
             col = cols[1],
             cex = 0.75*cex,
             las = 1,
             adj = 1,
             font = 2)
 
+      # Mean variance header
+      ypos = 10^par("usr")[4]
+      mtext(text = ' Average',
+            side = 4,
+            at =  ypos,
+            col = cols[1],
+            cex = 0.75*cex,
+            las = 1,
+            font = 2)
+
     } else {
+
       lines(
         mint,
         mV,
@@ -269,6 +251,23 @@ plotLZV = function(
         col  = cols[col]
       )
     }
+
+    # Mean + CI
+    pm = signif(mV0,2)
+    mtext(text = paste0('- ',pm),
+          side = 4,
+          at   = mV0,
+          col  = cols[col],
+          cex  = 0.75*cex,
+          las  = 1,
+          font = 2)
+    segments(
+      xlim[2], loV0,
+      xlim[2], upV0,
+      col  = cols[col],
+      lwd  = 6 * lwd,
+      lend = 1
+    )
 
     if(slide) {
       ipl = seq(1,length(mint),length.out=nBin)
@@ -291,28 +290,9 @@ plotLZV = function(
         col  = cols[col],
         lwd  = 1.5 * lwd,
         lend = 1)
-
     }
-    xpos = pretty(xOrd)
-    box()
 
-    # Mean variance
-    ypos = par("usr")[4]
-    pm = signif(mV0,2)
-    mtext(text = c(' Average',paste0('- ',pm)),
-          side = 4,
-          at = c(ypos,mV0),
-          col = c(1,cols[col]),
-          cex = 0.75*cex,
-          las = 1,
-          font = 2)
-    segments(
-      xlim[2],loV0,
-      xlim[2],upV0,
-      col  = cols[col],
-      lwd  = 6 * lwd,
-      lend = 1
-    )
+    box()
 
     if(label > 0)
       mtext(

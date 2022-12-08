@@ -4,20 +4,45 @@
 \alias{genIntervals}
 \title{Generate intervals for local statistics}
 \usage{
-genIntervals(N, nBin, slide = FALSE)
+genIntervals(
+  X,
+  nBin = 20,
+  slide = FALSE,
+  equiPop = TRUE,
+  popMin = 30,
+  logBin = TRUE
+)
 }
 \arguments{
-\item{N}{(integer) size of set to partition}
+\item{X}{(integer or vector) if integer: size of set to partition,
+if vector: ordered set of values to bin}
 
 \item{nBin}{(integer) number of contiguous intervals}
 
 \item{slide}{(logical) generate contiguous intervals
-(default `slide = FALSE`) or gerenate from a sliding window}
+(default `slide = FALSE`) or generate intervals from a sliding window}
+
+\item{equiPop}{(logical) generate intervals  with equal bin counts
+(default: `equiPop = TRUE`)}
+
+\item{popMin}{(integer) minimal bin count in an interval}
+
+\item{logBin}{(logical) if `equiPop = FALSE`, one can choose between
+equal range intervals, or equal log-range intervals
+(default `logBin = TRUE`)}
 }
 \value{
 A list with `nbr` the number of intervals, `lwindx` and  `upindx`,
-  vectors of indices for the first and last point of each interval.
+  vectors of indices for the first and last point of each interval
+  `pop` a vector of bin counts, `msg` an error message and the configuration
+  parameters: `slide`, `equiPop`, `popMin` and `logBin`
 }
 \description{
 Generate intervals for local statistics
+}
+\examples{
+\donttest{
+  uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+  int = genIntervals(uE,20) # Generate 20 bins with equal counts
+}
 }

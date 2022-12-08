@@ -1,17 +1,90 @@
+#' Estimate statistics of the SD of a sample
+#'
+#' @param Z (vector) a data sample
+#' @param method (string) one of 'bootstrap' (default) and 'cho'
+#' @param CImethod (string) one of 'bca' (default), 'perc' and 'basic'
+#'   for the CI estimation algorithm from bootstrap sample
+#' @param nBoot (integer) number of bootstrap repeats
+#' @param level (numeric) a probability level for CI (default: 0.95)
+#' @param parallel (string) one of 'no' (default) and 'multicore'
+#'
+#' @return A list containing the mean, sd and ci for the SD
+#'     of the Z sample
+#' @export
+#'
+sdZCI = function (
+  Z,
+  method = c('bootstrap','cho'),
+  CImethod = c('bca','perc','basic'),
+  nBoot = 1500,
+  level = 0.95,
+  parallel = c('no','multicore')
+) {
+
+  method   = match.arg(method)
+  CImethod = match.arg(CImethod)
+  parallel = match.arg(parallel)
+
+  wtd.sd = function(x,weights=NULL,normwt=TRUE)
+    sqrt(Hmisc::wtd.var(x,weights=weights,normwt=normwt))
+
+  switch (
+    method,
+    bootstrap = {
+      bst = boot::boot(Z, wtd.sd, R = nBoot, stype = 'f',
+                       parallel = parallel, normwt = TRUE)
+      bci = boot::boot.ci(bst, conf = level, type = CImethod )
+      ci = switch(
+        CImethod,
+        bca   = bci$bca[1, 4:5],
+        perc  = bci$perc[1, 4:5],
+        basic = bci$basic[1, 4:5]
+      )
+      list(
+        mean   = bci$t0,
+        sd     = sd(bst$t),
+        ci     = ci,
+        method = method,
+        CImethod = CImethod,
+        level  = level
+      )
+    },
+    cho = {
+      # LUP formula for y = sqrt(Var(X))
+      V  = var(Z)
+      S  = sqrt(V)
+      SD = sqrt(ErrViewLib::varvar(Z)) / (2*V^(1/2))
+      list(
+        mean   = S,
+        sd     = SD,
+        ci     = S + qnorm((1 + level) / 2) * c(-1, 1) * SD,
+        method = method,
+        level  = level
+      )
+    }
+  )
+}
 #' Plot reliability diagram
 #'
+#' @param X     (vector) vector of uncertainties
+#' @param Y     (vector) vector of errors
 #' @param nBin  (integer) number of intervals for local coverage stats
+#' @param slide (logical) use sliding window for subsetting (X,Z)
+#' @param equiPop (logical) generate intervals  with equal bin counts
+#'   (default: `equiPop = TRUE`)
+#' @param popMin (integer) minimal bin count in an interval
+#' @param logBin (logical) if `equiPop = FALSE`, one can choose between
+#'   equal range intervals, or equal log-range intervals
+#'   (default `logBin = TRUE`)
+#' @param method (string) one of 'bootstrap' (default) and 'cho'
+#' @param BSmethod (string) bootstrap variant
+#' @param nBoot (integer) number of bootstrap replicas
+#' @param xlim (vector) min and max values of X axis
+#' @param logX  (logical) log-transform X
 #' @param ylim  (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
-#' @param X     (vector) vector of uncertainties
-#' @param Y     (vector) vector of errors
-#' @param logX  (logical) log-transform X
-#' @param slide (logical) use sliding window for subsetting (X,Z)
-#' @param BSmethod (string) bootstrap variant
-#' @param nBoot (integer) number of bootstrap replicas
-#' @param xlim (vector) min and max values of X axis
 #' @param add (logical) add to previous graph ?
 #' @param col (integer) color index of curve to add
 #'
@@ -28,9 +101,14 @@ plotRelDiag = function(
   X, Y,
   logX      = FALSE,
   nBin      = NULL,
-  slide     = NULL,
+  equiPop   = TRUE,
+  popMin    = 30,
+  logBin    = TRUE,
+  intrv     = NULL,
+  method    = c('bootstrap','cho'),
   BSmethod  = c('bca','perc','basic'),
-  nBoot     = 0,
+  nBoot     = 500,
+  slide     = FALSE,
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
@@ -40,76 +118,44 @@ plotRelDiag = function(
   gPars     = ErrViewLib::setgPars()
 ) {
 
+  method   = match.arg(method)
   BSmethod = match.arg(BSmethod)
 
   N = length(Y)
-
-  if(is.null(nBin))
-    nBin  = max(min(floor(N/150),15),2)
-  if(nBin <= 0)
-    stop('>>> nBin should be > 0')
-  if(is.null(slide))
-    slide = nBin <= 4
 
   ord  = order(X)
   xOrd = X[ord]
   yOrd = Y[ord]
 
   # Design local areas
-  intrv = ErrViewLib::genIntervals(N, nBin, slide)
-  xl = log(xOrd)
-  step = diff(range(xl))/nBin
-  lims = exp(min(xl) + (1:nBin -1)* step)
-  lwindx = upindx = c()
-  lwindx[1] = 1
-  for(i in 2:nBin) {
-    lwindx[i] = which(xOrd >= lims[i])[1]
-    upindx[i-1] = lwindx[i] - 1
+  if(is.null(intrv)) {
+    if(is.null(nBin))
+      nBin  = max(min(floor(N/150),15),2)
+    if(nBin <= 0)
+      stop('>>> nBin should be > 0')
+    Xin = N
+    if(!equiPop)
+      Xin = xOrd
+    intrv = ErrViewLib::genIntervals(Xin, nBin, slide, equiPop, popMin, logBin)
   }
-  upindx[nBin] = N
-  intrv = list(
-    lwindx = lwindx,
-    upindx = upindx,
-    nbr = nBin
-  )
+  nBin = intrv$nbr
 
-  # Local variance values
   mV = loV = upV = mint = c()
-  for (i in 1:intrv$nbr) {
-    sel = intrv$lwindx[i]:intrv$upindx[i]
-    M = length(sel)
-    if (M < 5) {
-      mV[i] = NA
-      next
-    }
-    yLoc = yOrd[sel]
-    mV[i]  = sd(yLoc)
-    if(nBoot != 0) {
-      fsd = function(x,w)
-        sqrt(Hmisc::wtd.var(x,w,normwt=TRUE))
-      bst = boot::boot(yLoc, fsd, R = nBoot, stype = 'f')
-      bci = boot::boot.ci(bst, conf = 0.95, type = BSmethod)
-      ci = switch(
-        BSmethod,
-        bca   = bci$bca[1, 4:5],
-        perc  = bci$perc[1, 4:5],
-        basic = bci$basic[1, 4:5]
-      )
-      loV[i] = ci[1]
-      upV[i] = ci[2]
-    } else {
-      loV[i] = NA
-      upV[i] = NA
-    }
-    mint[i] = sqrt(mean(xOrd[sel]^2))
+  for (i in 1:nBin) {
+    sel  = intrv$lwindx[i]:intrv$upindx[i]
+    M    = length(sel)
+    zLoc = yOrd[sel]
+    zs   = sdZCI(
+      zLoc,
+      nBoot = max(nBoot, M),
+      method = method,
+      CImethod = BSmethod
+    )
+    mV[i]   = zs$mean
+    loV[i]  = zs$ci[1]
+    upV[i]  = zs$ci[2]
+    mint[i] = sqrt(mean(xOrd[sel] ^ 2))
   }
-  # Remove empty intervals
-  sel = !is.na(mV)
-  mV = mV[sel]
-  loV = loV[sel]
-  upV = upV[sel]
-  mint = mint[sel]
-
 
   if(length(gPars) == 0)
     gPars = ErrViewLib::setgPars()
