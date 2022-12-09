@@ -142,6 +142,7 @@ plotLZISD = function(
       Xin = xOrd
     intrv = ErrViewLib::genIntervals(Xin, nBin, slide, equiPop, popMin, logBin)
   }
+  nBin0 = nBin
   nBin = intrv$nbr
 
   # if(is.null(slide))
@@ -270,7 +271,7 @@ plotLZISD = function(
     )
 
     if(slide) {
-      ipl = seq(1,length(mint),length.out=nBin)
+      ipl = seq(1,length(mint),length.out=nBin0)
       polygon(
         c(mint,rev(mint)),
         c(loV, rev(upV)),

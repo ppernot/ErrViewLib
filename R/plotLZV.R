@@ -172,7 +172,8 @@ plotLZV = function(
       Xin = xOrd
     intrv = ErrViewLib::genIntervals(Xin, nBin, slide, equiPop, popMin, logBin)
   }
-  nBin = intrv$nbr
+  nBin0 = nBin # Used if slide = TRUE
+  nBin  = intrv$nbr
 
   # LZV values
   mV = loV = upV = mint = c()
@@ -271,7 +272,7 @@ plotLZV = function(
     }
 
     if(slide) {
-      ipl = seq(1,length(mint),length.out=nBin)
+      ipl = seq(1,length(mint),length.out=nBin0)
       polygon(
         c(mint,rev(mint)),
         c(loV, rev(upV)),
@@ -293,7 +294,6 @@ plotLZV = function(
         lend = 1)
 
     }
-    xpos = pretty(xOrd)
     box()
 
     # Mean variance

@@ -266,7 +266,7 @@ plotConfidence = function(
         legend = c('Prob. ref.',legend)
         lty    = c(3,lty)
         pch    = c(NA,pch)
-        lcol   = c(1,lcol)
+        lcol   = c(col,lcol)
       }
       legend(
         legLoc, bty = 'n', inset = 0.05,
@@ -289,4 +289,109 @@ plotConfidence = function(
         cex = cex,
         line = 0.3)
   }
+}
+#' Plot confidence curve for (uE,E) set. Interface to plotConfidence
+#' with different default arguments.
+#'
+#' @param E (vector) prediction uncertainty, uE, or predicted value, V
+#' @param uE (vector) error or z-score
+#' @param normalize (logical) use normalized statistic (default: FALSE)
+#' @param statS (string) statistic to use. One of 'RMSD' (default), 'MAE' or 'Q95'
+#' @param oracle (logical) plot oracle curve (default: FALSE)
+#' @param probref (logical) plot probabilistic reference (probref) curve
+#'   (default: TRUE)
+#' @param conf_probref (logical) plot confidence band around probref curve
+#'   (default: TRUE)
+#' @param dist_probref (string) model error distribution to generate reference curve
+#'   curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
+#' @param rep_probref (integer) sampling repetitions for normal curve (default = 500)
+#' @param col (integer) color index for the curve (default: 6)
+#' @param add (logical) add confidence curve to previous plot (default: FALSE)
+#' @param xlab (string) x axis label (default: 'k% discarded')
+#' @param xlim (vector) limits of the x axis (default: NULL)
+#' @param ylim (vector) limits of the y axis (default: NULL)
+#' @param title (string) a title to display above the plot (default: '')
+#' @param showLegend (logical) display legend (default: TRUE)
+#' @param legend (string) legend for the dataset (default: NULL)
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
+#'   (default: 'bottomleft')
+#' @param label (integer) index of letter for subplot tag (default: 0)
+#' @param gPars (list) graphical parameters (default: ErrViewLib::setgPars())
+#'
+#' @return Plot confidence curve for (E,uE) set
+
+#' @export
+#'
+#' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+#'   plotCC(E, uE, statS = 'MAE')
+#' }
+#'
+plotCC = function(
+  E, uE,
+  statS        = c('RMSD','MAE','Q95'),
+  normalize    = FALSE,
+  oracle       = FALSE,
+  probref      = TRUE,
+  conf_probref = TRUE,
+  dist_probref = c('Normal','Uniform','Normp4','Laplace','T4'),
+  rep_probref  = 500,
+  col          = 6,
+  add          = FALSE,
+  xlab         = 'k% discarded',
+  xlim         = NULL,
+  ylim         = NULL,
+  title        = NULL,
+  label        = 0,
+  showLegend   = TRUE,
+  legend       = NULL,
+  legLoc       = 'bottomleft',
+  gPars        = ErrViewLib::setgPars()
+)
+{
+
+  statS = match.arg(statS)
+  dist_probref = match.arg(dist_probref)
+
+  if(statS == 'RMSD') {
+    stat = ErrViewLib::rmsd
+    ylab = 'RMSD'
+    if(normalize)
+      ylab = 'RMSD / RMSD_0'
+  } else if(statS == 'MAE') {
+    stat = ErrViewLib::mue
+    ylab = 'MAE'
+    if(normalize)
+      ylab = 'MAE / MAE_0'
+  } else {
+    stat = ErrViewLib::q95hd
+    ylab = 'Q95'
+    if(normalize)
+      ylab = 'Q95 / Q95_0'
+  }
+
+  ErrViewLib::plotConfidence(
+    E, uE,
+    stat   = stat,
+    normalize = normalize,
+    oracle  = oracle,
+    probref = probref,
+    conf_probref = conf_probref,
+    dist_probref = dist_probref,
+    rep_probref = rep_probref,
+    col    = col,
+    add    = add,
+    xlab   = xlab,
+    xlim   = xlim,
+    ylab   = ylab,
+    ylim   = ylim,
+    title  = title,
+    label  = label,
+    showLegend = showLegend,
+    legend = legend,
+    legLoc = legLoc,
+    gPars  = gPars
+  )
 }
