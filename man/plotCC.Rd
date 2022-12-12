@@ -8,13 +8,14 @@ with different default arguments.}
 plotCC(
   E,
   uE,
-  statS = c("RMSD", "MAE", "Q95"),
+  statS = c("RMSE", "MAE", "Q95"),
   normalize = FALSE,
   oracle = FALSE,
   probref = TRUE,
   conf_probref = TRUE,
   dist_probref = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
   rep_probref = 500,
+  dfpr = TRUE,
   col = 6,
   add = FALSE,
   xlab = "k\% discarded",
@@ -33,7 +34,7 @@ plotCC(
 
 \item{uE}{(vector) error or z-score}
 
-\item{statS}{(string) statistic to use. One of 'RMSD' (default), 'MAE' or 'Q95'}
+\item{statS}{(string) statistic to use. One of 'RMSE' (default), 'MAE' or 'Q95'}
 
 \item{normalize}{(logical) use normalized statistic (default: FALSE)}
 
@@ -49,6 +50,8 @@ plotCC(
 curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
 
 \item{rep_probref}{(integer) sampling repetitions for normal curve (default = 500)}
+
+\item{dfpr}{(logical) estimate Distance From Probabilistic Reference}
 
 \item{col}{(integer) color index for the curve (default: 6)}
 
@@ -86,5 +89,4 @@ with different default arguments.
   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
   plotCC(E, uE, statS = 'MAE')
 }
-
 }

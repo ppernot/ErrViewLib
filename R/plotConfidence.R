@@ -1,4 +1,4 @@
-#' Auxilliary function for plotConfidence²
+#' Auxilliary function for plotConfidence
 #'
 #' @param X (vector) errors
 #' @param pcVec (vector) percentages
@@ -51,6 +51,7 @@ Sconf = function(
 #' @param conf_probref (logical) plot confidence band around probref curve
 #' @param dist_probref (string) model error distribution to generate Ideal curve
 #' @param rep_probref (integer) sampling repetitions for normal curve
+#' @param dfpr (logical) estimate Distance From Probabilistic Reference
 #' @param col (integer) color index for the curve
 #' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
@@ -66,7 +67,7 @@ Sconf = function(
 #' @param gPars (list) graphical parameters
 #'
 #' @return Plot confidence curve for (E,uE) set
-
+#'
 #' @export
 #'
 #' @examples
@@ -85,6 +86,7 @@ plotConfidence = function(
   conf_probref = FALSE,
   dist_probref = 'Normal',
   rep_probref = 100,
+  dfpr   = TRUE,
   col    = 2,
   type   = c('l','p'),
   add    = FALSE,
@@ -104,6 +106,9 @@ plotConfidence = function(
 
   if (as.numeric(length(E))*as.numeric(length(uE)) == 0)
     return()
+
+  # Do we estimate area from probabilistic reference ?
+  est_dfpr = dfpr & !normalize & probref
 
   # Unit-variance distributions
   Normal = function(N)
@@ -140,6 +145,8 @@ plotConfidence = function(
   # 1 - Draw samples of errors from uncertainties
   # 2 - Estimate Sconf over sample
   # 3 - Estimate mean and CI
+  # 4 - Estimate dfpr
+  vDfpr = vDfprRef = NULL
   if(probref) {
     nrun = rep_probref
     vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
@@ -153,6 +160,11 @@ plotConfidence = function(
       ci = apply(vnorm, 1, ErrViewLib::vhd)
       vnorm_lw = ci[1,]
       vnorm_up = ci[2,]
+    }
+    if(est_dfpr) {
+       vDfpr = sum(abs(vstat-vnorm_mu), na.rm = TRUE)
+       X = apply(vnorm, 2, function(x) sum(abs(x-vnorm_mu), na.rm = TRUE))
+       vDfprRef = ErrViewLib::q95hd(X)
     }
   }
 
@@ -268,6 +280,16 @@ plotConfidence = function(
         pch    = c(NA,pch)
         lcol   = c(col,lcol)
       }
+      if(est_dfpr) {
+        legend = c(
+          legend,
+          paste0('DFPR = ',signif(vDfpr,2)),
+          paste0('UP95 = ',signif(vDfprRef,2))
+        )
+        lty = c(lty,NA,NA)
+        pch = c(pch,NA,NA)
+        lcol = c(lcol,1,1)
+      }
       legend(
         legLoc, bty = 'n', inset = 0.05,
         legend = legend,
@@ -289,6 +311,13 @@ plotConfidence = function(
         cex = cex,
         line = 0.3)
   }
+
+  invisible(
+    list(
+      DFPR = vDfpr,
+      UP95 = vDfprRef
+    )
+  )
 }
 #' Plot confidence curve for (uE,E) set. Interface to plotConfidence
 #' with different default arguments.
@@ -296,15 +325,13 @@ plotConfidence = function(
 #' @param E (vector) prediction uncertainty, uE, or predicted value, V
 #' @param uE (vector) error or z-score
 #' @param normalize (logical) use normalized statistic (default: FALSE)
-#' @param statS (string) statistic to use. One of 'RMSD' (default), 'MAE' or 'Q95'
+#' @param statS (string) statistic to use. One of 'RMSE' (default), 'MAE' or 'Q95'
 #' @param oracle (logical) plot oracle curve (default: FALSE)
-#' @param probref (logical) plot probabilistic reference (probref) curve
-#'   (default: TRUE)
-#' @param conf_probref (logical) plot confidence band around probref curve
-#'   (default: TRUE)
-#' @param dist_probref (string) model error distribution to generate reference curve
-#'   curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
+#' @param probref (logical) plot probabilistic reference (probref) curve (default: TRUE)
+#' @param conf_probref (logical) plot confidence band around probref curve (default: TRUE)
+#' @param dist_probref (string) model error distribution to generate the reference curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
 #' @param rep_probref (integer) sampling repetitions for normal curve (default = 500)
+#' @param dfpr (logical) estimate Distance From Probabilistic Reference
 #' @param col (integer) color index for the curve (default: 6)
 #' @param add (logical) add confidence curve to previous plot (default: FALSE)
 #' @param xlab (string) x axis label (default: 'k% discarded')
@@ -313,13 +340,12 @@ plotConfidence = function(
 #' @param title (string) a title to display above the plot (default: '')
 #' @param showLegend (logical) display legend (default: TRUE)
 #' @param legend (string) legend for the dataset (default: NULL)
-#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
-#'   (default: 'bottomleft')
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord}) (default: 'bottomleft')
 #' @param label (integer) index of letter for subplot tag (default: 0)
 #' @param gPars (list) graphical parameters (default: ErrViewLib::setgPars())
 #'
 #' @return Plot confidence curve for (E,uE) set
-
+#'
 #' @export
 #'
 #' @examples
@@ -328,16 +354,16 @@ plotConfidence = function(
 #'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
 #'   plotCC(E, uE, statS = 'MAE')
 #' }
-#'
 plotCC = function(
   E, uE,
-  statS        = c('RMSD','MAE','Q95'),
+  statS        = c('RMSE','MAE','Q95'),
   normalize    = FALSE,
   oracle       = FALSE,
   probref      = TRUE,
   conf_probref = TRUE,
   dist_probref = c('Normal','Uniform','Normp4','Laplace','T4'),
   rep_probref  = 500,
+  dfpr         = TRUE,
   col          = 6,
   add          = FALSE,
   xlab         = 'k% discarded',
@@ -355,11 +381,11 @@ plotCC = function(
   statS = match.arg(statS)
   dist_probref = match.arg(dist_probref)
 
-  if(statS == 'RMSD') {
+  if(statS == 'RMSE') {
     stat = ErrViewLib::rmsd
-    ylab = 'RMSD'
+    ylab = 'RMSE'
     if(normalize)
-      ylab = 'RMSD / RMSD_0'
+      ylab = 'RMSE / RMSE_0'
   } else if(statS == 'MAE') {
     stat = ErrViewLib::mue
     ylab = 'MAE'
@@ -372,7 +398,7 @@ plotCC = function(
       ylab = 'Q95 / Q95_0'
   }
 
-  ErrViewLib::plotConfidence(
+  res = ErrViewLib::plotConfidence(
     E, uE,
     stat   = stat,
     normalize = normalize,
@@ -381,6 +407,7 @@ plotCC = function(
     conf_probref = conf_probref,
     dist_probref = dist_probref,
     rep_probref = rep_probref,
+    dfpr   = dfpr,
     col    = col,
     add    = add,
     xlab   = xlab,
@@ -394,4 +421,6 @@ plotCC = function(
     legLoc = legLoc,
     gPars  = gPars
   )
+
+  invisible(res)
 }

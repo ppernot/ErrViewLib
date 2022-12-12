@@ -14,6 +14,7 @@ plotConfidence(
   conf_probref = FALSE,
   dist_probref = "Normal",
   rep_probref = 100,
+  dfpr = TRUE,
   col = 2,
   type = c("l", "p"),
   add = FALSE,
@@ -47,6 +48,8 @@ plotConfidence(
 \item{dist_probref}{(string) model error distribution to generate Ideal curve}
 
 \item{rep_probref}{(integer) sampling repetitions for normal curve}
+
+\item{dfpr}{(logical) estimate Distance From Probabilistic Reference}
 
 \item{col}{(integer) color index for the curve}
 
