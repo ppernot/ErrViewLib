@@ -16,7 +16,7 @@
 #' }
 Sconf = function(
   X,
-  pcVec = 0:100,
+  pcVec = 0:99,
   stat = ErrViewLib::mue,
   normalize = TRUE
 ) {
@@ -132,7 +132,7 @@ plotConfidence = function(
   }
 
   M = length(uE)
-  pcVec = 0:100 # Vector of percentages
+  pcVec = 0:99 # Vector of percentages
 
   # Statistics for data
   vstat = ErrViewLib::Sconf(E, pcVec, stat, normalize)
@@ -228,7 +228,17 @@ plotConfidence = function(
       xlim = xlim,
       ylab = ylab,
       ylim = ylim,
-      main = title
+      main = ''
+    )
+    title(main = title, line = 2)
+    axis(
+      3,
+      at = seq(20,80,by=20),
+      labels = signif(
+        quantile(uE,
+                 probs = rev(seq(0.2,0.8,by = 0.2))),
+        2),
+      line = 0
     )
     grid()
 
