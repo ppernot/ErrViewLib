@@ -2,9 +2,9 @@
 % Please edit documentation in R/plotConfidence.R
 \name{Sconf}
 \alias{Sconf}
-\title{Auxilliary function for plotConfidence²}
+\title{Auxilliary function for plotConfidence}
 \usage{
-Sconf(X, pcVec = 0:100, stat = ErrViewLib::mue, normalize = TRUE)
+Sconf(X, pcVec = 0:99, stat = ErrViewLib::mue, normalize = TRUE)
 }
 \arguments{
 \item{X}{(vector) errors}
@@ -19,7 +19,7 @@ Sconf(X, pcVec = 0:100, stat = ErrViewLib::mue, normalize = TRUE)
 Vector of CC stats
 }
 \description{
-Auxilliary function for plotConfidence²
+Auxilliary function for plotConfidence
 }
 \examples{
 \donttest{

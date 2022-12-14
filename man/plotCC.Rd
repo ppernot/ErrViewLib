@@ -23,6 +23,7 @@ plotCC(
   ylim = NULL,
   title = NULL,
   label = 0,
+  showUk = FALSE,
   showLegend = TRUE,
   legend = NULL,
   legLoc = "bottomleft",
@@ -40,14 +41,11 @@ plotCC(
 
 \item{oracle}{(logical) plot oracle curve (default: FALSE)}
 
-\item{probref}{(logical) plot probabilistic reference (probref) curve
-(default: TRUE)}
+\item{probref}{(logical) plot probabilistic reference (probref) curve (default: TRUE)}
 
-\item{conf_probref}{(logical) plot confidence band around probref curve
-(default: TRUE)}
+\item{conf_probref}{(logical) plot confidence band around probref curve (default: TRUE)}
 
-\item{dist_probref}{(string) model error distribution to generate reference curve
-curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
+\item{dist_probref}{(string) model error distribution to generate the reference curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
 
 \item{rep_probref}{(integer) sampling repetitions for normal curve (default = 500)}
 
@@ -67,12 +65,13 @@ curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
 
 \item{label}{(integer) index of letter for subplot tag (default: 0)}
 
+\item{showUk}{(logical) plot secondary axis with u_k values; supersedes `title`}
+
 \item{showLegend}{(logical) display legend (default: TRUE)}
 
 \item{legend}{(string) legend for the dataset (default: NULL)}
 
-\item{legLoc}{(string) location of legend (see \link[grDevices]{xy.coord})
-(default: 'bottomleft')}
+\item{legLoc}{(string) location of legend (see \link[grDevices]{xy.coord}) (default: 'bottomleft')}
 
 \item{gPars}{(list) graphical parameters (default: ErrViewLib::setgPars())}
 }

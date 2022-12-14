@@ -60,6 +60,7 @@ Sconf = function(
 #' @param ylab (string) y axis label
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
+#' @param showUk (logical) plot secondary axis with u_k values; supersedes `title`
 #' @param showLegend (logical) display legend
 #' @param legend (string) legend for the dataset
 #' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
@@ -86,6 +87,7 @@ plotConfidence = function(
   conf_probref = FALSE,
   dist_probref = 'Normal',
   rep_probref = 100,
+  showUk = FALSE,
   dfpr   = TRUE,
   col    = 2,
   type   = c('l','p'),
@@ -230,16 +232,23 @@ plotConfidence = function(
       ylim = ylim,
       main = ''
     )
-    title(main = title, line = 2)
-    axis(
-      3,
-      at = seq(20,80,by=20),
-      labels = signif(
-        quantile(uE,
-                 probs = rev(seq(0.2,0.8,by = 0.2))),
-        2),
-      line = 0
-    )
+    if(showUk) {
+      axis(
+        3,
+        at = seq(20,80,by=20),
+        labels = signif(
+          quantile(uE,
+                   probs = rev(seq(0.2,0.8,by = 0.2))),
+          2),
+        padj = 0.5
+      )
+      mtext(expression(u[k]),side = 3, at = 50, line = 1.5, cex = cex)
+      # title(main = title, line = 2)
+
+    } else {
+      title(main = title)
+
+    }
     grid()
 
     if(normalize)
@@ -348,6 +357,7 @@ plotConfidence = function(
 #' @param xlim (vector) limits of the x axis (default: NULL)
 #' @param ylim (vector) limits of the y axis (default: NULL)
 #' @param title (string) a title to display above the plot (default: '')
+#' @param showUk (logical) plot secondary axis with u_k values; supersedes `title`
 #' @param showLegend (logical) display legend (default: TRUE)
 #' @param legend (string) legend for the dataset (default: NULL)
 #' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord}) (default: 'bottomleft')
@@ -381,12 +391,12 @@ plotCC = function(
   ylim         = NULL,
   title        = NULL,
   label        = 0,
+  showUk       = FALSE,
   showLegend   = TRUE,
   legend       = NULL,
   legLoc       = 'bottomleft',
   gPars        = ErrViewLib::setgPars()
-)
-{
+) {
 
   statS = match.arg(statS)
   dist_probref = match.arg(dist_probref)
@@ -426,6 +436,7 @@ plotCC = function(
     ylim   = ylim,
     title  = title,
     label  = label,
+    showUk = showUk,
     showLegend = showLegend,
     legend = legend,
     legLoc = legLoc,

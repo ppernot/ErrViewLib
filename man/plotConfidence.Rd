@@ -14,6 +14,7 @@ plotConfidence(
   conf_probref = FALSE,
   dist_probref = "Normal",
   rep_probref = 100,
+  showUk = FALSE,
   dfpr = TRUE,
   col = 2,
   type = c("l", "p"),
@@ -48,6 +49,8 @@ plotConfidence(
 \item{dist_probref}{(string) model error distribution to generate Ideal curve}
 
 \item{rep_probref}{(integer) sampling repetitions for normal curve}
+
+\item{showUk}{(logical) plot secondary axis with u_k values; supersedes `title`}
 
 \item{dfpr}{(logical) estimate Distance From Probabilistic Reference}
 
