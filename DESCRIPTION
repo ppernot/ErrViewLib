@@ -1,7 +1,7 @@
 Package: ErrViewLib
 Type: Package
 Title: Library for ErrView
-Version: 1.5
+Version: 1.6
 Authors@R: 
     person(given = "Pascal ",
            family = "PERNOT",

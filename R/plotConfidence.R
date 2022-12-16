@@ -353,7 +353,7 @@ plotConfidence = function(
 #' @param dfpr (logical) estimate Distance From Probabilistic Reference
 #' @param col (integer) color index for the curve (default: 6)
 #' @param add (logical) add confidence curve to previous plot (default: FALSE)
-#' @param xlab (string) x axis label (default: 'k% discarded')
+#' @param xlab (string) x axis label (default: 'k \% discarded)
 #' @param xlim (vector) limits of the x axis (default: NULL)
 #' @param ylim (vector) limits of the y axis (default: NULL)
 #' @param title (string) a title to display above the plot (default: '')
