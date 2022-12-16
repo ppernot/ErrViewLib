@@ -148,7 +148,7 @@ plotConfidence = function(
   # 2 - Estimate Sconf over sample
   # 3 - Estimate mean and CI
   # 4 - Estimate dfpr
-  vDfpr = vDfprRef = NULL
+  vDFPR = vUP_DFPR  = NULL
   if(probref) {
     nrun = rep_probref
     vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
@@ -164,9 +164,9 @@ plotConfidence = function(
       vnorm_up = ci[2,]
     }
     if(est_dfpr) {
-       vDfpr = sum(abs(vstat-vnorm_mu), na.rm = TRUE)
-       X = apply(vnorm, 2, function(x) sum(abs(x-vnorm_mu), na.rm = TRUE))
-       vDfprRef = ErrViewLib::q95hd(X)
+      vDFPR = sum(abs(vstat-vnorm_mu), na.rm = TRUE)
+      X = apply(vnorm, 2, function(x) sum(abs(x-vnorm_mu), na.rm = TRUE))
+      vUP_DFPR = ErrViewLib::q95hd(X)
     }
   }
 
@@ -302,8 +302,8 @@ plotConfidence = function(
       if(est_dfpr) {
         legend = c(
           legend,
-          paste0('DFPR = ',signif(vDfpr,2)),
-          paste0('UP95 = ',signif(vDfprRef,2))
+          paste0('DFPR = ',signif(vDFPR,2)),
+          paste0('UP_95 = ',signif(vUP_DFPR,2))
         )
         lty = c(lty,NA,NA)
         pch = c(pch,NA,NA)
@@ -333,8 +333,8 @@ plotConfidence = function(
 
   invisible(
     list(
-      DFPR = vDfpr,
-      UP95 = vDfprRef
+      DFPR  = vDFPR,
+      UP_95 = vUP_DFPR
     )
   )
 }

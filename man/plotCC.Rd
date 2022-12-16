@@ -55,7 +55,7 @@ plotCC(
 
 \item{add}{(logical) add confidence curve to previous plot (default: FALSE)}
 
-\item{xlab}{(string) x axis label (default: 'k% discarded')}
+\item{xlab}{(string) x axis label (default: 'k \% discarded)}
 
 \item{xlim}{(vector) limits of the x axis (default: NULL)}
 
