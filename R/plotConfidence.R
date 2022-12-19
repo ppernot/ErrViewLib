@@ -303,7 +303,7 @@ plotConfidence = function(
         legend = c(
           legend,
           paste0('DFPR = ',signif(vDFPR,2)),
-          paste0('UP_95 = ',signif(vUP_DFPR,2))
+          paste0('UP95 = ',signif(vUP_DFPR,2))
         )
         lty = c(lty,NA,NA)
         pch = c(pch,NA,NA)
@@ -333,8 +333,8 @@ plotConfidence = function(
 
   invisible(
     list(
-      DFPR  = vDFPR,
-      UP_95 = vUP_DFPR
+      DFPR = vDFPR,
+      UP95 = vUP_DFPR
     )
   )
 }
