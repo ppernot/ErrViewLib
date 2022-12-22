@@ -56,7 +56,7 @@ plotCalCurve(
 \item{plot}{(logical) plot the results}
 }
 \value{
-Invisibly returns a list of LCP results. Mainly used
+Invisibly returns a list of calibration statistics. Mainly used
   for its plotting side effect.
 }
 \description{

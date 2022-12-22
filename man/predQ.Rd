@@ -33,6 +33,9 @@ predQ(
 
 \item{rTest}{-}
 }
+\value{
+a list
+}
 \description{
 Auxillary function for plotCalCurve
 Predicted quantiles of errors

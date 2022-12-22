@@ -10,7 +10,7 @@
 #' @param prob -
 #' @param CImeth -
 #'
-#' @return
+#' @return a list
 #'
 predQ = function(
   Learn, Test,
@@ -117,7 +117,7 @@ predQ = function(
 #' @param gPars (list) graphical parameters
 #' @param plot (logical) plot the results
 #'
-#' @return Invisibly returns a list of LCP results. Mainly used
+#' @return Invisibly returns a list of calibration statistics. Mainly used
 #'   for its plotting side effect.
 #' @export
 #'

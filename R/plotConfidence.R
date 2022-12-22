@@ -51,7 +51,8 @@ Sconf = function(
 #' @param conf_probref (logical) plot confidence band around probref curve
 #' @param dist_probref (string) model error distribution to generate Ideal curve
 #' @param rep_probref (integer) sampling repetitions for normal curve
-#' @param dfpr (logical) estimate Distance From Probabilistic Reference
+#' @param plot (function) produce plot ?
+#' @param confStat (logical) estimate DFPR and/or AUCO ?
 #' @param col (integer) color index for the curve
 #' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
@@ -88,7 +89,8 @@ plotConfidence = function(
   dist_probref = 'Normal',
   rep_probref = 100,
   showUk = FALSE,
-  dfpr   = TRUE,
+  plot   = TRUE,
+  confStat = TRUE,
   col    = 2,
   type   = c('l','p'),
   add    = FALSE,
@@ -110,7 +112,8 @@ plotConfidence = function(
     return()
 
   # Do we estimate area from probabilistic reference ?
-  est_dfpr = dfpr & !normalize & probref
+  est_dfpr = confStat & !normalize & probref
+  est_auco = confStat & !normalize & oracle
 
   # Unit-variance distributions
   Normal = function(N)
@@ -140,8 +143,12 @@ plotConfidence = function(
   vstat = ErrViewLib::Sconf(E, pcVec, stat, normalize)
 
   # Statistics for oracle
-  if(oracle)
+  vAUCO = NULL
+  if(oracle) {
     vora = ErrViewLib::Sconf(O, pcVec, stat, normalize)
+    if(est_auco)
+      vAUCO = sum(abs(vstat-vora), na.rm = TRUE)
+  }
 
   # Statistics for probabilistic reference
   # 1 - Draw samples of errors from uncertainties
@@ -170,173 +177,187 @@ plotConfidence = function(
     }
   }
 
-  # Expose gPars list
-  for (n in names(gPars))
-    assign(n, rlist::list.extract(gPars, n))
+  if(plot) {
+    # Expose gPars list
+    for (n in names(gPars))
+      assign(n, rlist::list.extract(gPars, n))
 
-  if(add) {
+    if(add) {
 
-    if(probref) {
-      lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
-      if(conf_probref) {
-        polygon(
-          c(pcVec,rev(pcVec)),
-          c(vnorm_up,rev(vnorm_lw)),
-          col = cols_tr[col],
-          border = NA)
+      if(probref) {
+        lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
+        if(conf_probref) {
+          polygon(
+            c(pcVec,rev(pcVec)),
+            c(vnorm_up,rev(vnorm_lw)),
+            col = cols_tr[col],
+            border = NA)
+        }
       }
-    }
-    lines(pcVec, vstat,
-          type = type,
-          pch = 16,
-          lwd = 2 * lwd,
-          col = cols[col])
-
-  } else {
-
-    par(
-      mfrow = c(1, 1),
-      mar = mar,
-      mgp = mgp,
-      pty = 's',
-      tcl = tcl,
-      cex = cex,
-      lwd = lwd,
-      xaxs = 'i',
-      yaxs = 'i',
-      cex.main = 1
-    )
-
-    if (is.null(xlim))
-      xlim = range(pcVec)
-
-    if (is.null(ylim)) {
-      vs = vstat[is.finite(vstat)]
-      ylim = c(0, max(vs))
-      if(oracle)
-        ylim = range(c(ylim,vora[is.finite(vora)]))
-      if(probref)
-        ylim = range(c(ylim,vnorm_mu[is.finite(vnorm_mu)]))
-    }
-
-    plot(
-      pcVec, vstat,
-      type = 'n',
-      lty  = 1,
-      pch  = 16,
-      lwd  = 2*lwd,
-      col  = cols[col],
-      xlab = xlab,
-      xlim = xlim,
-      ylab = ylab,
-      ylim = ylim,
-      main = ''
-    )
-    if(showUk) {
-      axis(
-        3,
-        at = seq(20,80,by=20),
-        labels = signif(
-          quantile(uE,
-                   probs = rev(seq(0.2,0.8,by = 0.2))),
-          2),
-        padj = 0.5
-      )
-      mtext(expression(u[k]),side = 3, at = 50, line = 1.5, cex = cex)
-      # title(main = title, line = 2)
+      lines(pcVec, vstat,
+            type = type,
+            pch = 16,
+            lwd = 2 * lwd,
+            col = cols[col])
 
     } else {
-      title(main = title)
 
-    }
-    grid()
-
-    if(normalize)
-      abline(h = 1, lwd = 2 * lwd, col = cols[1])
-
-    if(oracle)
-      lines(pcVec, vora, lty = 2, lwd = 2*lwd, col=cols[1])
-
-    if(probref) {
-      lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
-      if(conf_probref) {
-        polygon(
-          c(pcVec,rev(pcVec)),
-          c(vnorm_up,rev(vnorm_lw)),
-          col = cols_tr[col],
-          border = NA
-        )
-      }
-    }
-
-    lines(
-      pcVec, vstat,
-      type = type,
-      lty  = 1,
-      pch  = 16,
-      lwd  = 2*lwd,
-      col  = cols[col]
-    )
-
-    # Build and display legend
-    if(showLegend) {
-      lty = if(type == 'l') 1 else NA
-      pch = if(type == 'l') NA else 16
-      lcol = col
-
-      if(is.null(legend))
-        legend = 'Data'
-
-      if(oracle) {
-        legend = c('Oracle',legend)
-        lty    = c(2,lty)
-        pch    = c(NA,pch)
-        lcol   = c(1,lcol)
-      }
-      if(probref) {
-        legend = c('Prob. ref.',legend)
-        lty    = c(3,lty)
-        pch    = c(NA,pch)
-        lcol   = c(col,lcol)
-      }
-      if(est_dfpr) {
-        legend = c(
-          legend,
-          paste0('DFPR = ',signif(vDFPR,2)),
-          paste0('UP95 = ',signif(vUP_DFPR,2))
-        )
-        lty = c(lty,NA,NA)
-        pch = c(pch,NA,NA)
-        lcol = c(lcol,1,1)
-      }
-      legend(
-        legLoc, bty = 'n', inset = 0.05,
-        legend = legend,
-        lty    = lty,
-        lwd    = 2*lwd,
-        col    = cols[lcol],
-        pch    = pch
-      )
-    }
-
-    box()
-
-    # Display subfigure label
-    if(label > 0)
-      mtext(
-        text = paste0('(', letters[label], ')'),
-        side = 3,
-        adj = 1,
+      par(
+        mfrow = c(1, 1),
+        mar = mar,
+        mgp = mgp,
+        pty = 's',
+        tcl = tcl,
         cex = cex,
-        line = 0.3)
+        lwd = lwd,
+        xaxs = 'i',
+        yaxs = 'i',
+        cex.main = 1
+      )
+
+      if (is.null(xlim))
+        xlim = range(pcVec)
+
+      if (is.null(ylim)) {
+        vs = vstat[is.finite(vstat)]
+        ylim = c(0, max(vs))
+        if(oracle)
+          ylim = range(c(ylim,vora[is.finite(vora)]))
+        if(probref)
+          ylim = range(c(ylim,vnorm_mu[is.finite(vnorm_mu)]))
+      }
+
+      plot(
+        pcVec, vstat,
+        type = 'n',
+        lty  = 1,
+        pch  = 16,
+        lwd  = 2*lwd,
+        col  = cols[col],
+        xlab = xlab,
+        xlim = xlim,
+        ylab = ylab,
+        ylim = ylim,
+        main = ''
+      )
+      if(showUk) {
+        axis(
+          3,
+          at = seq(20,80,by=20),
+          labels = signif(
+            quantile(uE,
+                     probs = rev(seq(0.2,0.8,by = 0.2))),
+            2),
+          padj = 0.5
+        )
+        mtext(expression(u[k]),side = 3, at = 50, line = 1.5, cex = cex)
+        # title(main = title, line = 2)
+
+      } else {
+        title(main = title)
+
+      }
+      grid()
+
+      if(normalize)
+        abline(h = 1, lwd = 2 * lwd, col = cols[1])
+
+      if(oracle)
+        lines(pcVec, vora, lty = 2, lwd = 2*lwd, col=cols[1])
+
+      if(probref) {
+        lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
+        if(conf_probref) {
+          polygon(
+            c(pcVec,rev(pcVec)),
+            c(vnorm_up,rev(vnorm_lw)),
+            col = cols_tr[col],
+            border = NA
+          )
+        }
+      }
+
+      lines(
+        pcVec, vstat,
+        type = type,
+        lty  = 1,
+        pch  = 16,
+        lwd  = 2*lwd,
+        col  = cols[col]
+      )
+
+      # Build and display legend
+      if(showLegend) {
+        lty = if(type == 'l') 1 else NA
+        pch = if(type == 'l') NA else 16
+        lcol = col
+
+        if(is.null(legend))
+          legend = 'Data'
+
+        if(oracle) {
+          legend = c('Oracle',legend)
+          lty    = c(2,lty)
+          pch    = c(NA,pch)
+          lcol   = c(1,lcol)
+        }
+        if(est_auco) {
+          legend = c(
+            legend,
+            paste0('AUCO = ',signif(vAUCO,2))
+          )
+          lty = c(lty,NA)
+          pch = c(pch,NA)
+          lcol = c(lcol,1)
+        }
+        if(probref) {
+          legend = c('Prob. ref.',legend)
+          lty    = c(3,lty)
+          pch    = c(NA,pch)
+          lcol   = c(col,lcol)
+        }
+        if(est_dfpr) {
+          legend = c(
+            legend,
+            paste0('DFPR = ',signif(vDFPR,2)),
+            paste0('UP95 = ',signif(vUP_DFPR,2))
+          )
+          lty = c(lty,NA,NA)
+          pch = c(pch,NA,NA)
+          lcol = c(lcol,1,1)
+        }
+        legend(
+          legLoc, bty = 'n', inset = 0.05,
+          legend = legend,
+          lty    = lty,
+          lwd    = 2*lwd,
+          col    = cols[lcol],
+          pch    = pch
+        )
+      }
+
+      box()
+
+      # Display subfigure label
+      if(label > 0)
+        mtext(
+          text = paste0('(', letters[label], ')'),
+          side = 3,
+          adj = 1,
+          cex = cex,
+          line = 0.3)
+    }
+
   }
 
   invisible(
     list(
       DFPR = vDFPR,
-      UP95 = vUP_DFPR
+      UP95 = vUP_DFPR,
+      AUCO = vAUCO
     )
   )
+
 }
 #' Plot confidence curve for (uE,E) set. Interface to plotConfidence
 #' with different default arguments.
@@ -350,7 +371,8 @@ plotConfidence = function(
 #' @param conf_probref (logical) plot confidence band around probref curve (default: TRUE)
 #' @param dist_probref (string) model error distribution to generate the reference curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
 #' @param rep_probref (integer) sampling repetitions for normal curve (default = 500)
-#' @param dfpr (logical) estimate Distance From Probabilistic Reference
+#' @param plot (function) produce plot ?
+#' @param confStat (logical) estimate DFPR and/or AUCO ?
 #' @param col (integer) color index for the curve (default: 6)
 #' @param add (logical) add confidence curve to previous plot (default: FALSE)
 #' @param xlab (string) x axis label (default: 'k \% discarded)
@@ -383,7 +405,8 @@ plotCC = function(
   conf_probref = TRUE,
   dist_probref = c('Normal','Uniform','Normp4','Laplace','T4'),
   rep_probref  = 500,
-  dfpr         = TRUE,
+  plot         = TRUE,
+  confStat     = TRUE,
   col          = 6,
   add          = FALSE,
   xlab         = 'k% discarded',
@@ -426,8 +449,9 @@ plotCC = function(
     probref = probref,
     conf_probref = conf_probref,
     dist_probref = dist_probref,
-    rep_probref = rep_probref,
-    dfpr   = dfpr,
+    rep_probref  = rep_probref,
+    plot         = plot,
+    confStat     = confStat,
     col    = col,
     add    = add,
     xlab   = xlab,

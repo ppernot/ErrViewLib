@@ -15,7 +15,8 @@ plotConfidence(
   dist_probref = "Normal",
   rep_probref = 100,
   showUk = FALSE,
-  dfpr = TRUE,
+  plot = TRUE,
+  confStat = TRUE,
   col = 2,
   type = c("l", "p"),
   add = FALSE,
@@ -52,7 +53,9 @@ plotConfidence(
 
 \item{showUk}{(logical) plot secondary axis with u_k values; supersedes `title`}
 
-\item{dfpr}{(logical) estimate Distance From Probabilistic Reference}
+\item{plot}{(function) produce plot ?}
+
+\item{confStat}{(logical) estimate DFPR and/or AUCO ?}
 
 \item{col}{(integer) color index for the curve}
 

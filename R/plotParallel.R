@@ -20,7 +20,7 @@ plotParallel = function (X, maxPoints = nrow(X),
                          colors = NULL,
                          rescale = TRUE,
                          scramble = FALSE,
-                         outliers = FALSE,
+                         outliers = "no",
                          outLabCex = 1,
                          outMethCex = 1,
                          xlim = c(1, ncol(X)),
@@ -47,7 +47,7 @@ plotParallel = function (X, maxPoints = nrow(X),
 
   par(
     mfrow = c(1, 1),
-    mar = c(8,3,0.2,3),
+    mar = c(8,mar[2:4]),
     mgp = mgp,
     pty = pty,
     tcl = tcl,
@@ -59,6 +59,8 @@ plotParallel = function (X, maxPoints = nrow(X),
   ## Define color gradient
   if(is.null(colors))
     colors = genColors(rowMeans(X1))
+  else
+    colors = gPars$cols[colors]
 
   if(rescale) {
     X = apply(X1,2,scale)
@@ -83,7 +85,7 @@ plotParallel = function (X, maxPoints = nrow(X),
     ylab = ifelse(
       rescale,
       'Centered-Scaled Errors',
-      paste0('Errors [',units,']')
+      paste0(ylab,' [',units,']')
     ),
     cols_tr2 = cols_tr2
   )

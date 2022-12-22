@@ -15,7 +15,8 @@ plotCC(
   conf_probref = TRUE,
   dist_probref = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
   rep_probref = 500,
-  dfpr = TRUE,
+  plot = TRUE,
+  confStat = TRUE,
   col = 6,
   add = FALSE,
   xlab = "k\% discarded",
@@ -49,7 +50,9 @@ plotCC(
 
 \item{rep_probref}{(integer) sampling repetitions for normal curve (default = 500)}
 
-\item{dfpr}{(logical) estimate Distance From Probabilistic Reference}
+\item{plot}{(function) produce plot ?}
+
+\item{confStat}{(logical) estimate DFPR and/or AUCO ?}
 
 \item{col}{(integer) color index for the curve (default: 6)}
 
