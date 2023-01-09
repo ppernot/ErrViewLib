@@ -12,7 +12,7 @@ plotParallel(
   colors = NULL,
   rescale = TRUE,
   scramble = FALSE,
-  outliers = FALSE,
+  outliers = "no",
   outLabCex = 1,
   outMethCex = 1,
   xlim = c(1, ncol(X)),

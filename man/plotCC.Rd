@@ -16,7 +16,8 @@ plotCC(
   dist_probref = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
   rep_probref = 500,
   plot = TRUE,
-  confStat = TRUE,
+  score = TRUE,
+  confStat = score,
   col = 6,
   add = FALSE,
   xlab = "k\% discarded",
@@ -52,7 +53,9 @@ plotCC(
 
 \item{plot}{(function) produce plot ?}
 
-\item{confStat}{(logical) estimate DFPR and/or AUCO ?}
+\item{score}{(logical) estimate DFPR and/or AUCO}
+
+\item{confStat}{(logical) estimate DFPR and/or AUCO}
 
 \item{col}{(integer) color index for the curve (default: 6)}
 

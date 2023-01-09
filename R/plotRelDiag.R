@@ -82,6 +82,8 @@ sdZCI = function (
 #' @param nBoot (integer) number of bootstrap replicas
 #' @param xlim (vector) min and max values of X axis
 #' @param logX  (logical) log-transform X
+#' @param plot (function) produce plot ?
+#' @param score (logical) estimate calibration metrics ?
 #' @param ylim  (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -110,6 +112,8 @@ plotRelDiag = function(
   BSmethod  = c('bca','perc','basic'),
   nBoot     = 500,
   slide     = FALSE,
+  plot      = TRUE,
+  score     = TRUE,
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
@@ -159,106 +163,113 @@ plotRelDiag = function(
     mint[i] = sqrt(mean(xOrd[sel] ^ 2))
   }
 
-  if(length(gPars) == 0)
-    gPars = ErrViewLib::setgPars()
+  ENCE = NULL
+  if(score)
+    ENCE = mean(abs(mV-mint)/mint)
 
-  for (n in names(gPars))
-    assign(n, rlist::list.extract(gPars, n))
 
-  if(!add) {
-    par(
-      mfrow = c(1, 1),
-      mar = mar,
-      mgp = mgp,
-      pty = 's',
-      tcl = tcl,
-      cex = cex,
-      lwd = lwd,
-      cex.main = 1
-    )
+  if(plot) {
+    if(length(gPars) == 0)
+      gPars = ErrViewLib::setgPars()
 
-    if(is.null(xlim))
-      if(!any(is.na(loV)))
-        xlim = range(c(mint,loV,upV))
-    else
-      xlim = range(c(mint,mV))
+    for (n in names(gPars))
+      assign(n, rlist::list.extract(gPars, n))
 
-    if(is.null(ylim))
-      if(!any(is.na(loV)))
-        ylim = range(c(mint,loV,upV))
-    else
-      ylim = range(c(mint,mV))
+    if(!add) {
+      par(
+        mfrow = c(1, 1),
+        mar = mar,
+        mgp = mgp,
+        pty = 's',
+        tcl = tcl,
+        cex = cex,
+        lwd = lwd,
+        cex.main = 1
+      )
 
-    matplot(
-      mint,
-      mV,
-      xlab = 'RMS(uE)',
-      ylab = 'SD(E)',
-      xlim = xlim,
-      # xaxs = 'i',
-      ylim = ylim,
-      type = 'b',
-      lty  = 3,
-      pch  = 16,
-      lwd  = lwd,
-      cex  = ifelse(slide,0.5,1),
-      col  = cols[col],
-      main = title,
-      log  = ifelse(logX,'xy','')
-    )
-    grid(equilogs = FALSE)
-    abline(a = 0, b = 1,
-           lty = 2,
-           col = cols[1],
-           lwd = lwd)
+      if(is.null(xlim))
+        if(!any(is.na(loV)))
+          xlim = range(c(mint,loV,upV))
+      else
+        xlim = range(c(mint,mV))
 
-  } else {
-    lines(
-      mint, mV,
-      type = 'b',
-      lty  = 3,
-      pch  = 16,
-      lwd  = lwd,
-      cex  = ifelse(slide,0.5,1),
-      col  = cols[col]
-    )
+      if(is.null(ylim))
+        if(!any(is.na(loV)))
+          ylim = range(c(mint,loV,upV))
+      else
+        ylim = range(c(mint,mV))
 
-  }
-
-  if(!any(is.na(loV)))
-    if(slide) {
-      ipl = seq(1,length(mint),length.out=nBin0)
-      polygon(
-        c(mint,rev(mint)),
-        c(loV, rev(upV)),
-        col = cols_tr[col],
-        border = NA)
-      segments(
-        mint[ipl], loV[ipl],
-        mint[ipl], upV[ipl],
+      matplot(
+        mint,
+        mV,
+        xlab = 'RMS(uE)',
+        ylab = 'SD(E)',
+        xlim = xlim,
+        # xaxs = 'i',
+        ylim = ylim,
+        type = 'b',
+        lty  = 3,
+        pch  = 16,
+        lwd  = lwd,
+        cex  = ifelse(slide,0.5,1),
         col  = cols[col],
-        lwd  = 1.5 * lwd,
-        lend = 1)
+        main = title,
+        log  = ifelse(logX,'xy','')
+      )
+      grid(equilogs = FALSE)
+      abline(a = 0, b = 1,
+             lty = 2,
+             col = cols[1],
+             lwd = lwd)
 
     } else {
-      segments(
-        mint, loV,
-        mint, upV,
-        col  = cols[col],
-        lwd  = 1.5 * lwd,
-        lend = 1)
+      lines(
+        mint, mV,
+        type = 'b',
+        lty  = 3,
+        pch  = 16,
+        lwd  = lwd,
+        cex  = ifelse(slide,0.5,1),
+        col  = cols[col]
+      )
 
     }
-  box()
 
-  if(label > 0)
-    mtext(
-      text = paste0('(', letters[label], ')'),
-      side = 3,
-      adj = 1,
-      cex = cex,
-      line = 0.3)
+    if(!any(is.na(loV)))
+      if(slide) {
+        ipl = seq(1,length(mint),length.out=nBin0)
+        polygon(
+          c(mint,rev(mint)),
+          c(loV, rev(upV)),
+          col = cols_tr[col],
+          border = NA)
+        segments(
+          mint[ipl], loV[ipl],
+          mint[ipl], upV[ipl],
+          col  = cols[col],
+          lwd  = 1.5 * lwd,
+          lend = 1)
 
+      } else {
+        segments(
+          mint, loV,
+          mint, upV,
+          col  = cols[col],
+          lwd  = 1.5 * lwd,
+          lend = 1)
+
+      }
+    box()
+
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj = 1,
+        cex = cex,
+        line = 0.3)
+
+  }
 
   invisible(
     list(
@@ -267,7 +278,8 @@ plotRelDiag = function(
       upindx = intrv$upindx,
       pc     = mV,
       pcl    = loV,
-      pcu    = upV
+      pcu    = upV,
+      ENCE   = ENCE
     )
   )
 }

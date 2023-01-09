@@ -77,16 +77,17 @@ rsdZCI = function (
 #' @param nBin (integer) number of intervals for local coverage stats
 #' @param slide (logical) use sliding window for subsetting (X,Z)
 #' @param equiPop (logical) generate intervals  with equal bin counts
-#'   (default: `equiPop = TRUE`)
+#'   (default: `TRUE`)
 #' @param popMin (integer) minimal bin count in an interval
 #' @param logBin (logical) if `equiPop = FALSE`, one can choose between
 #'   equal range intervals, or equal log-range intervals
-#'   (default `logBin = TRUE`)
+#'   (default `TRUE`)
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #' @param plot (logical) plot the results
+#' @param score (logical) estimate calibration stats (default: `FALSE`)
 #' @param xlab (string) X axis label
 #' @param xlim (vector) min and max values of X axis
 #' @param add (logical) add to previous graph ?
@@ -120,6 +121,7 @@ plotLZISD = function(
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
+  score     = FALSE,
   add       = FALSE,
   col       = 5,
   label     = 0,
@@ -309,6 +311,14 @@ plotLZISD = function(
 
   }
 
+  ZISDE = ZISDM = NULL
+  if(score) {
+    scores = abs(log(mV))
+    ZISDE = exp(mean(scores))
+    im = which.max(scores)
+    ZISDM = exp( sign(log(mV[im])) * scores[im] )
+  }
+
   invisible(
     list(
       mint   = mint,
@@ -317,7 +327,9 @@ plotLZISD = function(
       pc     = mV,
       pcl    = loV,
       pcu    = upV,
-      meanP  = mV0
+      meanP  = mV0,
+      ZISDE  = ZISDE,
+      ZISDM  = ZISDM
     )
   )
 }

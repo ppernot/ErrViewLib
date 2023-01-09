@@ -17,6 +17,8 @@ plotRelDiag(
   BSmethod = c("bca", "perc", "basic"),
   nBoot = 500,
   slide = FALSE,
+  plot = TRUE,
+  score = TRUE,
   xlim = NULL,
   ylim = NULL,
   title = "",
@@ -53,6 +55,10 @@ equal range intervals, or equal log-range intervals
 \item{nBoot}{(integer) number of bootstrap replicas}
 
 \item{slide}{(logical) use sliding window for subsetting (X,Z)}
+
+\item{plot}{(function) produce plot ?}
+
+\item{score}{(logical) estimate calibration metrics ?}
 
 \item{xlim}{(vector) min and max values of X axis}
 

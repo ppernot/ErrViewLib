@@ -53,6 +53,7 @@ Sconf = function(
 #' @param rep_probref (integer) sampling repetitions for normal curve
 #' @param plot (function) produce plot ?
 #' @param confStat (logical) estimate DFPR and/or AUCO ?
+#' @param score (logical) estimate DFPR and/or AUCO ?
 #' @param col (integer) color index for the curve
 #' @param type (string) curve type: line ('l') or points ('p')
 #' @param add (logical) add confidence curve to previous plot
@@ -90,7 +91,8 @@ plotConfidence = function(
   rep_probref = 100,
   showUk = FALSE,
   plot   = TRUE,
-  confStat = TRUE,
+  score  = TRUE,
+  confStat = score,
   col    = 2,
   type   = c('l','p'),
   add    = FALSE,
@@ -372,7 +374,8 @@ plotConfidence = function(
 #' @param dist_probref (string) model error distribution to generate the reference curve. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
 #' @param rep_probref (integer) sampling repetitions for normal curve (default = 500)
 #' @param plot (function) produce plot ?
-#' @param confStat (logical) estimate DFPR and/or AUCO ?
+#' @param confStat (logical) estimate DFPR and/or AUCO
+#' @param score (logical) estimate DFPR and/or AUCO
 #' @param col (integer) color index for the curve (default: 6)
 #' @param add (logical) add confidence curve to previous plot (default: FALSE)
 #' @param xlab (string) x axis label (default: 'k \% discarded)
@@ -406,7 +409,8 @@ plotCC = function(
   dist_probref = c('Normal','Uniform','Normp4','Laplace','T4'),
   rep_probref  = 500,
   plot         = TRUE,
-  confStat     = TRUE,
+  score        = TRUE,
+  confStat     = score,
   col          = 6,
   add          = FALSE,
   xlab         = 'k% discarded',
@@ -451,6 +455,7 @@ plotCC = function(
     dist_probref = dist_probref,
     rep_probref  = rep_probref,
     plot         = plot,
+    score        = score,
     confStat     = confStat,
     col    = col,
     add    = add,

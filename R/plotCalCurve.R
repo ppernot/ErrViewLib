@@ -98,7 +98,7 @@ predQ = function(
     )
   )
 }
-#' Plot local coverage probabilities to assess calibration and sharpness
+#' Older version of calibration curves. Kept for reproducibility of papers.
 #'
 #' @param Data (data.frame) dataframe with predictor(s) and reference
 #' @param uP (vector) a set of prediction uncertainties
@@ -268,6 +268,12 @@ plotCalCurve = function(
   matlines(pt,cbind(lwr,upr),col = cols[3], lty = 2, lwd = lwd)
   box()
   if(score) {
+    trapz = function(x,y) {
+      # Trapezoidal integration
+      idx = 2:length(x)
+      return (as.double( (x[idx] - x[idx-1]) %*%
+                           (y[idx] + y[idx-1])) / 2)
+    }
     misCal   = trapz(pt,abs(pe-pt))
     misCalUp = trapz(pt,abs(upr-lwr)) / 2
     calErr   = sqrt(sum((pt-pe)^2))
@@ -289,6 +295,161 @@ plotCalCurve = function(
       adj = 1,
       cex = cex,
       line = 0.3)
+
+  invisible(
+    list(
+      misCal = misCal,
+      misCalUp = misCalUp,
+      calErr = calErr
+    )
+  )
+}
+#' Plot calibration curve (aka RMSE vs RMV)
+#'
+#' @param E (vector) a vector of errors
+#' @param uE (vector) a vector of uncertainties
+#' @param dist (string) a distribution (default: `Normal`)
+#' @param shape (numeric) shape parameter for the T and Normp distributions
+#' @param score (logical) evaluate the calibration scores (default: `TRUE`)
+#' @param plot (logical) plot the results (default: `TRUE`)
+#' @param title (string) a title to display above the plot
+#' @param label (integer) index of letter for subplot tag
+#' @param gPars (list) graphical parameters
+#'
+#' @return Invisibly returns a list of calibration statistics. Mainly used
+#'   for its plotting side effect.
+#' @export
+#'
+plotCalibration = function(
+  E, uE,
+  prob      = seq(0.005, 0.995, by=0.005),
+  dist      = c('Normal','Student','Uniform','Laplace','Normp','T4','Normp4'),
+  shape     = 4,
+  score     = TRUE,
+  plot      = TRUE,
+  title     = '',
+  label     = 0,
+  gPars     = ErrViewLib::setgPars()
+) {
+
+  dist    = match.arg(dist)
+
+  N = length(E)
+
+  # Coverage stats data
+  Normal = function(p, ...)
+    qnorm(p)
+  Student = function(p, df = 4)
+    qt(p, df = df) / sqrt(df/(df-2))
+  Uniform = function(p, ...)
+    qunif(p, -sqrt(3), sqrt(3))
+  Laplace = function(pr, ...)
+    normalp::qnormp(pr, p = 1) / sqrt(gamma(3)/gamma(1))
+  Normp = function(pr, df = 4)
+    normalp::qnormp(pr, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
+  T4 = function(p, ...)
+    Student(p, df = 4)
+  Normp4 = function(p, ...)
+    Normp(p, df = 4)
+
+  qfun = get(dist)
+
+  pP = c()
+  for (ip in seq_along(prob))
+    pP[ip] = mean(E <= uE * qfun(prob[ip], df = shape))
+
+  pt = c(0,prob,1)
+  pe = c(0,pP,1)
+
+  misCal = misCalUp = calErr = NA
+  if(score) {
+    trapz = function(x,y) {
+      # Trapezoidal integration
+      idx = 2:length(x)
+      return (as.double( (x[idx] - x[idx-1]) %*%
+                           (y[idx] + y[idx-1])) / 2)
+    }
+    lwr = upr = c()
+    for(i in seq_along(pe)) {
+      ci = DescTools::BinomCI(pe[i]*N, N, method = 'wilsoncc')
+      lwr[i] = ci[,2]
+      upr[i] = ci[,3]
+    }
+    misCal   = trapz(pt,abs(pe-pt))
+    misCalUp = trapz(pt,abs(upr-lwr)) / 2
+    calErr   = sqrt(sum((pt-pe)^2))
+  }
+
+  if(plot) {
+
+    # Expose gPars list
+    for (n in names(gPars))
+      assign(n, rlist::list.extract(gPars, n))
+
+    par(
+      mfrow = c(1, 1),
+      mar = mar,
+      mgp = mgp,
+      pty = 's',
+      tcl = tcl,
+      cex = cex,
+      lwd = lwd
+    )
+
+    plot(
+      pt, pe,
+      type = 'l',
+      xlim = c(0,1),
+      xlab = 'Expected cumulative distribution',
+      ylim = c(0,1),
+      ylab = 'Observed cumulative distribution',
+      xaxs = 'i',
+      yaxs = 'i',
+      col  = cols[3],
+      main = title,
+      lwd  = lwd
+    )
+    grid()
+    abline(
+      a=0,b=1,
+      lty=2,
+      col = cols[6],
+      lwd = lwd
+    )
+    polygon(
+      c(pt,0),c(pe,0),
+      col = cols_tr[5],
+      border = NA
+    )
+    lwr = upr = c()
+    for(i in seq_along(pe)) {
+      ci = DescTools::BinomCI(pe[i]*N, N, method = 'wilsoncc')
+      lwr[i] = ci[,2]
+      upr[i] = ci[,3]
+    }
+    matlines(pt,cbind(lwr,upr),col = cols[3], lty = 2, lwd = lwd)
+    box()
+    if(score) {
+       text(
+        0.75, 0.1,
+        paste0(
+          'MisCal   = ',signif(misCal,2),'\n',
+          'MisCalUp = ',signif(misCalUp,2),'\n',
+          'CalErr   = ',signif(calErr,2)
+        ),
+        cex=1
+      )
+    }
+
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj = 1,
+        cex = cex,
+        line = 0.3)
+
+  }
 
   invisible(
     list(

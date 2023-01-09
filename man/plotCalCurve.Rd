@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotCalCurve.R
 \name{plotCalCurve}
 \alias{plotCalCurve}
-\title{Plot local coverage probabilities to assess calibration and sharpness}
+\title{Older version of calibration curves. Kept for reproducibility of papers.}
 \usage{
 plotCalCurve(
   Data,
@@ -60,5 +60,5 @@ Invisibly returns a list of calibration statistics. Mainly used
   for its plotting side effect.
 }
 \description{
-Plot local coverage probabilities to assess calibration and sharpness
+Older version of calibration curves. Kept for reproducibility of papers.
 }
