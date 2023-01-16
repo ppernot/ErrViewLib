@@ -163,7 +163,7 @@ plotRelDiag = function(
     mint[i] = sqrt(mean(xOrd[sel] ^ 2))
   }
 
-  ENCE = NULL
+  ENCE = NA
   if(score)
     ENCE = mean(abs(mV-mint)/mint)
 

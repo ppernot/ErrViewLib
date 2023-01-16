@@ -311,12 +311,20 @@ plotLZISD = function(
 
   }
 
-  ZISDE = ZISDM = NULL
+  ZISDE = ZISDEUp = ZISDM = ZISDMs = NA
   if(score) {
     scores = abs(log(mV))
-    ZISDE = exp(mean(scores))
+    # Max deviation
     im = which.max(scores)
     ZISDM = exp( sign(log(mV[im])) * scores[im] )
+    # Significant ?
+    ZISDMs = FALSE
+    if(sdZ < loV[im] | sdZ > upV[im])
+      ZISDMs = TRUE
+    # Mean deviation
+    ZISDE = exp(mean(scores))
+    scores = pmax(log(upV/mV),log(mV/loV))
+    ZISDEUp = exp(mean(scores))
   }
 
   invisible(
@@ -329,7 +337,9 @@ plotLZISD = function(
       pcu    = upV,
       meanP  = mV0,
       ZISDE  = ZISDE,
-      ZISDM  = ZISDM
+      ZISDEUp= ZISDEUp,
+      ZISDM  = ZISDM,
+      ZISDMs = ZISDMs
     )
   )
 }

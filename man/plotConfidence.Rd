@@ -16,7 +16,8 @@ plotConfidence(
   rep_probref = 100,
   showUk = FALSE,
   plot = TRUE,
-  confStat = TRUE,
+  score = TRUE,
+  confStat = score,
   col = 2,
   type = c("l", "p"),
   add = FALSE,
@@ -54,6 +55,8 @@ plotConfidence(
 \item{showUk}{(logical) plot secondary axis with u_k values; supersedes `title`}
 
 \item{plot}{(function) produce plot ?}
+
+\item{score}{(logical) estimate DFPR and/or AUCO ?}
 
 \item{confStat}{(logical) estimate DFPR and/or AUCO ?}
 
