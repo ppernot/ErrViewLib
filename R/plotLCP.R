@@ -146,7 +146,7 @@ plotLCP = function(
       xlim = range(xOrd)
 
     if (any(is.na(ylim)))
-      ylim = range(c(loP, upP))
+      ylim = range(c(loP, upP, prob))
 
     matplot(
       mint,

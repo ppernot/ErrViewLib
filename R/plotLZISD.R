@@ -202,7 +202,7 @@ plotLZISD = function(
       )
 
       if(is.null(ylim))
-        ylim = range(c(loV, upV))
+        ylim = range(c(loV, upV, sdZ))
 
       matplot(
         mint,
