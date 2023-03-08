@@ -385,6 +385,7 @@ plotConfidence = function(
 #' @param showUk (logical) plot secondary axis with u_k values; supersedes `title`
 #' @param showLegend (logical) display legend (default: TRUE)
 #' @param legend (string) legend for the dataset (default: NULL)
+#' @param unit (string) unit string to add to ylab
 #' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord}) (default: 'bottomleft')
 #' @param label (integer) index of letter for subplot tag (default: 0)
 #' @param gPars (list) graphical parameters (default: ErrViewLib::setgPars())
@@ -420,6 +421,7 @@ plotCC = function(
   label        = 0,
   showUk       = FALSE,
   showLegend   = TRUE,
+  unit         = '',
   legend       = NULL,
   legLoc       = 'bottomleft',
   gPars        = ErrViewLib::setgPars()
@@ -430,17 +432,17 @@ plotCC = function(
 
   if(statS == 'RMSE') {
     stat = ErrViewLib::rmsd
-    ylab = 'RMSE'
+    ylab = paste0('RMSE ',unit)
     if(normalize)
       ylab = 'RMSE / RMSE_0'
   } else if(statS == 'MAE') {
     stat = ErrViewLib::mue
-    ylab = 'MAE'
+    ylab = paste0('MAE ',unit)
     if(normalize)
       ylab = 'MAE / MAE_0'
   } else {
     stat = ErrViewLib::q95hd
-    ylab = 'Q95'
+    ylab = paste0('Q95 ',unit)
     if(normalize)
       ylab = 'Q95 / Q95_0'
   }

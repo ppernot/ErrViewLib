@@ -27,6 +27,7 @@ plotCC(
   label = 0,
   showUk = FALSE,
   showLegend = TRUE,
+  unit = "",
   legend = NULL,
   legLoc = "bottomleft",
   gPars = ErrViewLib::setgPars()
@@ -74,6 +75,8 @@ plotCC(
 \item{showUk}{(logical) plot secondary axis with u_k values; supersedes `title`}
 
 \item{showLegend}{(logical) display legend (default: TRUE)}
+
+\item{unit}{(string) unit string to add to ylab}
 
 \item{legend}{(string) legend for the dataset (default: NULL)}
 

@@ -86,6 +86,7 @@ sdZCI = function (
 #' @param score (logical) estimate calibration metrics ?
 #' @param ylim  (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
+#' @param unit (string) unit string to add to xlab and ylab
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #' @param add (logical) add to previous graph ?
@@ -117,6 +118,7 @@ plotRelDiag = function(
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
+  unit      = '',
   label     = 0,
   add       = FALSE,
   col       = 5,
@@ -202,10 +204,9 @@ plotRelDiag = function(
       matplot(
         mint,
         mV,
-        xlab = 'RMS(uE)',
-        ylab = 'SD(E)',
+        xlab = paste0('RMS(uE) ',unit),
+        ylab = paste0('SD(E) ',unit),
         xlim = xlim,
-        # xaxs = 'i',
         ylim = ylim,
         type = 'b',
         lty  = 3,

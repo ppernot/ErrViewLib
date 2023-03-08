@@ -22,6 +22,7 @@ plotRelDiag(
   xlim = NULL,
   ylim = NULL,
   title = "",
+  unit = "",
   label = 0,
   add = FALSE,
   col = 5,
@@ -65,6 +66,8 @@ equal range intervals, or equal log-range intervals
 \item{ylim}{(vector) limits of the y axis}
 
 \item{title}{(string) a title to display above the plot}
+
+\item{unit}{(string) unit string to add to xlab and ylab}
 
 \item{label}{(integer) index of letter for subplot tag}
 
