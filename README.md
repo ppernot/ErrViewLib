@@ -5,6 +5,8 @@
 Package for the statistical analysis and plotting of error sets from
 computational chemistry methods.
 
+Now augmented with UQ validation methods.
+
 ## Install
 
 ```r
