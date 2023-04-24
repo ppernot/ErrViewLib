@@ -129,12 +129,13 @@ plotConfidence = function(
   Normp4 = function(N, df = 4)
     normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
 
-  # Reorder data
-  io  = order(uE, decreasing = TRUE)
+  # Reorder data (use abs(E) to resolve ties)
+  io  = order(uE, abs(E), decreasing = TRUE)
   uE  = uE[io]
   E   = E[io]
   if(oracle) {
-    io = order(abs(E), decreasing = TRUE) # Perfect set for oracle
+    # Perfect ordered set for oracle
+    io = order(abs(E), decreasing = TRUE)
     O  = E[io]
   }
 
