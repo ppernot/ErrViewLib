@@ -7,6 +7,7 @@
 plotRelDiag(
   X,
   Y,
+  aux = NULL,
   logX = FALSE,
   nBin = NULL,
   equiPop = TRUE,
@@ -33,6 +34,8 @@ plotRelDiag(
 \item{X}{(vector) vector of uncertainties}
 
 \item{Y}{(vector) vector of errors}
+
+\item{aux}{(vector) auxilliary vector to resolve ties in X sorting}
 
 \item{logX}{(logical) log-transform X}
 

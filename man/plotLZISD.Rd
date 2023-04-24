@@ -7,6 +7,7 @@
 plotLZISD(
   X,
   Z,
+  aux = NULL,
   sdZ = 1,
   logX = FALSE,
   nBin = NULL,
@@ -34,6 +35,8 @@ plotLZISD(
 \item{X}{(vector) abscissae of the Z values}
 
 \item{Z}{(vector) set of z-score values to be tested}
+
+\item{aux}{(vector) auxilliary vector to resolve ties in X sorting}
 
 \item{sdZ}{(numeric) target value for 1/SD(Z) (default `1`)}
 

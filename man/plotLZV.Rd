@@ -7,6 +7,7 @@
 plotLZV(
   X,
   Z,
+  aux = NULL,
   varZ = 1,
   logX = FALSE,
   nBin = NULL,
@@ -33,6 +34,8 @@ plotLZV(
 \item{X}{(vector) abscissae of the Z values}
 
 \item{Z}{(vector) set of z-score values to be tested}
+
+\item{aux}{(vector) auxilliary vector to resolve ties in X sorting}
 
 \item{varZ}{(numeric) target value for Var(Z) (default `1`)}
 

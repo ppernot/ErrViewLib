@@ -8,6 +8,7 @@ plotLCP(
   E,
   U,
   ordX = NULL,
+  aux = NULL,
   logX = FALSE,
   prob = c(0.95),
   nBin = NULL,
@@ -35,6 +36,8 @@ plotLCP(
 \item{U}{(matrix) Prediction uncertainties}
 
 \item{ordX}{(vector) set of abscissas to order sample}
+
+\item{aux}{(vector) auxilliary vector to resolve ties in ordX sorting}
 
 \item{logX}{(logical) log-transform abscissas}
 
