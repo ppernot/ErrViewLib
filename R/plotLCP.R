@@ -19,6 +19,7 @@
 #' @param gPars (list) graphical parameters
 #' @param plot (logical) plot the results
 #' @param ordX  (vector) set of abscissas to order sample
+#' @param aux (vector) auxilliary vector to resolve ties in ordX sorting
 #' @param logX  (logical) log-transform abscissas
 #' @param binomCI (string) name of method to estimate Binomial Proportion CI
 #' @param xlab  (string) abscissa label
@@ -40,6 +41,7 @@
 plotLCP = function(
   E, U,
   ordX      = NULL,
+  aux       = NULL,
   logX      = FALSE,
   prob      = c(0.95),
   nBin      = NULL,
@@ -75,7 +77,10 @@ plotLCP = function(
   if(!is.null(ordX)) {
     if(length(ordX) != length(E))
       stop('>>> Inconsistent length for ordX')
-    ord = order(ordX)
+    if(is.null(aux))
+      ord  = order(X)
+    else
+      ord  = order(X,aux)
     xOrd = ordX[ord]
   } else {
     stop('>>> Please provide ordX')
