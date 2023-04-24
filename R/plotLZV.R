@@ -92,6 +92,7 @@ varZCI = function (
 #'
 #' @param X (vector) abscissae of the Z values
 #' @param Z (vector) set of z-score values to be tested
+#' @param aux (vector) auxilliary vector to resolve ties in X sorting
 #' @param varZ (numeric) target value for Var(Z) (default `1`)
 #' @param logX (logical) log-transform X
 #' @param method (string) method used to estimate 95 percent CI on Var(Z)
@@ -128,6 +129,7 @@ varZCI = function (
 #' }
 plotLZV = function(
   X, Z,
+  aux       = NULL,
   varZ      = 1,
   logX      = FALSE,
   nBin      = NULL,
@@ -155,7 +157,10 @@ plotLZV = function(
 
   N = length(Z)
 
-  ord  = order(X)
+  if(is.null(aux))
+    ord  = order(X)
+  else
+    ord  = order(X,aux)
   xOrd = X[ord]
   zOrd = Z[ord]
 
