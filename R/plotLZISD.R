@@ -265,7 +265,7 @@ plotLZISD = function(
     }
 
     # Mean + CI
-    pm = signif(mV0,2)
+    pm = round(mV0,2)
     mtext(text = paste0('- ',pm),
           side = 4,
           at   = mV0,
@@ -341,6 +341,8 @@ plotLZISD = function(
       pcl    = loV,
       pcu    = upV,
       meanP  = mV0,
+      meanPl = loV0,
+      meanPu = upV0,
       ZISDE  = ZISDE,
       ZISDEUp= ZISDEUp,
       ZISDM  = ZISDM,

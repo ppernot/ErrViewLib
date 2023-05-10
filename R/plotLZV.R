@@ -114,6 +114,7 @@ varZCI = function (
 #' @param plot (logical) plot the results
 #' @param xlab (string) X axis label
 #' @param xlim (vector) min and max values of X axis
+#' @param score (logical) estimate calibration stats (default: `FALSE`)
 #' @param add (logical) add to previous graph ?
 #' @param col (integer) color index of curve to add
 #'
@@ -146,6 +147,7 @@ plotLZV = function(
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
+  score     = FALSE,
   add       = FALSE,
   col       = 5,
   label     = 0,
@@ -203,7 +205,7 @@ plotLZV = function(
               nBoot = max(nBoot, N),
               method = method,
               CImethod = BSmethod)
-  mV0 = zs$mean
+  mV0  = zs$mean
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
 
@@ -304,14 +306,17 @@ plotLZV = function(
 
     # Mean variance
     ypos = par("usr")[4]
-    pm = signif(mV0,2)
-    mtext(text = c(' Average',paste0('- ',pm)),
-          side = 4,
-          at = c(ypos,mV0),
-          col = c(1,cols[col]),
-          cex = 0.75*cex,
-          las = 1,
-          font = 2)
+    pm   = round(mV0, digits = 2)
+    mtext(
+      text = c(
+        ' Average',
+        paste0('- ', pm)),
+      side = 4,
+      at   = c(ypos, mV0),
+      col  = c(1,cols[col]),
+      cex  = 0.75*cex,
+      las  = 1,
+      font = 2)
     segments(
       xlim[2],loV0,
       xlim[2],upV0,
@@ -330,6 +335,22 @@ plotLZV = function(
 
   }
 
+  ZVE = ZVEUp = ZVDM = ZVMs = NA
+  if(score) {
+    scores = abs(log(mV))
+    # Max deviation
+    im = which.max(scores)
+    ZVM = exp( sign(log(mV[im])) * scores[im] )
+    # Significant ?
+    ZVMs = FALSE
+    if(varZ < loV[im] | varZ > upV[im])
+      ZVMs = TRUE
+    # Mean deviation
+    ZVE = exp(mean(scores))
+    scores = pmax(log(upV/mV),log(mV/loV))
+    ZVEUp = exp(mean(scores))
+  }
+
   invisible(
     list(
       mint   = mint,
@@ -338,7 +359,13 @@ plotLZV = function(
       pc     = mV,
       pcl    = loV,
       pcu    = upV,
-      meanP  = mV0
+      meanP  = mV0,
+      meanPl = loV0,
+      meanPu = upV0,
+      ZVE    = ZVE,
+      ZVEUp  = ZVEUp,
+      ZVM    = ZVM,
+      ZVMs   = ZVMs
     )
   )
 }

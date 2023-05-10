@@ -24,6 +24,7 @@ plotLZV(
   xlim = NULL,
   ylim = NULL,
   title = "",
+  score = FALSE,
   add = FALSE,
   col = 5,
   label = 0,
@@ -71,6 +72,8 @@ equal range intervals, or equal log-range intervals
 \item{ylim}{(vector) limits of the y axis}
 
 \item{title}{(string) a title to display above the plot}
+
+\item{score}{(logical) estimate calibration stats (default: `FALSE`)}
 
 \item{add}{(logical) add to previous graph ?}
 

@@ -7,6 +7,7 @@
 plotRelDiag(
   X,
   Y,
+  ordX = NULL,
   aux = NULL,
   logX = FALSE,
   nBin = NULL,
@@ -35,7 +36,9 @@ plotRelDiag(
 
 \item{Y}{(vector) vector of errors}
 
-\item{aux}{(vector) auxilliary vector to resolve ties in X sorting}
+\item{ordX}{(vector) set of abscissas to order sample}
+
+\item{aux}{(vector) auxilliary vector to resolve ties in sample sorting}
 
 \item{logX}{(logical) log-transform X}
 
