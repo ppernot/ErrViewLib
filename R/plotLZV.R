@@ -335,7 +335,7 @@ plotLZV = function(
 
   }
 
-  ZVE = ZVEUp = ZVDM = ZVMs = NA
+  ZVE = ZVEUp = ZVMs = ZVM = NA
   if(score) {
     scores = abs(log(mV))
     # Max deviation
