@@ -20,6 +20,8 @@
 #' @param label (integer) index of letter for subplot tag
 #' @param gPars (list) graphical parameters
 #' @param scalePoints (numeric) scale factor for points size
+#' @param showLegend (logical) display legend
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord})
 #'
 #' @return Plots E vs uE or V
 #' @export
@@ -36,6 +38,7 @@ plotEvsPU =  function(
   runExt    = FALSE,
   runQuant  = FALSE,
   runMode   = FALSE,
+  runVar    = FALSE,
   cumMAE    = FALSE,
   probs     = c(0.95),
   xlab      = NULL,
@@ -50,6 +53,8 @@ plotEvsPU =  function(
   nBin      = NULL,
   slide     = TRUE,
   label     = 0,
+  showLegend = TRUE,
+  legLoc    = 'topleft',
   gPars     = ErrViewLib::setgPars()
 ) {
 
@@ -82,7 +87,7 @@ plotEvsPU =  function(
   if(logY)
     Y = log10(abs(Y))
 
-  if(runExt | runQuant | runMode) {
+  if(runExt | runQuant | runMode | runVar) {
     N = length(Y)
 
     if(is.null(nBin))
@@ -103,10 +108,12 @@ plotEvsPU =  function(
     nq = length(probs)
     qmin = qmax = matrix(NA,ncol=nq,nrow=intrv$nbr)
     for (i in 1:intrv$nbr) {
+
       # Subsetting
       sel = intrv$lwindx[i]:intrv$upindx[i]
       x = xOrd[sel]
       y = yOrd[sel]
+
       # Take min & max within the interval
       ymin[i] = min(y)
       ymax[i] = max(y)
@@ -119,11 +126,15 @@ plotEvsPU =  function(
           qmax[i, j] = q[2]
         }
       }
+
       if(runMode)
         ymode[i] = getmode(y)
 
+      if(runVar)
+        ymode[i] = var(y)
+
       # Center of the interval
-      mint[i] = 0.5*sum(range(xOrd[sel]))
+      mint[i] = 0.5*sum(range(x))
     }
   }
 
@@ -174,6 +185,7 @@ plotEvsPU =  function(
   colg = cols[myColors[4]]     # Guide lines
   colc = cols[myColors[5]]     # Cum. MAE
   colm = cols[myColors[3]]     # Mode
+  colv = cols[myColors[5]]     # Variance
 
   plot(
     X, Y,
@@ -247,6 +259,25 @@ plotEvsPU =  function(
         lwd = 2*lwd,
         col = colr)
     }
+    klev = c(-2, 2)
+    for (s in klev)
+      if(type == 'horiz') {
+        abline(
+          h = s,
+          lty = 2,
+          lwd = 2*lwd,
+          col = colr
+        )
+      } else {
+        abline(
+          a = 0,
+          b = s,
+          untf = TRUE,
+          lty = 2,
+          lwd = 2*lwd,
+          col = colr
+        )
+      }
     legs = c(legs,'Quantiles')
     pleg = c(pleg,NA)
     cleg = c(cleg,colr)
@@ -265,6 +296,37 @@ plotEvsPU =  function(
     tleg = c(tleg,1)
   }
 
+  if(runVar) {
+    lines(
+      mint, ymode,
+      lty = 1,
+      lwd = 2*lwd,
+      col = colv)
+    klev = c(1)
+    for (s in klev)
+      if(type == 'horiz') {
+        abline(
+          h = s,
+          lty = 2,
+          lwd = 2*lwd,
+          col = colv
+        )
+      } else {
+        abline(
+          a = 0,
+          b = s,
+          untf = TRUE,
+          lty = 2,
+          lwd = 2*lwd,
+          col = colv
+        )
+      }
+    legs = c(legs,'Variance')
+    pleg = c(pleg,NA)
+    cleg = c(cleg,colv)
+    tleg = c(tleg,1)
+  }
+
   if(cumMAE) {
     matlines(
       xOrd,cMAE,
@@ -277,14 +339,15 @@ plotEvsPU =  function(
     tleg = c(tleg,1)
   }
 
-  legend(
-    'topleft', bg = 'white', box.col = 'white',
-    legend = legs,
-    pch = pleg,
-    lty = tleg,
-    col = cleg,
-    lwd = 2*lwd,
-    cex = 0.9
+  if (showLegend)
+    legend(
+      legLoc, bg = 'white', box.col = 'white',
+      legend = legs,
+      pch = pleg,
+      lty = tleg,
+      col = cleg,
+      lwd = 2*lwd,
+      cex = 0.9
     )
 
   box()

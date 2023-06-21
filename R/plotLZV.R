@@ -209,7 +209,10 @@ plotLZV = function(
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
 
+  colors = ifelse((loV-varZ)*(upV-varZ) < 0, col, 2) # also used for scores...
+
   if(plot) {
+
     if(length(gPars) == 0)
       gPars = ErrViewLib::setgPars()
 
@@ -231,11 +234,10 @@ plotLZV = function(
         cex.main = 1
       )
 
-
       if(is.null(ylim))
         ylim = range(c(loV, upV, varZ))
 
-      matplot(
+      plot(
         mint,
         mV,
         xlab = xlab,
@@ -248,7 +250,7 @@ plotLZV = function(
         pch  = 16,
         lwd  = lwd,
         cex  = ifelse(slide,0.5,1),
-        col  = cols[col],
+        col  = cols[colors],
         main = title,
         log  = ifelse(logX,'x','')
       )
@@ -275,7 +277,7 @@ plotLZV = function(
         pch  = 16,
         lwd  = lwd,
         cex  = ifelse(slide,0.5,1),
-        col  = cols[col]
+        col  = cols[colors]
       )
     }
 
@@ -289,7 +291,7 @@ plotLZV = function(
       segments(
         mint[ipl], loV[ipl],
         mint[ipl], upV[ipl],
-        col  = cols[col],
+        col  = cols[colors[ipl]],
         lwd  = 1.5 * lwd,
         lend = 1)
 
@@ -297,7 +299,7 @@ plotLZV = function(
       segments(
         mint, loV,
         mint, upV,
-        col  = cols[col],
+        col  = cols[colors],
         lwd  = 1.5 * lwd,
         lend = 1)
 
@@ -335,20 +337,26 @@ plotLZV = function(
 
   }
 
-  ZVE = ZVEUp = ZVMs = ZVM = NA
+  ZVE = ZVEUp = ZVMs = ZVM = fVal = NA
   if(score) {
     scores = abs(log(mV))
+
     # Max deviation
     im = which.max(scores)
     ZVM = exp( sign(log(mV[im])) * scores[im] )
+
     # Significant ?
     ZVMs = FALSE
     if(varZ < loV[im] | varZ > upV[im])
       ZVMs = TRUE
+
     # Mean deviation
     ZVE = exp(mean(scores))
     scores = pmax(log(upV/mV),log(mV/loV))
     ZVEUp = exp(mean(scores))
+
+    # Fraction of valid intervals
+    fVal = sum(colors == col)/length(colors)
   }
 
   invisible(
@@ -365,7 +373,8 @@ plotLZV = function(
       ZVE    = ZVE,
       ZVEUp  = ZVEUp,
       ZVM    = ZVM,
-      ZVMs   = ZVMs
+      ZVMs   = ZVMs,
+      fVal   = fVal
     )
   )
 }

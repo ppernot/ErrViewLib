@@ -11,6 +11,7 @@ plotEvsPU(
   runExt = FALSE,
   runQuant = FALSE,
   runMode = FALSE,
+  runVar = FALSE,
   cumMAE = FALSE,
   probs = c(0.95),
   xlab = NULL,
@@ -25,6 +26,8 @@ plotEvsPU(
   nBin = NULL,
   slide = TRUE,
   label = 0,
+  showLegend = TRUE,
+  legLoc = "topleft",
   gPars = ErrViewLib::setgPars()
 )
 }
@@ -66,6 +69,10 @@ plotEvsPU(
 \item{slide}{(logical) use sliding window for subsetting (X,Y)}
 
 \item{label}{(integer) index of letter for subplot tag}
+
+\item{showLegend}{(logical) display legend}
+
+\item{legLoc}{(string) location of legend (see \link[grDevices]{xy.coord})}
 
 \item{gPars}{(list) graphical parameters}
 }
