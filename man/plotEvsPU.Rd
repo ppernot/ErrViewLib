@@ -11,6 +11,7 @@ plotEvsPU(
   runExt = FALSE,
   runQuant = FALSE,
   runMode = FALSE,
+  runMean = FALSE,
   runVar = FALSE,
   cumMAE = FALSE,
   probs = c(0.95),
@@ -40,13 +41,15 @@ plotEvsPU(
 
 \item{runExt}{(logical) plot extremal points}
 
-\item{runQuant}{(logical) plot quantile regression}
+\item{runQuant}{(logical) plot running quantiles (cf. probs)}
 
 \item{runMode}{(logical) plot running mode of distribution}
 
+\item{runMean}{(logical) plot running mean}
+
 \item{cumMAE}{(logical) plot cumulative MAE}
 
-\item{probs}{(vector) probability levels for quantile-bases confidence intervals}
+\item{probs}{(vector) probability levels for quantile-based confidence intervals}
 
 \item{xlab}{(string) x axis label}
 

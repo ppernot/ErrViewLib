@@ -4,9 +4,10 @@
 #' @param Y (vector) error or z-score
 #' @param type (string) type of guide lines ('prop' or 'horiz')
 #' @param runExt (logical) plot extremal points
-#' @param runQuant (logical) plot quantile regression
+#' @param runQuant (logical) plot running quantiles (cf. probs)
+#' @param runMean (logical) plot running mean
 #' @param runMode (logical) plot running mode of distribution
-#' @param probs (vector) probability levels for quantile-bases confidence intervals
+#' @param probs (vector) probability levels for quantile-based confidence intervals
 #' @param cumMAE (logical) plot cumulative MAE
 #' @param xlab (string) x axis label
 #' @param xlim (vector) limits of the X axis
@@ -38,6 +39,7 @@ plotEvsPU =  function(
   runExt    = FALSE,
   runQuant  = FALSE,
   runMode   = FALSE,
+  runMean   = FALSE,
   runVar    = FALSE,
   cumMAE    = FALSE,
   probs     = c(0.95),
@@ -87,7 +89,7 @@ plotEvsPU =  function(
   if(logY)
     Y = log10(abs(Y))
 
-  if(runExt | runQuant | runMode | runVar) {
+  if(runExt | runQuant | runMode | runVar | runMean) {
     N = length(Y)
 
     if(is.null(nBin))
@@ -104,7 +106,7 @@ plotEvsPU =  function(
     intrv = ErrViewLib::genIntervals(N, nBin, slide)
 
     # Local stats
-    ymin = ymax = ymode = mint = c()
+    ymin = ymax = ymode = yvar = ymean = mint = c()
     nq = length(probs)
     qmin = qmax = matrix(NA,ncol=nq,nrow=intrv$nbr)
     for (i in 1:intrv$nbr) {
@@ -131,7 +133,10 @@ plotEvsPU =  function(
         ymode[i] = getmode(y)
 
       if(runVar)
-        ymode[i] = var(y)
+        yvar[i] = var(y)
+
+      if(runMean)
+        ymean[i] = mean(y)
 
       # Center of the interval
       mint[i] = 0.5*sum(range(x))
@@ -186,6 +191,7 @@ plotEvsPU =  function(
   colc = cols[myColors[5]]     # Cum. MAE
   colm = cols[myColors[3]]     # Mode
   colv = cols[myColors[5]]     # Variance
+  cola = cols[myColors[3]]     # Variance
 
   plot(
     X, Y,
@@ -296,9 +302,21 @@ plotEvsPU =  function(
     tleg = c(tleg,1)
   }
 
+  if(runMean) {
+    lines(
+      mint, ymean,
+      lty = 1,
+      lwd = 2*lwd,
+      col = cola)
+    legs = c(legs,'Mean')
+    pleg = c(pleg,NA)
+    cleg = c(cleg,cola)
+    tleg = c(tleg,1)
+  }
+
   if(runVar) {
     lines(
-      mint, ymode,
+      mint, yvar,
       lty = 1,
       lwd = 2*lwd,
       col = colv)
