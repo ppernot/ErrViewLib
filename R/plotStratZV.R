@@ -454,7 +454,7 @@ plotStratZM = function(
     )
   )
 }
-#' Plot local z-score variance to assess calibration and tightness
+#' Plot local RCE to assess calibration and tightness
 #' for stratified conditioning variables
 #'
 #' @param X (vector) abscissae of the Z values
@@ -472,7 +472,7 @@ plotStratZM = function(
 #' @param plot (logical) plot the results
 #' @param xlab (string) X axis label
 #'
-#' @return Invisibly returns a list of LZV results. Mainly used
+#' @return Invisibly returns a list of RCE results. Mainly used
 #'   for its plotting side effect.
 #' @export
 #'
@@ -481,7 +481,7 @@ plotStratZM = function(
 #'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
 #'   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
 #'   X   = signif(uE,1)
-#'   plotStratZV(X, E/uE, method = 'cho', ylim = c(0,2))
+#'   plotStratRCE(X, uE, E, ylim = c(-1,1))
 #' }
 plotStratRD= function(
   X, uE, E,
@@ -545,7 +545,7 @@ plotStratRD= function(
   counts = counts[sel]
 
   # Statistics
-  fRCE = function(X, indx = 1:length(X)) {
+  fRCE = function(X, indx = 1:nrow(X)) {
     RMV    = sqrt(mean(X[indx,1]^2))
     RMSE   = sqrt(mean(X[indx,2]^2))
     return( (RMV - RMSE) / RMV )

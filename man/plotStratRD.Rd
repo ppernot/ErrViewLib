@@ -2,14 +2,13 @@
 % Please edit documentation in R/plotStratZV.R
 \name{plotStratRD}
 \alias{plotStratRD}
-\title{Plot local z-score variance to assess calibration and tightness
+\title{Plot local RCE to assess calibration and tightness
 for stratified conditioning variables}
 \usage{
 plotStratRD(
   X,
   uE,
   E,
-  varZ = 1,
   aggregate = TRUE,
   popMin = 30,
   plot = TRUE,
@@ -23,8 +22,6 @@ plotStratRD(
 }
 \arguments{
 \item{X}{(vector) abscissae of the Z values}
-
-\item{varZ}{(numeric) target value for Var(Z) (default `1`)}
 
 \item{aggregate}{(logical) aggregate contiguous strata smaller than popMin}
 
@@ -46,16 +43,18 @@ plotStratRD(
 
 \item{Z}{(vector) set of z-score values to be tested}
 
+\item{varZ}{(numeric) target value for Var(Z) (default `1`)}
+
 \item{method}{(string) method used to estimate 95 percent CI on Var(Z)}
 
 \item{BSmethod}{(string) bootstrap variant}
 }
 \value{
-Invisibly returns a list of LZV results. Mainly used
+Invisibly returns a list of RCE results. Mainly used
   for its plotting side effect.
 }
 \description{
-Plot local z-score variance to assess calibration and tightness
+Plot local RCE to assess calibration and tightness
 for stratified conditioning variables
 }
 \examples{
@@ -63,6 +62,6 @@ for stratified conditioning variables
   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
   X   = signif(uE,1)
-  plotStratZV(X, E/uE, method = 'cho', ylim = c(0,2))
+  plotStratRCE(X, uE, E, ylim = c(-1,1))
 }
 }
