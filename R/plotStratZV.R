@@ -125,7 +125,7 @@ plotStratZV = function(
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
 
-  col = ifelse((loV - 1) * (upV - 1) < 0, cols[5], cols[2])
+  col = ifelse((loV - varZ) * (upV - varZ) <= 0, cols[5], cols[2])
   sel = counts < popMin
   col[sel] = 'gray'
 
@@ -160,7 +160,7 @@ plotStratZV = function(
       xlab = '',
       ylim = ylim,
       yaxs = 'i',
-      ylab = 'Local Var(Z)'
+      ylab = 'Var(Z)'
     )
     # grid()
     abline(h = 1, lty = 2)
@@ -218,12 +218,13 @@ plotStratZV = function(
   }
 
   # Statistics
-  success = sum(col == cols[5])
-  trials  = sum(col != 'gray')
-  fVal = success / trials
-  ci = DescTools::BinomCI(success, trials, method = "wilsoncc")
-  lofVal = ci[, 2]
-  upfVal = ci[, 3]
+  isVal   = (loV-varZ)*(upV-varZ) <= 0 & counts >= popMin
+  success = sum(isVal)
+  trials  = sum(counts >= popMin)
+  fVal    = success / trials
+  ci      = DescTools::BinomCI(success, trials, method = "wilsoncc")
+  lofVal  = ci[, 2]
+  upfVal  = ci[, 3]
 
   invisible(
     list(
@@ -237,7 +238,8 @@ plotStratZV = function(
       meanPu = upV0,
       fVal   = fVal,
       lofVal = lofVal,
-      upfVal = upfVal
+      upfVal = upfVal,
+      isVal  = isVal
     )
   )
 }
@@ -329,13 +331,14 @@ plotStratZM = function(
   # LZM values
   mM = loM = upM = c()
   for (i in seq_along(values)) {
-    f      = values[i]
-    sel    = X == f
-    M      = length(sel)
+    sel    = X == values[i]
+    M      = sum(sel)
     zLoc   = Z[sel]
-    mM[i]  = mean(zLoc)
-    loM[i] = mM[i] + sd(zLoc)/sqrt(M) * qt(0.025, df = M-1)
-    upM[i] = mM[i] + sd(zLoc)/sqrt(M) * qt(0.975, df = M-1)
+    mZ     = mean(zLoc)
+    sZ     = sd(zLoc) / sqrt(M)
+    mM[i]  = mZ
+    loM[i] = mZ + sZ * qt(0.025, df = M-1)
+    upM[i] = mZ + sZ * qt(0.975, df = M-1)
   }
   mM0   = mean(Z)
   loM0  = mM0 - sd(Z)/sqrt(N) * 1.96
@@ -349,7 +352,7 @@ plotStratZM = function(
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
 
-  col = ifelse(loM * upM < 0, cols[5], cols[2])
+  col = ifelse(loM * upM <= 0, cols[5], cols[2])
   sel = counts < popMin
   col[sel] = 'gray'
 
@@ -384,7 +387,7 @@ plotStratZM = function(
       xlab = '',
       ylim = ylim,
       yaxs = 'i',
-      ylab = 'Local mean(Z)'
+      ylab = 'Mean(Z)'
     )
     # grid()
     abline(h = 0, lty = 2)
@@ -441,16 +444,29 @@ plotStratZM = function(
 
   }
 
+  # Statistics
+  isVal   = loV * upV <= 0 & counts >= popMin
+  success = sum(isVal)
+  trials  = sum(counts >= popMin)
+  fVal    = success / trials
+  ci      = DescTools::BinomCI(success, trials, method = "wilsoncc")
+  lofVal  = ci[, 2]
+  upfVal  = ci[, 3]
+
   invisible(
     list(
       values = values,
       counts = counts,
-      pc     = mM,
-      pcl    = loM,
-      pcu    = upM,
-      meanP  = mM0,
-      meanPl = loM0,
-      meanPu = upM0
+      pc     = mV,
+      pcl    = loV,
+      pcu    = upV,
+      meanP  = mV0,
+      meanPl = loV0,
+      meanPu = upV0,
+      fVal   = fVal,
+      lofVal = lofVal,
+      upfVal = upfVal,
+      isVal  = isVal
     )
   )
 }
@@ -483,7 +499,7 @@ plotStratZM = function(
 #'   X   = signif(uE,1)
 #'   plotStratRCE(X, uE, E, ylim = c(-1,1))
 #' }
-plotStratRD= function(
+plotStratRCE= function(
   X, uE, E,
   aggregate = TRUE,
   popMin    = 30,
@@ -579,7 +595,7 @@ plotStratRD= function(
   for (n in names(gPars))
     assign(n, rlist::list.extract(gPars, n))
 
-  col = ifelse(loV * upV < 0, cols[5], cols[2])
+  col = ifelse(loV * upV <= 0, cols[5], cols[2])
   sel = counts < popMin
   col[sel] = 'gray'
 
@@ -672,12 +688,13 @@ plotStratRD= function(
   }
 
   # Statistics
-  success = sum(col == cols[5])
-  trials  = sum(col != 'gray')
-  fVal = success / trials
-  ci = DescTools::BinomCI(success, trials, method = "wilsoncc")
-  lofVal = ci[, 2]
-  upfVal = ci[, 3]
+  isVal   = loV * upV <= 0 & counts >= popMin
+  success = sum(isVal)
+  trials  = sum(counts >= popMin)
+  fVal    = success / trials
+  ci      = DescTools::BinomCI(success, trials, method = "wilsoncc")
+  lofVal  = ci[, 2]
+  upfVal  = ci[, 3]
 
   invisible(
     list(
@@ -691,7 +708,8 @@ plotStratRD= function(
       meanPu = upV0,
       fVal   = fVal,
       lofVal = lofVal,
-      upfVal = upfVal
+      upfVal = upfVal,
+      isVal  = isVal
     )
   )
 }

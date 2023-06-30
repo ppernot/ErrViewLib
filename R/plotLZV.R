@@ -209,7 +209,7 @@ plotLZV = function(
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
 
-  colors = ifelse((loV-varZ)*(upV-varZ) < 0, col, 2) # also used for scores...
+  colors = ifelse((loV-varZ)*(upV-varZ) <= 0, col, 2)
 
   if(plot) {
 
@@ -357,12 +357,12 @@ plotLZV = function(
     ZVEUp = exp(mean(scores))
 
     # Fraction of valid intervals
-    success = sum(colors == col)
-    trials  = length(colors)
-    fVal = success/trials
-    ci = DescTools::BinomCI(success, trials, method = "wilsoncc")
-    lofVal = ci[,2]
-    upfVal = ci[,3]
+    success = sum((loV-varZ)*(upV-varZ) <= 0)
+    trials  = length(loV)
+    fVal    = success/trials
+    ci      = DescTools::BinomCI(success, trials, method = "wilsoncc")
+    lofVal  = ci[,2]
+    upfVal  = ci[,3]
   }
 
   invisible(
@@ -382,7 +382,8 @@ plotLZV = function(
       ZVMs   = ZVMs,
       fVal   = fVal,
       lofVal = lofVal,
-      upfVal = upfVal
+      upfVal = upfVal,
+      isVal  = (loV-varZ)*(upV-varZ) <= 0
     )
   )
 }
@@ -478,13 +479,12 @@ plotLZM = function(
     loM[i] = mM[i] + sd(zLoc)/sqrt(M) * qt(0.025, df = M-1)
     upM[i] = mM[i] + sd(zLoc)/sqrt(M) * qt(0.975, df = M-1)
     mint[i] = mean(range(xOrd[sel])) # Center of interval
-
   }
   mM0   = mean(Z)
   loM0  = mM0 - sd(Z)/sqrt(N) * 1.96
   upM0  = mM0 + sd(Z)/sqrt(N) * 1.96
 
-  colors = ifelse(loM*upM < 0, col, 2) # also used for scores...
+  colors = ifelse(loM*upM <= 0, col, 2) # also used for scores...
 
   if(plot) {
 
@@ -516,7 +516,7 @@ plotLZM = function(
         mint,
         mM,
         xlab = xlab,
-        ylab = 'Local Z-score mean',
+        ylab = 'Mean(Z)',
         xlim = xlim,
         xaxs = 'i',
         ylim = ylim,
@@ -622,7 +622,8 @@ plotLZM = function(
       pcu    = upM,
       meanP  = mM0,
       meanPl = loM0,
-      meanPu = upM0
+      meanPu = upM0,
+      isVal  = loM * upM <= 0
     )
   )
 }
@@ -738,7 +739,7 @@ plotLRCE = function(
   loV0 = R - uR * 1.96
   upV0 = R + uR * 1.96
 
-  colors = ifelse(loV*upV < 0, col, 2) # also used for scores...
+  colors = ifelse(loV*upV <= 0, col, 2) # also used for scores...
 
   if(plot) {
 
@@ -866,13 +867,15 @@ plotLRCE = function(
 
   }
 
-  fVal = lofVal = upfVal = NA
-  success = sum(colors == col)
-  trials  = length(colors)
-  fVal = success/trials
-  ci = DescTools::BinomCI(success, trials, method = "wilsoncc")
-  lofVal = ci[,2]
-  upfVal = ci[,3]
+  # Fraction of valid intervals
+  fVal    = lofVal = upfVal = NA
+  isVal   = loV * upV <= 0
+  success = sum(isVal)
+  trials  = length(loV)
+  fVal    = success/trials
+  ci      = DescTools::BinomCI(success, trials, method = "wilsoncc")
+  lofVal  = ci[,2]
+  upfVal  = ci[,3]
 
   invisible(
     list(
@@ -887,7 +890,8 @@ plotLRCE = function(
       meanPu = upV0,
       fVal   = fVal,
       lofVal = lofVal,
-      upfVal = upfVal
+      upfVal = upfVal,
+      isVal  = isVal
     )
   )
 }
