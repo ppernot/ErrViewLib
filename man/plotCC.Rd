@@ -8,7 +8,7 @@ with different default arguments.}
 plotCC(
   E,
   uE,
-  statS = c("RMSE", "MAE", "Q95"),
+  statS = c("RMSE", "RMSD", "MAE", "Q95"),
   normalize = FALSE,
   oracle = FALSE,
   probref = TRUE,

@@ -50,6 +50,19 @@ hsmode = function(X, index = 1:length(X), ...) {
 rmsd = function(X, index = 1:length(X),...) {
   sd(X[index])
 }
+#' Root-Mean Squared Error (RMSE)
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X -
+#' @param index -
+#'
+#' @return
+#' @export
+#'
+rmse = function(X, index = 1:length(X),...) {
+  sqrt(mean((X[index])^2))
+}
 #' Median Absolute Deviation (MAD-SD)
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'

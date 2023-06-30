@@ -403,7 +403,7 @@ plotConfidence = function(
 #' }
 plotCC = function(
   E, uE,
-  statS        = c('RMSE','MAE','Q95'),
+  statS        = c('RMSE','RMSD','MAE','Q95'),
   normalize    = FALSE,
   oracle       = FALSE,
   probref      = TRUE,
@@ -432,10 +432,15 @@ plotCC = function(
   dist_probref = match.arg(dist_probref)
 
   if(statS == 'RMSE') {
-    stat = ErrViewLib::rmsd
+    stat = ErrViewLib::rmse
     ylab = paste0('RMSE ',unit)
     if(normalize)
       ylab = 'RMSE / RMSE_0'
+  } else if(statS == 'RMSD') {
+    stat = ErrViewLib::rmsd
+    ylab = paste0('RMSD ',unit)
+    if(normalize)
+      ylab = 'RMSD / RMSD_0'
   } else if(statS == 'MAE') {
     stat = ErrViewLib::mue
     ylab = paste0('MAE ',unit)
