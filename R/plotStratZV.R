@@ -445,7 +445,7 @@ plotStratZM = function(
   }
 
   # Statistics
-  isVal   = loV * upV <= 0 & counts >= popMin
+  isVal   = loM * upM <= 0 & counts >= popMin
   success = sum(isVal)
   trials  = sum(counts >= popMin)
   fVal    = success / trials
@@ -457,12 +457,12 @@ plotStratZM = function(
     list(
       values = values,
       counts = counts,
-      pc     = mV,
-      pcl    = loV,
-      pcu    = upV,
-      meanP  = mV0,
-      meanPl = loV0,
-      meanPu = upV0,
+      pc     = mM,
+      pcl    = loM,
+      pcu    = upM,
+      meanP  = mM0,
+      meanPl = loM0,
+      meanPu = upM0,
       fVal   = fVal,
       lofVal = lofVal,
       upfVal = upfVal,
