@@ -12,7 +12,7 @@ plotStratZV(
   aggregate = TRUE,
   popMin = 30,
   plot = TRUE,
-  method = c("cho", "bootstrap", "chisq"),
+  method = c("cho", "bootstrap", "chisq", "auto"),
   BSmethod = c("bca", "perc", "basic"),
   nBoot = 500,
   xlab = "Conditioning variable",

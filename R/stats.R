@@ -63,6 +63,21 @@ rmsd = function(X, index = 1:length(X),...) {
 rmse = function(X, index = 1:length(X),...) {
   sqrt(mean((X[index])^2))
 }
+#' Relative Calibration Error (RCE)
+#'
+#' Auxiliary function for bootstrap by 'boot::boot()'
+#'
+#' @param X (matrix) a 2-columns matrix containing the uncertainties and the errors
+#' @param index -
+#'
+#' @return
+#' @export
+#'
+rce = function(X, indx = 1:nrow(X)) {
+  RMV    = sqrt(mean(X[indx,1]^2))
+  RMSE   = sqrt(mean(X[indx,2]^2))
+  (RMV - RMSE) / RMV
+}
 #' Median Absolute Deviation (MAD-SD)
 #'
 #' Auxiliary function for bootstrap by 'boot::boot()'

@@ -6,7 +6,7 @@
 \usage{
 varZCI(
   Z,
-  method = c("bootstrap", "cho", "chisq"),
+  method = c("bootstrap", "cho", "chisq", "auto"),
   CImethod = c("bca", "perc", "basic"),
   nBoot = 1500,
   level = 0.95,
@@ -16,7 +16,7 @@ varZCI(
 \arguments{
 \item{Z}{(vector) a data sample}
 
-\item{method}{(string) one of 'bootstrap' (default), 'cho' and
+\item{method}{(string) one of 'auto' (default), 'bootstrap', 'cho' and
 'chisq' for the estimation of the statistics}
 
 \item{CImethod}{(string) one of 'bca' (default), 'perc' and 'basic'
