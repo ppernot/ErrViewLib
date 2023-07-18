@@ -11,6 +11,7 @@ plotStratZV(
   varZ = 1,
   aggregate = TRUE,
   popMin = 30,
+  greedy = TRUE,
   plot = TRUE,
   method = c("cho", "bootstrap", "chisq", "auto"),
   BSmethod = c("bca", "perc", "basic"),
@@ -29,9 +30,11 @@ plotStratZV(
 
 \item{varZ}{(numeric) target value for Var(Z) (default `1`)}
 
-\item{aggregate}{(logical) aggregate contiguous strata smaller than popMin}
+\item{aggregate}{(logical) aggregate contiguous strata smaller than popMin (default: TRUE)}
 
 \item{popMin}{(integer) minimal count in a stratum}
+
+\item{greedy}{(logical) use greedy algorithm to merge strata (default: TRUE)}
 
 \item{plot}{(logical) plot the results}
 

@@ -13,6 +13,7 @@ plotEvsPU(
   runMode = FALSE,
   runMean = FALSE,
   runVar = FALSE,
+  runMS = FALSE,
   cumMAE = FALSE,
   probs = c(0.95),
   xlab = NULL,
@@ -46,6 +47,10 @@ plotEvsPU(
 \item{runMode}{(logical) plot running mode of distribution}
 
 \item{runMean}{(logical) plot running mean}
+
+\item{runVar}{(logical) plot running variance}
+
+\item{runMS}{(logical) plot running mean squares (exclusive with `runVar`)}
 
 \item{cumMAE}{(logical) plot cumulative MAE}
 

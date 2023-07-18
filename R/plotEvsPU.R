@@ -6,6 +6,8 @@
 #' @param runExt (logical) plot extremal points
 #' @param runQuant (logical) plot running quantiles (cf. probs)
 #' @param runMean (logical) plot running mean
+#' @param runVar (logical) plot running variance
+#' @param runMS (logical) plot running mean squares (exclusive with `runVar`)
 #' @param runMode (logical) plot running mode of distribution
 #' @param probs (vector) probability levels for quantile-based confidence intervals
 #' @param cumMAE (logical) plot cumulative MAE
@@ -41,6 +43,7 @@ plotEvsPU =  function(
   runMode   = FALSE,
   runMean   = FALSE,
   runVar    = FALSE,
+  runMS     = FALSE,
   cumMAE    = FALSE,
   probs     = c(0.95),
   xlab      = NULL,
@@ -134,6 +137,9 @@ plotEvsPU =  function(
 
       if(runVar)
         yvar[i] = var(y)
+
+      if(runMS)
+        yvar[i] = mean(y^2)
 
       if(runMean)
         ymean[i] = mean(y)
@@ -314,7 +320,7 @@ plotEvsPU =  function(
     tleg = c(tleg,1)
   }
 
-  if(runVar) {
+  if(runVar | runMS) {
     lines(
       mint, yvar,
       lty = 1,
@@ -339,7 +345,7 @@ plotEvsPU =  function(
           col = colv
         )
       }
-    legs = c(legs,'Variance')
+    legs = c(legs,ifelse(runVar,'Variance','Mean squares'))
     pleg = c(pleg,NA)
     cleg = c(cleg,colv)
     tleg = c(tleg,1)

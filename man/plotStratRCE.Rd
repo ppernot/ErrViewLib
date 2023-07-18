@@ -11,6 +11,7 @@ plotStratRCE(
   E,
   aggregate = TRUE,
   popMin = 30,
+  greedy = TRUE,
   plot = TRUE,
   nBoot = 1500,
   xlab = "Conditioning variable",
@@ -26,6 +27,8 @@ plotStratRCE(
 \item{aggregate}{(logical) aggregate contiguous strata smaller than popMin}
 
 \item{popMin}{(integer) minimal count in a stratum}
+
+\item{greedy}{(logical) use greedy algorithm to merge strata (default: TRUE)}
 
 \item{plot}{(logical) plot the results}
 

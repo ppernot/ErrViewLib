@@ -1,14 +1,128 @@
+#' Aggregate a stratified sample to avoid strata with counts smaller than a threshold
+#'
+#' @param X (vector) stratified sample to be aggregated
+#' @param popMin (integer) minimal count in a stratum
+#' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
+#'
+#' @return a list containing the new X vector and the values and counts of the new strata
+#' @export
+#'
+#' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Uncertainty
+#'   X   = signif(uE,1)                # Stratify uE
+#'   ST  = stratAgg(X)
+#'   print(str(ST))
+#' }
+stratAgg <- function(X, popMin = 50, greedy = TRUE) {
+
+  values = sort(unique(X)) #!!! Do not use names(table(X)) for this
+                           # !!! (values are truncated)
+  counts = as.vector(table(X))
+
+  if (greedy) {
+    # Merge strata until all counts > popMin
+    while (sum(counts < popMin) != 0) {
+
+      ## Stratum to merge
+      first = which(counts < popMin)[1]
+
+      # Select smallest neighbor target
+      if(first == 1) {
+        j = first + 1
+      } else if(first == length(counts)) {
+        j = first - 1
+      } else {
+        pm1 = counts[first - 1]
+        pp1 = counts[first + 1]
+        if(pm1 < pp1) {
+          j = first - 1
+        } else {
+          j = first + 1
+        }
+      }
+
+      ## Merge
+      seli = X == values[first]
+      selj = X == values[j]
+
+      ### Weighted mean of merged strata
+      values[first] =
+        (counts[first] * values[first] +
+           counts[j] * values[j]) /
+        (counts[first] + counts[j])
+      counts[first] = counts[first] + counts[j]
+      counts[j] = 0
+      X[seli] = values[first]
+      X[selj] = values[first]
+
+      sel    = counts != 0
+      values = values[sel]
+      counts = counts[sel]
+    }
+
+  } else {
+    # Aggregate contiguous strata smaller than popMin
+    while (sum(counts < popMin) != 0) {
+      sel = counts < popMin
+      i = 1
+      while (!sel[which(sel)[i] + 1]) {
+        i = i + 1
+        if (i > length(which(sel)))
+          break
+      }
+      if (i > length(which(sel)))
+        break
+      first = which(sel)[i]
+      j = first + 1
+      while (sel[j]) {
+        seli = X == values[first]
+        selj = X == values[j]
+
+        # Weighted mean of merged strata
+        values[first] =
+          (counts[first] * values[first] +
+             counts[j] * values[j]) /
+          (counts[first] + counts[j])
+
+        counts[first] = counts[first] + counts[j]
+        counts[j] = 0
+
+        X[seli] = values[first]
+        X[selj] = values[first]
+
+        j = j + 1
+        if (j > length(counts))
+          break
+      }
+      sel = counts != 0
+      values = values[sel]
+      counts = counts[sel]
+    }
+  }
+
+  return(
+    list(
+      X      = X,
+      values = values,
+      counts = counts
+    )
+  )
+}
+
+
 #' Plot local z-score variance to assess calibration and tightness
 #' for stratified conditioning variables
 #'
 #' @param X (vector) abscissae of the Z values
 #' @param Z (vector) set of z-score values to be tested
-#' @param aggregate (logical) aggregate contiguous strata smaller than popMin
+#' @param aggregate (logical) aggregate contiguous strata smaller than popMin (default: TRUE)
+#' @param popMin (integer) minimal count in a stratum
+#' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
 #' @param varZ (numeric) target value for Var(Z) (default `1`)
 #' @param method (string) method used to estimate 95 percent CI on Var(Z)
 #' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
-#' @param popMin (integer) minimal count in a stratum
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -32,6 +146,7 @@ plotStratZV = function(
   varZ      = 1,
   aggregate = TRUE,
   popMin    = 30,
+  greedy    = TRUE,
   plot      = TRUE,
   method    = c('cho', 'bootstrap', 'chisq','auto'),
   BSmethod  = c('bca', 'perc', 'basic'),
@@ -49,50 +164,16 @@ plotStratZV = function(
   N = length(Z)
 
   # Define strata
-  values = sort(unique(X))
-  counts = as.vector(table(X))
-
-  if (aggregate)
-    ## Aggregate contiguous strata smaller than popMin
-    while (sum(counts < popMin) != 0) {
-      sel = counts < popMin
-      i = 1
-      while (!sel[which(sel)[i] + 1]) {
-        i = i + 1
-        if (i > length(which(sel)))
-          break
-      }
-      if (i > length(which(sel)))
-        break
-      first = which(sel)[i]
-      j = first + 1
-      while (sel[j]) {
-        seli = X == values[first]
-        selj = X == values[j]
-
-        values[first] =
-          (counts[first] * values[first] +
-             counts[j] * values[j]) /
-          (counts[first] + counts[j])
-        counts[first] = counts[first] + counts[j]
-        counts[j] = 0
-
-        X[seli] = values[first]
-        X[selj] = values[first]
-
-        j = j + 1
-        if (j > length(counts))
-          break
-      }
-      sel = counts != 0
-      values = values[sel]
-      counts = counts[sel]
-    }
-
-  # Remove loners
-  sel    = counts > 1
-  values = values[sel]
-  counts = counts[sel]
+  if(aggregate) {
+    ST     = stratAgg(X, popMin, greedy)
+    X      = ST$X
+    values = ST$values
+    counts = ST$counts
+  } else {
+    values = sort(unique(X)) # !!! Do not use names(table(X)) for this
+                             # !!! (values are truncated)
+    counts = as.vector(table(X))
+  }
 
   # Statistics
   mV = loV = upV  = c()
@@ -251,6 +332,7 @@ plotStratZV = function(
 #' @param Z (vector) set of z-score values to be tested
 #' @param aggregate (logical) aggregate contiguous strata smaller than popMin
 #' @param popMin (integer) minimal count in a stratum
+#' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -273,6 +355,7 @@ plotStratZM = function(
   X, Z,
   aggregate = TRUE,
   popMin    = 30,
+  greedy    = TRUE,
   plot      = TRUE,
   xlab      = 'Conditioning variable',
   ylim      = NULL,
@@ -284,50 +367,16 @@ plotStratZM = function(
   N = length(Z)
 
   # Define strata
-  values = sort(unique(X))
-  counts = as.vector(table(X))
-
-  if (aggregate)
-    ## Aggregate contiguous strata smaller than popMin
-    while (sum(counts < popMin) != 0) {
-      sel = counts < popMin
-      i = 1
-      while (!sel[which(sel)[i] + 1]) {
-        i = i + 1
-        if (i > length(which(sel)))
-          break
-      }
-      if (i > length(which(sel)))
-        break
-      first = which(sel)[i]
-      j = first + 1
-      while (sel[j]) {
-        seli = X == values[first]
-        selj = X == values[j]
-
-        values[first] =
-          (counts[first] * values[first] +
-             counts[j] * values[j]) /
-          (counts[first] + counts[j])
-        counts[first] = counts[first] + counts[j]
-        counts[j] = 0
-
-        X[seli] = values[first]
-        X[selj] = values[first]
-
-        j = j + 1
-        if (j > length(counts))
-          break
-      }
-      sel = counts != 0
-      values = values[sel]
-      counts = counts[sel]
-    }
-
-  # Remove loners
-  sel    = counts > 1
-  values = values[sel]
-  counts = counts[sel]
+  if(aggregate) {
+    ST     = stratAgg(X, popMin, greedy)
+    X      = ST$X
+    values = ST$values
+    counts = ST$counts
+  } else {
+    values = sort(unique(X)) # !!! Do not use names(table(X)) for this
+    # !!! (values are truncated)
+    counts = as.vector(table(X))
+  }
 
   # LZM values
   mM = loM = upM = c()
@@ -479,6 +528,7 @@ plotStratZM = function(
 #' @param mZ2 (numeric) target value for <Z^2> (default: 1)
 #' @param aggregate (logical) aggregate contiguous strata smaller than popMin
 #' @param popMin (integer) minimal count in a stratum
+#' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -502,6 +552,7 @@ plotStratZMS = function(
   mZ2       = 1,
   aggregate = TRUE,
   popMin    = 30,
+  greedy    = TRUE,
   plot      = TRUE,
   xlab      = 'Conditioning variable',
   ylim      = NULL,
@@ -513,50 +564,17 @@ plotStratZMS = function(
   N = length(Z)
 
   # Define strata
-  values = sort(unique(X))
-  counts = as.vector(table(X))
+  if(aggregate) {
+    ST     = stratAgg(X, popMin, greedy)
+    X      = ST$X
+    values = ST$values
+    counts = ST$counts
+  } else {
+    values = sort(unique(X)) # !!! Do not use names(table(X)) for this
+    # !!! (values are truncated)
+    counts = as.vector(table(X))
+  }
 
-  if (aggregate)
-    ## Aggregate contiguous strata smaller than popMin
-    while (sum(counts < popMin) != 0) {
-      sel = counts < popMin
-      i = 1
-      while (!sel[which(sel)[i] + 1]) {
-        i = i + 1
-        if (i > length(which(sel)))
-          break
-      }
-      if (i > length(which(sel)))
-        break
-      first = which(sel)[i]
-      j = first + 1
-      while (sel[j]) {
-        seli = X == values[first]
-        selj = X == values[j]
-
-        values[first] =
-          (counts[first] * values[first] +
-             counts[j] * values[j]) /
-          (counts[first] + counts[j])
-        counts[first] = counts[first] + counts[j]
-        counts[j] = 0
-
-        X[seli] = values[first]
-        X[selj] = values[first]
-
-        j = j + 1
-        if (j > length(counts))
-          break
-      }
-      sel = counts != 0
-      values = values[sel]
-      counts = counts[sel]
-    }
-
-  # Remove loners
-  sel    = counts > 1
-  values = values[sel]
-  counts = counts[sel]
 
   # LZM values
   mM = loM = upM = c()
@@ -718,11 +736,12 @@ plotStratZMS = function(
 #' @param X (vector) abscissae of the Z values
 #' @param Z (vector) set of z-score values to be tested
 #' @param aggregate (logical) aggregate contiguous strata smaller than popMin
+#' @param popMin (integer) minimal count in a stratum
+#' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
 #' @param varZ (numeric) target value for Var(Z) (default `1`)
 #' @param method (string) method used to estimate 95 percent CI on Var(Z)
 #' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
-#' @param popMin (integer) minimal count in a stratum
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -745,6 +764,7 @@ plotStratRCE= function(
   X, uE, E,
   aggregate = TRUE,
   popMin    = 30,
+  greedy    = TRUE,
   plot      = TRUE,
   nBoot     = 1500,
   xlab      = 'Conditioning variable',
@@ -755,50 +775,16 @@ plotStratRCE= function(
 ) {
 
   # Define strata
-  values = sort(unique(X))
-  counts = as.vector(table(X))
-
-  if (aggregate)
-    ## Aggregate contiguous strata smaller than popMin
-    while (sum(counts < popMin) != 0) {
-      sel = counts < popMin
-      i = 1
-      while (!sel[which(sel)[i] + 1]) {
-        i = i + 1
-        if (i > length(which(sel)))
-          break
-      }
-      if (i > length(which(sel)))
-        break
-      first = which(sel)[i]
-      j = first + 1
-      while (sel[j]) {
-        seli = X == values[first]
-        selj = X == values[j]
-
-        values[first] =
-          (counts[first] * values[first] +
-             counts[j] * values[j]) /
-          (counts[first] + counts[j])
-        counts[first] = counts[first] + counts[j]
-        counts[j] = 0
-
-        X[seli] = values[first]
-        X[selj] = values[first]
-
-        j = j + 1
-        if (j > length(counts))
-          break
-      }
-      sel = counts != 0
-      values = values[sel]
-      counts = counts[sel]
-    }
-
-  # Remove loners
-  sel    = counts > 1
-  values = values[sel]
-  counts = counts[sel]
+  if(aggregate) {
+    ST     = stratAgg(X, popMin, greedy)
+    X      = ST$X
+    values = ST$values
+    counts = ST$counts
+  } else {
+    values = sort(unique(X)) # !!! Do not use names(table(X)) for this
+    # !!! (values are truncated)
+    counts = as.vector(table(X))
+  }
 
   # Statistics
   mV = loV = upV  = c()
