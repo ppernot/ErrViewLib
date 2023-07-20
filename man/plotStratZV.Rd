@@ -15,7 +15,7 @@ plotStratZV(
   plot = TRUE,
   method = c("cho", "bootstrap", "chisq", "auto"),
   BSmethod = c("bca", "perc", "basic"),
-  nBoot = 500,
+  nBoot = 1500,
   xlab = "Conditioning variable",
   ylim = NULL,
   title = "",

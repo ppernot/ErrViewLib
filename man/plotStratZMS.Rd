@@ -10,8 +10,11 @@ plotStratZMS(
   Z,
   mZ2 = 1,
   aggregate = TRUE,
-  popMin = 30,
+  popMin = 100,
   greedy = TRUE,
+  nBoot = 1500,
+  method = c("bootstrap", "stud", "auto"),
+  BSmethod = c("bca", "perc", "basic"),
   plot = TRUE,
   xlab = "Conditioning variable",
   ylim = NULL,
@@ -32,6 +35,12 @@ plotStratZMS(
 \item{popMin}{(integer) minimal count in a stratum}
 
 \item{greedy}{(logical) use greedy algorithm to merge strata (default: TRUE)}
+
+\item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{method}{(string) method used to estimate 95 percent CI on <Z^2>}
+
+\item{BSmethod}{(string) bootstrap variant}
 
 \item{plot}{(logical) plot the results}
 

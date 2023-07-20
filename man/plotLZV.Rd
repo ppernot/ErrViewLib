@@ -19,7 +19,7 @@ plotLZV(
   slide = FALSE,
   method = c("bootstrap", "cho", "chisq", "auto"),
   BSmethod = c("bca", "perc", "basic"),
-  nBoot = 500,
+  nBoot = 1500,
   xlab = "Conditioning variable",
   xlim = NULL,
   ylim = NULL,

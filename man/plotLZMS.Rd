@@ -12,12 +12,12 @@ plotLZMS(
   logX = FALSE,
   nBin = NULL,
   equiPop = TRUE,
-  popMin = 30,
+  popMin = 100,
   logBin = TRUE,
   intrv = NULL,
   plot = TRUE,
   slide = FALSE,
-  nBoot = 500,
+  nBoot = 1500,
   method = c("bootstrap", "stud", "auto"),
   BSmethod = c("bca", "perc", "basic"),
   xlab = "Conditioning variable",
@@ -61,7 +61,7 @@ equal range intervals, or equal log-range intervals
 
 \item{nBoot}{(integer) number of bootstrap replicas}
 
-\item{method}{(string) method used to estimate 95 percent CI on Var(Z)}
+\item{method}{(string) method used to estimate 95 percent CI on <Z^2>}
 
 \item{BSmethod}{(string) bootstrap variant}
 

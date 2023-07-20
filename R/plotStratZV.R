@@ -150,7 +150,7 @@ plotStratZV = function(
   plot      = TRUE,
   method    = c('cho', 'bootstrap', 'chisq','auto'),
   BSmethod  = c('bca', 'perc', 'basic'),
-  nBoot     = 500,
+  nBoot     = 1500,
   xlab      = 'Conditioning variable',
   ylim      = NULL,
   title     = '',
@@ -180,21 +180,13 @@ plotStratZV = function(
   for (i in seq_along(values)) {
     f   = values[i]
     sel = X == f
-    c = ErrViewLib::varZCI(
-      Z[sel],
-      nBoot = max(nBoot, sum(sel)),
-      method = method,
-      CImethod = BSmethod
-    )
+    c = ErrViewLib::varZCI(Z[sel], nBoot = nBoot,
+                           method = method, CImethod = BSmethod)
     mV[i]  = c$mean
     loV[i] = c$ci[1]
     upV[i] = c$ci[2]
   }
-  zs = varZCI(
-    Z,
-    nBoot = max(nBoot, N),
-    method = method,
-    CImethod = BSmethod)
+  zs = varZCI(Z, method = 'auto', nBoot = nBoot, CImethod = BSmethod)
   mV0  = zs$mean
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
@@ -526,6 +518,9 @@ plotStratZM = function(
 #' @param X (vector) conditioning variable
 #' @param Z (vector) set of z-score values to be tested
 #' @param mZ2 (numeric) target value for <Z^2> (default: 1)
+#' @param method (string) method used to estimate 95 percent CI on <Z^2>
+#' @param BSmethod (string) bootstrap variant
+#' @param nBoot (integer) number of bootstrap replicas
 #' @param aggregate (logical) aggregate contiguous strata smaller than popMin
 #' @param popMin (integer) minimal count in a stratum
 #' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
@@ -551,8 +546,11 @@ plotStratZMS = function(
   X, Z,
   mZ2       = 1,
   aggregate = TRUE,
-  popMin    = 30,
+  popMin    = 100,
   greedy    = TRUE,
+  nBoot     = 1500,
+  method    = c('bootstrap','stud','auto'),
+  BSmethod  = c('bca','perc','basic'),
   plot      = TRUE,
   xlab      = 'Conditioning variable',
   ylim      = NULL,
@@ -560,6 +558,9 @@ plotStratZMS = function(
   label     = 0,
   gPars     = ErrViewLib::setgPars()
 ) {
+
+  method   = match.arg(method)
+  BSmethod = match.arg(BSmethod)
 
   N = length(Z)
 
@@ -580,17 +581,17 @@ plotStratZMS = function(
   mM = loM = upM = c()
   for (i in seq_along(values)) {
     sel    = X == values[i]
-    M      = sum(sel)
-    zLoc   = Z[sel]
-    m      = mean(zLoc^2)
-    s      = sd(zLoc^2) / sqrt(M)
-    mM[i]  = m
-    loM[i] = m + s * qt(0.025, df = M-1)
-    upM[i] = m + s * qt(0.975, df = M-1)
+    zs     = ErrViewLib::ZMSCI(Z[sel], nBoot = nBoot,
+                               method = method, CImethod = BSmethod )
+    mM[i]   = zs$mean
+    loM[i]  = zs$ci[1]
+    upM[i]  = zs$ci[2]
   }
-  mM0   = mean(Z^2)
-  loM0  = mM0 - sd(Z^2)/sqrt(N) * 1.96
-  upM0  = mM0 + sd(Z^2)/sqrt(N) * 1.96
+  zs    = ErrViewLib::ZMSCI(Z, method = 'auto', nBoot = nBoot,
+                            CImethod = BSmethod)
+  mM0   = zs$mean
+  loM0  = zs$ci[1]
+  upM0  = zs$ci[2]
 
   # Colors of symbols and segments
 
