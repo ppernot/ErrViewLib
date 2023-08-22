@@ -105,7 +105,7 @@ varZCI = function (
 #'
 ZMSCI = function (
   Z,
-  method   = c('bootstrap','stud','auto'),
+  method   = c('bootstrap','stud','auto','studc'),
   CImethod = c('bca','perc','basic'),
   nBoot = 1500,
   level = 0.95,
@@ -142,15 +142,33 @@ ZMSCI = function (
       )
     },
     stud = {
-      V  = mean(Z^2)
+      mu = mean(Z^2)
+      s2 = var(Z^2)
       N  = length(Z)
-      SD = sd(Z^2)/sqrt(N)
+      sm = sqrt(s2/N)
       list(
-        mean   = V,
-        sd     = SD,
+        mean   = mu,
+        sd     = sm,
         ci     = c(
-          V + SD * qt((1 - level) / 2, df = N-1) ,
-          V + SD * qt((1 + level) / 2, df = N-1)
+          mu  + sm * qt((1 - level) / 2, df = N-1) ,
+          mu  + sm * qt((1 + level) / 2, df = N-1)
+        ),
+        method = method,
+        level  = level
+      )
+    },
+    studc = {
+      mu = mean(Z^2)
+      s2 = var(Z^2)
+      m3 = moments::moment(Z^2, order = 3, central = TRUE)
+      N  = length(Z)
+      sm = sqrt(s2/N)
+      list(
+        mean   = mu,
+        sd     = sm,
+        ci     = c(
+          mu + m3/(6*s2*N) + sm * qt((1 - level) / 2, df = N-1) ,
+          mu + m3/(6*s2*N) + sm * qt((1 + level) / 2, df = N-1)
         ),
         method = method,
         level  = level
@@ -789,18 +807,19 @@ plotLRCE = function(
     sel    = intrv$lwindx[i]:intrv$upindx[i]
     uEloc  = uOrd[sel]
     Eloc   = eOrd[sel]
-    bs     = boot::boot(cbind(uEloc,Eloc), ErrViewLib::rce, R=nBoot)
+    bs     = boot::boot(cbind(uEloc,Eloc), ErrViewLib::rce,
+                        R=max(nBoot,length(sel)))
     bci    = boot::boot.ci(bs, conf = 0.95, type = 'bca' )
     mV[i]  = bci$t0
     loV[i] = bci$bca[1, 4]
     upV[i] = bci$bca[1, 5]
     mint[i] = mean(range(xOrd[sel])) # Center of interval
   }
-  bs   = boot::boot(cbind(uE, E), ErrViewLib::rce, R=nBoot)
-  bci  = boot::boot.ci(bs, conf = 0.95, type = 'bca' )
-  mV0  = bci$t0
-  loV0 = bci$bca[1, 4]
-  upV0 = bci$bca[1, 5]
+  # Basic CI for full dataset (too long otherwise)
+  bs   = boot::boot(cbind(uE, E), ErrViewLib::rce, R = nBoot)
+  mV0  = bs$t0
+  loV0 = quantile(bs$t,0.025)
+  upV0 = quantile(bs$t,0.975)
 
   colors = ifelse(loV*upV <= 0, col, 2) # also used for scores...
 

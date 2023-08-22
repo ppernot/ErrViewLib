@@ -6,7 +6,7 @@
 \usage{
 ZMSCI(
   Z,
-  method = c("bootstrap", "stud", "auto"),
+  method = c("bootstrap", "stud", "auto", "studc"),
   CImethod = c("bca", "perc", "basic"),
   nBoot = 1500,
   level = 0.95,

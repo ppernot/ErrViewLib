@@ -68,7 +68,7 @@ plotAGVZMS <- function(
   for (i in seq_along(sizes)) {
     OK = OKc = 0
     for (j in 1:nMC) {
-      if(verbose)
+      if(verbose & j%%10 ==0)
         cat(sizes[i],' : ',j,' / ',nMC,'\n')
       sam = sample(M, sizes[i])
       z = Z[sam]
