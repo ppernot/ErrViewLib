@@ -196,8 +196,8 @@ plotEvsPU =  function(
   colg = cols[myColors[4]]     # Guide lines
   colc = cols[myColors[5]]     # Cum. MAE
   colm = cols[myColors[3]]     # Mode
-  colv = cols[myColors[5]]     # Variance
-  cola = cols[myColors[3]]     # Variance
+  colv = cols[myColors[3]]     # Variance / Mean Squares
+  cola = cols[myColors[5]]     # Mean
 
   plot(
     X, Y,

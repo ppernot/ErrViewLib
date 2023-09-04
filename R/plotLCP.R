@@ -78,9 +78,9 @@ plotLCP = function(
     if(length(ordX) != length(E))
       stop('>>> Inconsistent length for ordX')
     if(is.null(aux))
-      ord  = order(X)
+      ord  = order(ordX)
     else
-      ord  = order(X,aux)
+      ord  = order(ordX,aux)
     xOrd = ordX[ord]
   } else {
     stop('>>> Please provide ordX')
