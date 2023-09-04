@@ -27,6 +27,7 @@ plotLZMS(
   score = FALSE,
   add = FALSE,
   col = 5,
+  colInv = 2,
   label = 0,
   gPars = ErrViewLib::setgPars()
 )

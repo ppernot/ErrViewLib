@@ -1039,6 +1039,7 @@ plotLZMS = function(
   score     = FALSE,
   add       = FALSE,
   col       = 5,
+  colInv    = 2,
   label     = 0,
   gPars     = ErrViewLib::setgPars()
 ) {
@@ -1089,7 +1090,7 @@ plotLZMS = function(
   loV0  = zs$ci[1]
   upV0  = zs$ci[2]
 
-  colors = ifelse((loV-varZ)*(upV-varZ) <= 0, col, 2)
+  colors = ifelse((loV-varZ)*(upV-varZ) <= 0, col, colInv)
 
   if(plot) {
 
