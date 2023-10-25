@@ -12,7 +12,8 @@ tabScoresRef(
   intrv = NULL,
   nMC = 1000,
   dist = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
-  rawUnc = FALSE
+  rawUnc = FALSE,
+  quant = FALSE
 )
 }
 \arguments{
@@ -31,9 +32,14 @@ tabScoresRef(
 
 \item{dist}{(string) model error distribution to generate the reference
 values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
+
+\item{rawUnc}{(logical) if TRUE, output unformatted reference uncertainties}
+
+\item{quant}{(logical) if TRUE, return 95% confidence interval limits}
 }
 \value{
-A table with two lines or three if rawUnc is TRUE.
+A table with two lines, three if rawUnc is TRUE,
+  and two more if quant is TRUE.
 }
 \description{
 Table of calibration scores with probabilistic references

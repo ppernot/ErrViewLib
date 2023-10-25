@@ -11,7 +11,8 @@ calibScoresProbRef(
   nBin = NULL,
   intrv = NULL,
   nMC = 1000,
-  dist = c("Normal", "Uniform", "Normp4", "Laplace", "T4")
+  dist = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
+  quant = FALSE
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ calibScoresProbRef(
 
 \item{dist}{(string) model error distribution to generate the reference
 values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
+
+\item{quant}{(logical) if TRUE, return 95% confidence interval limits}
 }
 \value{
 A list containing two lists: meanRefScores is a list of mean scores

@@ -185,6 +185,7 @@ calibScores <- function(
 #' @param nMC (integer) sampling size (default: 1000)
 #' @param dist (string) model error distribution to generate the reference
 #'    values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
+#' @param quant (logical) if TRUE, return 95% confidence interval limits
 #'
 #' @return A list containing two lists: meanRefScores is a list of mean scores
 #'   with the same structure as the output of `calibScores` and sdRefScores
@@ -201,7 +202,8 @@ calibScoresProbRef <- function(
   E, u, X = NULL,
   nBin = NULL, intrv = NULL,
   nMC = 1000,
-  dist = c('Normal','Uniform','Normp4','Laplace','T4')
+  dist = c('Normal','Uniform','Normp4','Laplace','T4'),
+  quant = FALSE
 ) {
 
   dist = match.arg(dist)
@@ -244,12 +246,16 @@ calibScoresProbRef <- function(
   }
   meanScores = apply(tSim, 2, mean, na.rm = TRUE)
   sdScores   = apply(tSim, 2, sd, na.rm = TRUE)
+  if(quant)
+    qScores = apply(tSim, 2, quantile, probs= c(0.025,0.975), na.rm = TRUE)
   names(meanScores) = names(sdScores) = names(unlist(gs))
-
+  colnames(qScores) = names(unlist(gs))
   return(
     list(
       meanRefScores = as.list(meanScores),
-      sdRefScores   = as.list(sdScores)
+      sdRefScores   = as.list(sdScores),
+      qRefScoreslw  = as.list(qScores[1,]),
+      qRefScoresup  = as.list(qScores[2,])
     )
   )
 }
@@ -264,9 +270,11 @@ calibScoresProbRef <- function(
 #' @param nMC (integer) sampling size (default: 1000)
 #' @param dist (string) model error distribution to generate the reference
 #'    values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
-#' @params rawUnc (logical) if TRUE, output unformatted reference uncertainties
+#' @param rawUnc (logical) if TRUE, output unformatted reference uncertainties
+#' @param quant (logical) if TRUE, return 95% confidence interval limits
 #'
-#' @return A table with two lines or three if rawUnc is TRUE.
+#' @return A table with two lines, three if rawUnc is TRUE,
+#'   and two more if quant is TRUE.
 #' @export
 #'
 #' @examples
@@ -280,15 +288,17 @@ tabScoresRef <- function(
   nBin = NULL, intrv = NULL,
   nMC = 1000,
   dist = c('Normal','Uniform','Normp4','Laplace','T4'),
-  rawUnc = FALSE
+  rawUnc = FALSE,
+  quant = FALSE
 ) {
 
   res = ErrViewLib::calibScores(E, u, X, nBin, intrv)
-  ref = ErrViewLib::calibScoresProbRef(E, u, X, nBin, intrv, nMC, dist)
+  ref = ErrViewLib::calibScoresProbRef(E, u, X, nBin, intrv, nMC, dist, quant)
 
   v1 = signif(unlist(res),3)
   v2 = unlist(ref$meanRefScores)
   v3 = unlist(ref$sdRefScores)
+
   if(rawUnc) {
     tab = rbind(v1, v2, v3)
     rownames(tab) = c('Data','Ref','uRef')
@@ -298,6 +308,14 @@ tabScoresRef <- function(
                function(x) ErrViewLib::prettyUnc(x[1],x[2],numDig = 1))
     tab = rbind(v1,v4)
     rownames(tab) = c('Data','Ref(uRef)')
+  }
+
+  rn = rownames(tab)
+  if(quant) {
+    v1  = unlist(ref$qRefScoreslw)
+    v2  = unlist(ref$qRefScoresup)
+    tab = rbind(tab, v1, v2)
+    rownames(tab) = c(rn,'lwQ','upQ')
   }
 
   return(tab)
