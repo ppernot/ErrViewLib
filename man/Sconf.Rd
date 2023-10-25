@@ -11,7 +11,7 @@ Sconf(X, pcVec = 0:99, stat = ErrViewLib::mue, normalize = TRUE)
 
 \item{pcVec}{(vector) percentages}
 
-\item{stat}{(function) statistiv}
+\item{stat}{(function) statistic}
 
 \item{normalize}{(logical) normalize statistic}
 }

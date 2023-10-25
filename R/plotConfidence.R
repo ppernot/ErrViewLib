@@ -2,7 +2,7 @@
 #'
 #' @param X (vector) errors
 #' @param pcVec (vector) percentages
-#' @param stat (function) statistiv
+#' @param stat (function) statistic
 #' @param normalize (logical) normalize statistic
 #'
 #' @return Vector of CC stats

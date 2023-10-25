@@ -35,7 +35,7 @@ hrmode = function(X, index = 1:length(X), ...) {
 #' @export
 #'
 hsmode = function(X, index = 1:length(X), ...) {
-  modeest::hsm(X[index],bw=0.5)
+  modeest::hsm(X[index], bw = 0.5)
 }
 #' Root-Mean Squared Deviation (RMSD)
 #'
