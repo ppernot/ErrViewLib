@@ -32,7 +32,7 @@ calibScoresProbRef(
 \item{dist}{(string) model error distribution to generate the reference
 values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
 
-\item{quant}{(logical) if TRUE, return 95% confidence interval limits}
+\item{quant}{(logical) if TRUE, return 95\% confidence interval limits}
 }
 \value{
 A list containing two lists: meanRefScores is a list of mean scores
@@ -48,4 +48,5 @@ Probabilistic reference values for calibration scores
   E  = rnorm(uE, mean=0, sd=uE)    # Generate errors
   calibScoresProbRef(E, uE)
 }
+
 }

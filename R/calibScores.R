@@ -97,6 +97,7 @@ nllFun = function(E, u) {
 #'   its calibration and sharpness components (nll, calib, sharp).
 #'   The presence and length of SX, enceX and uceX match the presence and
 #'   column number of X.
+#'
 #' @export
 #'
 #' @examples
@@ -185,11 +186,12 @@ calibScores <- function(
 #' @param nMC (integer) sampling size (default: 1000)
 #' @param dist (string) model error distribution to generate the reference
 #'    values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
-#' @param quant (logical) if TRUE, return 95% confidence interval limits
+#' @param quant (logical) if TRUE, return 95\% confidence interval limits
 #'
 #' @return A list containing two lists: meanRefScores is a list of mean scores
 #'   with the same structure as the output of `calibScores` and sdRefScores
 #'   contains the standard deviations with the same structure
+#'
 #' @export
 #'
 #' @examples
@@ -198,6 +200,7 @@ calibScores <- function(
 #'   E  = rnorm(uE, mean=0, sd=uE)    # Generate errors
 #'   calibScoresProbRef(E, uE)
 #' }
+#'
 calibScoresProbRef <- function(
   E, u, X = NULL,
   nBin = NULL, intrv = NULL,
@@ -271,10 +274,11 @@ calibScoresProbRef <- function(
 #' @param dist (string) model error distribution to generate the reference
 #'    values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
 #' @param rawUnc (logical) if TRUE, output unformatted reference uncertainties
-#' @param quant (logical) if TRUE, return 95% confidence interval limits
+#' @param quant (logical) if TRUE, return 95\% confidence interval limits
 #'
 #' @return A table with two lines, three if rawUnc is TRUE,
 #'   and two more if quant is TRUE.
+#'
 #' @export
 #'
 #' @examples
@@ -283,6 +287,7 @@ calibScoresProbRef <- function(
 #'   E  = rnorm(uE, mean=0, sd=uE)    # Generate errors
 #'   tabScoresRef(E, uE)
 #' }
+#'
 tabScoresRef <- function(
   E, u, X = NULL,
   nBin = NULL, intrv = NULL,

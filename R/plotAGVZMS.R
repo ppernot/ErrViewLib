@@ -162,3 +162,147 @@ plotAGVZMS <- function(
   )
 
 }
+#' Adversarial Group Calibration based on the Scal statistic
+#'
+#' @param Z (vector) set of z-score values to be tested
+#' @param popMin (integer) minimal bin count in an interval
+#' @param method (string) method used to estimate 95 percent CI on <Z^2>
+#' @param nMC (integer) number of random intervals per size and repeats
+#' @param control (logical) estimate AGV for control sample (normal-standard)
+#' @param colControl (integer) color index of control curve
+#' @param dist (string) model error distribution to generate the control
+#'    values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
+#' @param add (logical) add to previous graph ?
+#' @param ylim (vector) limits of the y axis
+#' @param col (integer) color index of main curve
+#' @param gPars (list) graphical parameters
+#' @param title (string) a title to display above the plot
+#' @param label (integer) index of letter for subplot tag
+#'
+#' @return Nothing.
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)    # Generate errors
+#'   plotAGV(E/uE)
+#' }
+plotAGV<- function(
+  Z,
+  popMin   = 50,
+  nMC      = 100,
+  add      = FALSE,
+  ylim     = NULL,
+  col      = 6,
+  control  = TRUE,
+  colControl = 2,
+  dist = c('Normal','Uniform','Normp4','Laplace','T4'),
+  title    = '',
+  label    = 0,
+  gPars    = ErrViewLib::setgPars()
+) {
+
+  dist = match.arg(dist)
+
+  if(control) {
+    # Unit-variance distributions
+    Normal = function(N)
+      rnorm(N)
+    T4 = function(N, df = 4)
+      rt(N, df = df) / sqrt(df/(df-2))
+    Uniform = function(N)
+      runif(N, -sqrt(3), sqrt(3))
+    Laplace = function(N, df = 1)
+      normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
+    Normp4 = function(N, df = 4)
+      normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
+    # Get distribution function from arg name
+    distFun = get(dist)
+    # Generate control sample
+    Zc = distFun(Z)
+  }
+
+
+  M = length(Z)
+  sizes  = M / 2^{0:20}
+  sizes  = round(sizes[sizes >= popMin & sizes <= M])
+
+  ag = agu = agc = agcu =rep(NA, length(sizes))
+  for (i in seq_along(sizes)) {
+    wtz = wtzc = c()
+    for (j in 1:nMC) {
+      tz = tzc = 0
+      for (k in 1:nMC) {
+        sam = sample(M, sizes[i])
+        tz = max(tz, abs(log(mean(Z[sam]^2))))
+        if(control)
+          tzc = max(tzc, abs(log(mean(Zc[sam]^2))))
+      }
+      wtz[j] = tz
+      if(control)
+        wtzc[j] = tzc
+    }
+    ag[i]  = mean(wtz)
+    agu[i] = sd(wtz)
+    if(control) {
+      agc[i]  = mean(wtzc)
+      agcu[i] = sd(wtzc)
+    }
+  }
+
+  for (n in names(gPars))
+    assign(n, rlist::list.extract(gPars, n))
+
+  par(
+    mfrow = c(1, 1),
+    mar = mar,
+    mgp = mgp,
+    pty = 's',
+    tcl = tcl,
+    cex = cex,
+    lwd = lwd,
+    yaxs = 'i',
+    cex.main = 1
+  )
+
+  if(!add) {
+    if(is.null(ylim))
+      ylim = range(c(0,ag+2*agu,agc+2*agcu))
+    x = sizes/M
+    plot(
+      x, ag,
+      type = 'b', pch = 19, cex = 0.75, col = cols[col],
+      log = 'x', xlab = 'Relative group size',
+      ylim = ylim, yaxs = 'i',
+      ylab = 'Calibration error of worst group',
+      main = title
+    )
+    grid(equilogs = FALSE)
+    polygon(c(x,rev(x)),c(ag+2*agu,rev(ag-2*agu)),
+            border = NA, col = cols_tr[col])
+    if(control) {
+      points(
+        x, agc,
+        type = 'b', pch = 19, col = cols[colControl], cex = 0.75)
+      polygon(c(x,rev(x)),c(agc+2*agcu,rev(agc-2*agcu)),
+              border = NA, col = cols_tr[colControl])
+    }
+    box()
+    if(label > 0)
+      mtext(
+        text = paste0('(', letters[label], ')'),
+        side = 3,
+        adj = 1,
+        cex = cex,
+        line = 0.3)
+  } else {
+    points(
+      x, ag,
+      type = 'b', pch = 19, col = cols[col], cex = 0.75)
+    polygon(c(x,rev(x)),c(ag+2*agu,rev(ag-2*agu)),
+            border = NA, col = cols_tr[col])
+  }
+
+}

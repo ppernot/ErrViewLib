@@ -35,7 +35,7 @@ values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
 
 \item{rawUnc}{(logical) if TRUE, output unformatted reference uncertainties}
 
-\item{quant}{(logical) if TRUE, return 95% confidence interval limits}
+\item{quant}{(logical) if TRUE, return 95\% confidence interval limits}
 }
 \value{
 A table with two lines, three if rawUnc is TRUE,
@@ -50,4 +50,5 @@ Table of calibration scores with probabilistic references
   E  = rnorm(uE, mean=0, sd=uE)    # Generate errors
   tabScoresRef(E, uE)
 }
+
 }
