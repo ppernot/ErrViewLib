@@ -266,11 +266,10 @@ plotAGV<- function(
     yaxs = 'i',
     cex.main = 1
   )
-
+  x = sizes/M
   if(!add) {
     if(is.null(ylim))
       ylim = range(c(0,ag+2*agu,agc+2*agcu))
-    x = sizes/M
     plot(
       x, ag,
       type = 'b', pch = 19, cex = 0.75, col = cols[col],
