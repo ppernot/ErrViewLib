@@ -238,7 +238,7 @@ plotAGV<- function(
     wtz = wtzc = c()
     for (j in 1:nMC) {
       tz = tzc = 0
-      for (k in 1:nMC) {
+      for (k in 1:nGroup) {
         sam = sample(M, sizes[i])
         tz = max(tz, abs(log(mean(Z[sam]^2))))
         if(control)
