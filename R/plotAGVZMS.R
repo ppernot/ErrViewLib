@@ -177,6 +177,7 @@ plotAGVZMS <- function(
 #' @param col (integer) color index of main curve
 #' @param gPars (list) graphical parameters
 #' @param title (string) a title to display above the plot
+#' @param legend (logical) add a legend (default: TRUE) ?
 #' @param label (integer) index of letter for subplot tag
 #'
 #' @return Nothing.
@@ -201,6 +202,7 @@ plotAGV<- function(
   dist = c('Normal','Uniform','Normp4','Laplace','T4'),
   title    = '',
   label    = 0,
+  legend   = TRUE,
   gPars    = ErrViewLib::setgPars()
 ) {
 
@@ -289,6 +291,11 @@ plotAGV<- function(
               border = NA, col = cols_tr[colControl])
     }
     box()
+    if(legend)
+      legend(
+        'topright', bty = 'n',
+        legend = c('Data','Reference'),
+        pch = 19, lty = 1, col = gPars$cols[c(6,2)])
     if(label > 0)
       mtext(
         text = paste0('(', letters[label], ')'),

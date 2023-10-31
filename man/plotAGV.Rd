@@ -16,6 +16,7 @@ plotAGV(
   dist = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
   title = "",
   label = 0,
+  legend = TRUE,
   gPars = ErrViewLib::setgPars()
 )
 }
@@ -42,6 +43,8 @@ values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
 \item{title}{(string) a title to display above the plot}
 
 \item{label}{(integer) index of letter for subplot tag}
+
+\item{legend}{(logical) add a legend (default: TRUE) ?}
 
 \item{gPars}{(list) graphical parameters}
 
