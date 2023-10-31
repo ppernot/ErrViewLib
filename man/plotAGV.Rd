@@ -7,7 +7,8 @@
 plotAGV(
   Z,
   popMin = 50,
-  nMC = 100,
+  nGroup = 100,
+  nMC = 500,
   add = FALSE,
   ylim = NULL,
   col = 6,
@@ -25,7 +26,9 @@ plotAGV(
 
 \item{popMin}{(integer) minimal bin count in an interval}
 
-\item{nMC}{(integer) number of random intervals per size and repeats}
+\item{nGroup}{(integer) number random groups sampled to select worst one}
+
+\item{nMC}{(integer) number of repeats for worst group selection}
 
 \item{add}{(logical) add to previous graph ?}
 

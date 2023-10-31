@@ -167,7 +167,8 @@ plotAGVZMS <- function(
 #' @param Z (vector) set of z-score values to be tested
 #' @param popMin (integer) minimal bin count in an interval
 #' @param method (string) method used to estimate 95 percent CI on <Z^2>
-#' @param nMC (integer) number of random intervals per size and repeats
+#' @param nGroup (integer) number random groups sampled to select worst one
+#' @param nMC (integer) number of repeats for worst group selection
 #' @param control (logical) estimate AGV for control sample (normal-standard)
 #' @param colControl (integer) color index of control curve
 #' @param dist (string) model error distribution to generate the control
@@ -193,7 +194,8 @@ plotAGVZMS <- function(
 plotAGV<- function(
   Z,
   popMin   = 50,
-  nMC      = 100,
+  nGroup   = 100,
+  nMC      = 500,
   add      = FALSE,
   ylim     = NULL,
   col      = 6,
@@ -267,7 +269,7 @@ plotAGV<- function(
     lwd = lwd,
     yaxs = 'i',
     cex.main = 1,
-    xpd = TRUE # Clipping
+    xpd = FALSE # Clipping
   )
   x = sizes/M
   if(!add) {
