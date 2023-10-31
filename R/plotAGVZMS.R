@@ -266,7 +266,8 @@ plotAGV<- function(
     cex = cex,
     lwd = lwd,
     yaxs = 'i',
-    cex.main = 1
+    cex.main = 1,
+    xpd = TRUE # Clipping
   )
   x = sizes/M
   if(!add) {
