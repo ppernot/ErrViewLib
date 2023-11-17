@@ -286,7 +286,7 @@ plotStratZV = function(
         side = 3,
         adj = 1,
         cex = cex,
-        line = 2
+        line = 0.3
       )
 
   }
@@ -481,7 +481,7 @@ plotStratZM = function(
         side = 3,
         adj = 1,
         cex = cex,
-        line = 2
+        line = 0.3
       )
 
   }
@@ -700,7 +700,7 @@ plotStratZMS = function(
         side = 3,
         adj = 1,
         cex = cex,
-        line = 2
+        line = 0.3
       )
 
   }
@@ -899,7 +899,7 @@ plotStratRCE= function(
         side = 3,
         adj = 1,
         cex = cex,
-        line = 2
+        line = 0.3
       )
 
   }

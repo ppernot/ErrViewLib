@@ -119,7 +119,7 @@ plotLCP = function(
     }
     mint[i] = 0.5*sum(range(xOrd[sel])) # Center of interval
   }
-  # Average coverage
+  # Mean coverage
   S = c()
   for (ip in seq_along(prob))
     S[ip] = sum(abs(eOrd) <= uOrd[,ip])
@@ -222,7 +222,7 @@ plotLCP = function(
       else
         pm[i] = signif(meanP[i],2)
     }
-    mtext(text = c(' Average',paste0('- ',pm)),
+    mtext(text = c(' Mean',paste0('- ',pm)),
           side = 4,
           at = c(ypos,meanP),
           col = c(1,cols[mycols]),

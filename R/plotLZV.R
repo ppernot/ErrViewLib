@@ -391,7 +391,7 @@ plotLZV = function(
     pm   = round(mV0, digits = 2)
     mtext(
       text = c(
-        ' Average',
+        ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
@@ -666,7 +666,7 @@ plotLZM = function(
     pm   = round(mM0, digits = 2)
     mtext(
       text = c(
-        ' Average',
+        ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mM0),
@@ -923,7 +923,7 @@ plotLRCE = function(
     pm   = round(mV0, digits = 2)
     mtext(
       text = c(
-        ' Average',
+        ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
@@ -1192,7 +1192,7 @@ plotLZMS = function(
     pm   = round(mV0, digits = 2)
     mtext(
       text = c(
-        ' Average',
+        ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
