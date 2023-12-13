@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotCalCurve.R
 \name{plotCalibration}
 \alias{plotCalibration}
-\title{Plot calibration curve (aka RMSE vs RMV)}
+\title{Plot calibration curve}
 \usage{
 plotCalibration(
   E,
@@ -41,5 +41,5 @@ Invisibly returns a list of calibration statistics. Mainly used
   for its plotting side effect.
 }
 \description{
-Plot calibration curve (aka RMSE vs RMV)
+Plot calibration curve
 }

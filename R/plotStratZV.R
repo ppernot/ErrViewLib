@@ -259,7 +259,7 @@ plotStratZV = function(
     # Mean in margin
     ypos = par("usr")[4]
     pm   = round(mV0, digits = 2)
-    colm = ifelse((loV0 - 1) * (upV0 - 1) < 0, cols[5], cols[2])
+    colm = ifelse((loV0 - varZ) * (upV0 - varZ) < 0, cols[5], cols[2])
     mtext(
       text = c(' Mean',
                paste0('- ', pm)),
@@ -661,7 +661,7 @@ plotStratZMS = function(
     # Mean in margin
     ypos = par("usr")[4]
     pm   = round(mM0, digits = 2)
-    colm = ifelse(loM0 * upM0 < 0, cols[5], cols[2])
+    colm = ifelse((loM0 - mZ2) * (upM0-mZ2) < 0, cols[5], cols[2])
     mtext(
       text = c(' Mean',
                paste0('- ', pm)),

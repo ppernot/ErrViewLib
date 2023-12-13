@@ -14,7 +14,9 @@ plotAGV(
   col = 6,
   control = TRUE,
   colControl = 2,
-  dist = c("Normal", "Uniform", "Normp4", "Laplace", "T4"),
+  stat = c("max", "mean", "median", "q95"),
+  dist = c("Normal", "Uniform", "Normpn", "Normp4", "Laplace", "T4", "Student"),
+  df = 4,
   title = "",
   label = 0,
   legend = TRUE,
@@ -41,7 +43,9 @@ plotAGV(
 \item{colControl}{(integer) color index of control curve}
 
 \item{dist}{(string) model error distribution to generate the control
-values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'}
+values. One of 'Normal' (default), 'Uniform', 'Normpn', Normp4', 'Laplace', 'Tn' or 'T4'}
+
+\item{df}{(integer) degrees of freedom for distributions 'Normpn' and 'Tn'}
 
 \item{title}{(string) a title to display above the plot}
 

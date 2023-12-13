@@ -71,14 +71,15 @@ genIntervals = function(
     br   = ErrViewLib::vhd(X, p = p)
     # Nbr of intervals
     nbr  = length(br)
-    # Lower index of interval in ordered data
+    # Lower and upper indexes of interval in ordered data
     lwindx = upindx = c()
     lwindx[1] = 1
-    for (i in 2:nbr)
-      lwindx[i] = which(X > br[i])[1]
-    # Upper index
-    for (i in 1:(nbr-1))
-      upindx[i] = lwindx[i+1]-1
+    if(nbr > 1) {
+      for (i in 2:nbr)
+        lwindx[i] = which(X > br[i])[1]
+      for (i in 1:(nbr-1))
+        upindx[i] = lwindx[i+1]-1
+    }
     upindx[nbr] = N
     nBin = nbr
 
@@ -103,10 +104,11 @@ genIntervals = function(
     # Intervals
     lwindx = upindx = c()
     lwindx[1] = 1
-    for(i in 2:nBin) {
-      lwindx[i] = which(xOrd >= lims[i])[1]
-      upindx[i-1] = lwindx[i] - 1
-    }
+    if(nBin > 1)
+      for(i in 2:nBin) {
+        lwindx[i] = which(xOrd >= lims[i])[1]
+        upindx[i-1] = lwindx[i] - 1
+      }
     upindx[nBin] = N
 
     # Merge small populations

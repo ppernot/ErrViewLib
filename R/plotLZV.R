@@ -389,20 +389,21 @@ plotLZV = function(
     # Mean variance
     ypos = par("usr")[4]
     pm   = round(mV0, digits = 2)
+    colm = ifelse((loV0 - varZ) * (upV0 - varZ) < 0, cols[5], cols[2])
     mtext(
       text = c(
         ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
-      col  = c(1,cols[col]),
+      col  = c(1,colsm),
       cex  = 0.75*cex,
       las  = 1,
       font = 2)
     segments(
       xlim[2],loV0,
       xlim[2],upV0,
-      col  = cols[col],
+      col  = colm,
       lwd  = 6 * lwd,
       lend = 1
     )
@@ -664,20 +665,21 @@ plotLZM = function(
     # Mean variance
     ypos = par("usr")[4]
     pm   = round(mM0, digits = 2)
+    colm = ifelse(loM0 * upM0 < 0, cols[5], cols[2])
     mtext(
       text = c(
         ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mM0),
-      col  = c(1,cols[col]),
+      col  = c(1,colm),
       cex  = 0.75*cex,
       las  = 1,
       font = 2)
     segments(
       xlim[2],loM0,
       xlim[2],upM0,
-      col  = cols[col],
+      col  = colm,
       lwd  = 6 * lwd,
       lend = 1
     )
@@ -921,20 +923,21 @@ plotLRCE = function(
     # Mean variance
     ypos = par("usr")[4]
     pm   = round(mV0, digits = 2)
+    colm = ifelse(loV0 * upV0 < 0, cols[col], cols[2])
     mtext(
       text = c(
         ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
-      col  = c(1,cols[col]),
+      col  = c(1,colm),
       cex  = 0.75*cex,
       las  = 1,
       font = 2)
     segments(
       xlim[2],loV0,
       xlim[2],upV0,
-      col  = cols[col],
+      col  = colm,
       lwd  = 6 * lwd,
       lend = 1
     )
@@ -1190,20 +1193,21 @@ plotLZMS = function(
     # Mean variance
     ypos = par("usr")[4]
     pm   = round(mV0, digits = 2)
+    colm = ifelse((loV0-varZ)*(upV0-varZ) <= 0, col, colInv)
     mtext(
       text = c(
         ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
-      col  = c(1,cols[col]),
+      col  = c(1,cols[colm]),
       cex  = 0.75*cex,
       las  = 1,
       font = 2)
     segments(
       xlim[2],loV0,
       xlim[2],upV0,
-      col  = cols[col],
+      col  = cols[colm],
       lwd  = 6 * lwd,
       lend = 1
     )

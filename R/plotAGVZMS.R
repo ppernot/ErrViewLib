@@ -172,7 +172,8 @@ plotAGVZMS <- function(
 #' @param control (logical) estimate AGV for control sample (normal-standard)
 #' @param colControl (integer) color index of control curve
 #' @param dist (string) model error distribution to generate the control
-#'    values. One of 'Normal' (default), 'Uniform', 'Normp4', 'Laplace' or 'T4'
+#'    values. One of 'Normal' (default), 'Uniform', 'Normpn', Normp4', 'Laplace', 'Tn' or 'T4'
+#' @param df (integer) degrees of freedom for distributions 'Normpn' and 'Tn'
 #' @param add (logical) add to previous graph ?
 #' @param ylim (vector) limits of the y axis
 #' @param col (integer) color index of main curve
@@ -201,7 +202,9 @@ plotAGV<- function(
   col      = 6,
   control  = TRUE,
   colControl = 2,
-  dist = c('Normal','Uniform','Normp4','Laplace','T4'),
+  stat     = c('max','mean','median','q95'),
+  dist     = c('Normal','Uniform','Normpn','Normp4','Laplace','T4','Student'),
+  df       = 4,
   title    = '',
   label    = 0,
   legend   = TRUE,
@@ -209,15 +212,20 @@ plotAGV<- function(
 ) {
 
   dist = match.arg(dist)
+  stat = match.arg(stat)
 
   if(control) {
     # Unit-variance distributions
-    Normal = function(N)
+    Normal = function(N, ...)
       rnorm(N)
+    Student = function(N, df = df)
+      rt(N, df = df) / sqrt(df/(df-2))
     T4 = function(N, df = 4)
       rt(N, df = df) / sqrt(df/(df-2))
     Uniform = function(N)
       runif(N, -sqrt(3), sqrt(3))
+    Normpn = function(N, df = df)
+      normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
     Laplace = function(N, df = 1)
       normalp::rnormp(N, p = df) / sqrt(df^(2/df)*gamma(3/df)/gamma(1/df))
     Normp4 = function(N, df = 4)
@@ -225,7 +233,7 @@ plotAGV<- function(
     # Get distribution function from arg name
     distFun = get(dist)
     # Generate control sample
-    Zc = distFun(Z)
+    Zc = distFun(length(Z), df)
   }
 
 
@@ -237,16 +245,28 @@ plotAGV<- function(
   for (i in seq_along(sizes)) {
     wtz = wtzc = c()
     for (j in 1:nMC) {
-      tz = tzc = 0
+      tz = tzc = c()
       for (k in 1:nGroup) {
         sam = sample(M, sizes[i])
-        tz = max(tz, abs(log(mean(Z[sam]^2))))
+        tz[k] = abs(log(mean(Z[sam]^2)))
         if(control)
-          tzc = max(tzc, abs(log(mean(Zc[sam]^2))))
+          tzc[k] = abs(log(mean(Zc[sam]^2)))
       }
-      wtz[j] = tz
+      wtz[j] = switch(
+        stat,
+        max    = max(tz),
+        mean   = mean(tz),
+        median = median(tz),
+        q95    = quantile(tz, probs = 0.95)
+      )
       if(control)
-        wtzc[j] = tzc
+        wtzc[j] = switch(
+          stat,
+          max    = max(tzc),
+          mean   = mean(tzc),
+          median = median(tzc),
+          q95    = quantile(tzc, probs = 0.95)
+        )
     }
     ag[i]  = mean(wtz)
     agu[i] = sd(wtz)

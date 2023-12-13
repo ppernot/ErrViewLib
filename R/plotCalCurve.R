@@ -304,7 +304,7 @@ plotCalCurve = function(
     )
   )
 }
-#' Plot calibration curve (aka RMSE vs RMV)
+#' Plot calibration curve
 #'
 #' @param E (vector) a vector of errors
 #' @param uE (vector) a vector of uncertainties
