@@ -1071,7 +1071,8 @@ plotLZMS = function(
     Xin = N
     if(!equiPop)
       Xin = xOrd
-    intrv = ErrViewLib::genIntervals(Xin, nBin, slide, equiPop, popMin, logBin)
+    intrv = ErrViewLib::genIntervals(Xin, nBin, slide,
+                                     equiPop, popMin, logBin)
   }
   nBin0 = nBin # Used if slide = TRUE
   nBin  = intrv$nbr
@@ -1080,15 +1081,19 @@ plotLZMS = function(
   mV = loV = upV = mint = c()
   for (i in 1:nBin) {
     sel  = intrv$lwindx[i]:intrv$upindx[i]
-    zs   = ErrViewLib::ZMSCI(zOrd[sel], nBoot =nBoot,
-                             method = method, CImethod = BSmethod )
+    zs   = ErrViewLib::ZMSCI(zOrd[sel],
+                             nBoot = nBoot,
+                             method = method,
+                             CImethod = BSmethod)
     mV[i]   = zs$mean
     loV[i]  = zs$ci[1]
     upV[i]  = zs$ci[2]
     mint[i] = mean(range(xOrd[sel])) # Center of interval
   }
-  zs = ErrViewLib::ZMSCI(Z, method = 'auto',
-                         nBoot =nBoot, CImethod = BSmethod)
+  zs = ErrViewLib::ZMSCI(Z,
+                         method = 'auto',
+                         nBoot = nBoot,
+                         CImethod = BSmethod)
   mV0   = zs$mean
   loV0  = zs$ci[1]
   upV0  = zs$ci[2]

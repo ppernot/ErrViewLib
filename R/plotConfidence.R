@@ -482,3 +482,294 @@ plotCC = function(
 
   invisible(res)
 }
+#' Plot confidence curve for (uE,E) set. New version with improved validation.
+#'
+#' @param E (vector) prediction uncertainty, uE, or predicted value, V
+#' @param uE (vector) error or z-score
+#' @param probref (logical) plot probabilistic reference (probref) curve (default: FALSE)
+#' @param rep_probref (integer) sampling repetitions for normal curve (default = 1000)
+#' @param score (logical) estimate confidence score ? This requires a bootstrapped CI on the CC and might take some time.
+#' @param nBoot (integer) nb of bootstrap repeats to estimate CI on confidence curve (default = 5000)
+#' @param parallel (logical) use parallelized bootstrap ? (default = FALSE)
+#' @param cl (object) cluster for parallel computing, which is used when parallel = TRUE. If parallel = TRUE and cl = NULL, then the cluster is defined as cl = makeCluster(detectCores()). (default = NULL)
+#' @param plot (function) produce plot ?
+#' @param col (integer) color index for the curve (default: 6)
+#' @param add (logical) add confidence curve to previous plot (default: FALSE)
+#' @param xlab (string) x axis label (default: 'k \% discarded)
+#' @param xlim (vector) limits of the x axis (default: NULL)
+#' @param ylim (vector) limits of the y axis (default: NULL)
+#' @param title (string) a title to display above the plot (default: '')
+#' @param showUk (logical) plot secondary axis with u_k values; supersedes `title`
+#' @param showLegend (logical) display legend (default: TRUE)
+#' @param legend (string) legend for the dataset (default: NULL)
+#' @param unit (string) unit string to add to ylab
+#' @param legLoc (string) location of legend (see \link[grDevices]{xy.coord}) (default: 'bottomleft')
+#' @param label (integer) index of letter for subplot tag (default: 0)
+#' @param gPars (list) graphical parameters (default: ErrViewLib::setgPars())
+#'
+#' @return Plot confidence curve for (E,uE) set
+#'
+#' @export
+#'
+#' @examples
+#' \donttest{
+#'   uE  = sqrt(rchisq(1000, df = 4))  # Re-scale uncertainty
+#'   E   = rnorm(uE, mean=0, sd=uE)  # Generate errors
+#'   plotCCVal(E, uE)
+#' }
+plotCCVal = function(
+  E, uE,
+  stat   = ErrViewLib::rmse,
+  probref = FALSE,
+  rep_probref = 1000,
+  showUk = FALSE,
+  plot   = TRUE,
+  score  = FALSE,
+  nBoot  = 5000,
+  parallel = FALSE,
+  cl     = NULL,
+  col    = 5,
+  type   = c('l','p'),
+  add    = FALSE,
+  xlab   = 'k% discarded',
+  xlim   = NULL,
+  ylab   = 'RMSE',
+  ylim   = NULL,
+  title  = NULL,
+  label  = 0,
+  showLegend = TRUE,
+  legend = NULL,
+  legLoc = 'bottomleft',
+  gPars  = ErrViewLib::setgPars()
+) {
+
+  type = match.arg(type)
+
+  if (as.numeric(length(E))*as.numeric(length(uE)) == 0)
+    return()
+
+  if(score)
+    probref = TRUE
+
+  # Reorder data
+  io = order(uE, decreasing = TRUE)
+  uE = uE[io]
+  E  = E[io]
+
+  M = length(uE)
+  pcVec = 0:99 # Vector of percentages
+
+  # Statistics for data
+  vstat = ErrViewLib::Sconf(E, pcVec, stat, FALSE)
+
+  # Probabilistic reference   vnorm_mu = NULL
+  if(probref) {
+    # Simulated reference
+    nrun = rep_probref
+    vnorm = matrix(0, ncol = nrun, nrow = length(pcVec))
+    for (i in 1:nrun) {
+      X = uE * rnorm(M)
+      vnorm[, i] = ErrViewLib::Sconf(X, pcVec, stat, FALSE)
+    }
+    vnorm_mu = apply(vnorm, 1, mean, na.rm = TRUE)
+  }
+
+  CS = CS_CI = NULL # Consistency score
+  vstatCI = matrix(NA, nrow = length(pcVec), ncol = 2)
+  if(score){
+    ## Bootstrapped CI
+    cl0 = NULL
+    if(parallel) {
+      library(parallel)
+      cl0 = cl
+      if(is.null(cl))
+        cl <- makeCluster(detectCores())
+    }
+    for (i in 1:length(pcVec)) {
+      k = pcVec[i]
+      sel = 1:floor(k * M / 100)
+      if (length(sel) == 0) {
+        vstatCI[i,1:2] = NA
+      } else {
+        X0 = E[-sel]
+        bs = nptest::np.boot(
+          x = X0,
+          statistic = stat, R = nBoot,
+          level = 0.95, method = 'bca',
+          parallel = parallel, cl = cl)
+        vstatCI[i,1:2] = bs$bca
+      }
+    }
+    if(parallel & is.null(cl0))
+      stopCluster(cl)
+
+    # Fraction of simulated CC within data CI
+    success = sum(vnorm_mu >= vstatCI[,1] & vnorm_mu <= vstatCI[,2])
+    trials  = length(pcVec)
+    CS_CI   = DescTools::BinomCI(success, trials , method = "wilsoncc")
+    CS      = CS_CI[1]
+    ciPrint = paste0('[', round(CS_CI[2],2),', ',
+                     round(CS_CI[3],2), ']')
+  }
+
+  if(plot) {
+    # Expose gPars list
+    for (n in names(gPars))
+      assign(n, rlist::list.extract(gPars, n))
+
+    if(add) {
+
+      if(probref)
+        lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
+
+      if(score)
+        polygon(
+          c(pcVec,rev(pcVec)),
+          c(vstatCI[,1],rev(vstatCI[,2])),
+          col = cols_tr[col],
+          border = NA)
+
+      lines(pcVec, vstat,
+            type = type,
+            pch = 16,
+            lwd = 2 * lwd,
+            col = cols[col])
+
+    } else {
+
+      par(
+        mfrow = c(1, 1),
+        mar = mar,
+        mgp = mgp,
+        pty = 's',
+        tcl = tcl,
+        cex = cex,
+        lwd = lwd,
+        xaxs = 'i',
+        yaxs = 'i',
+        cex.main = 1
+      )
+
+      if (is.null(xlim))
+        xlim = range(pcVec)
+
+      if (is.null(ylim)) {
+        vs = vstat[is.finite(vstat)]
+        ylim = c(0, max(vs))
+        if(probref)
+          ylim = range(c(ylim,vnorm_mu[is.finite(vnorm_mu)]))
+      }
+
+      plot(
+        pcVec, vstat,
+        type = 'n',
+        lty  = 1,
+        pch  = 16,
+        lwd  = 2*lwd,
+        col  = cols[col],
+        xlab = xlab,
+        xlim = xlim,
+        ylab = ylab,
+        ylim = ylim,
+        main = ''
+      )
+      if(showUk) {
+        axis(
+          3,
+          at = seq(20,80,by=20),
+          labels = signif(
+            quantile(uE,
+                     probs = rev(seq(0.2,0.8,by = 0.2))),
+            2),
+          padj = 0.5
+        )
+        mtext(expression(u[k]),side = 3, at = 50, line = 1.5, cex = cex)
+
+      } else {
+        title(main = title)
+
+      }
+      grid()
+
+      if(probref)
+        lines(pcVec, vnorm_mu, lty = 3, lwd = 2*lwd, col=cols[col])
+
+      if(score)
+        polygon(
+          c(pcVec,rev(pcVec)),
+          c(vstatCI[,1],rev(vstatCI[,2])),
+          col = cols_tr[col],
+          border = NA)
+
+      lines(
+        pcVec, vstat,
+        type = type,
+        lty  = 1,
+        pch  = 16,
+        lwd  = 2*lwd,
+        col  = cols[col]
+      )
+
+      # Build and display legend
+      if(showLegend) {
+        lty = if(type == 'l') 1 else NA
+        pch = if(type == 'l') NA else 16
+        lcol = col
+
+        if(is.null(legend))
+          legend = 'Data'
+
+        if(probref) {
+          legend = c('Prob. ref.',legend)
+          lty    = c(3,lty)
+          pch    = c(NA,pch)
+          lcol   = c(col,lcol)
+        }
+
+        if(score) {
+          legend = c(
+            legend,
+            paste0('CS = ',round(CS,2)),
+            paste0('CI = ', ciPrint)
+          )
+          lty = c(lty,NA,NA)
+          pch = c(pch,NA,NA)
+          lcol = c(lcol,1,1)
+        }
+
+        legend(
+          legLoc, bty = 'n', inset = 0.05,
+          legend = legend,
+          lty    = lty,
+          lwd    = 2*lwd,
+          col    = cols[lcol],
+          pch    = pch
+        )
+      }
+
+      box()
+
+      # Display subfigure label
+      if(label > 0)
+        mtext(
+          text = paste0('(', letters[label], ')'),
+          side = 3,
+          adj = 1,
+          cex = cex,
+          line = 0.3)
+    }
+
+  }
+
+  invisible(
+    list(
+      CS      = CS,
+      CS_CI   = CS_CI,
+      pcVec   = pcVec,
+      curve   = vstat,
+      curveCI = vstatCI,
+      probRef = vnorm_mu
+    )
+  )
+
+}
