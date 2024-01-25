@@ -15,7 +15,8 @@ plotStratZV(
   plot = TRUE,
   method = c("cho", "bootstrap", "chisq", "auto"),
   BSmethod = c("bca", "perc", "basic"),
-  nBoot = 1500,
+  nBoot = 5000,
+  parallel = FALSE,
   xlab = "Conditioning variable",
   ylim = NULL,
   title = "",
@@ -43,6 +44,8 @@ plotStratZV(
 \item{BSmethod}{(string) bootstrap variant}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{parallel}{(logical) parallelized bootstrap (default: `FALSE`)}
 
 \item{xlab}{(string) X axis label}
 

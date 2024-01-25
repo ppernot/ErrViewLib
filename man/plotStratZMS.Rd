@@ -12,7 +12,8 @@ plotStratZMS(
   aggregate = TRUE,
   popMin = 100,
   greedy = TRUE,
-  nBoot = 1500,
+  nBoot = 5000,
+  parallel = FALSE,
   method = c("bootstrap", "stud", "auto"),
   BSmethod = c("bca", "perc", "basic"),
   plot = TRUE,
@@ -37,6 +38,8 @@ plotStratZMS(
 \item{greedy}{(logical) use greedy algorithm to merge strata (default: TRUE)}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{parallel}{(logical) parallelized bootstrap (default: `FALSE`)}
 
 \item{method}{(string) method used to estimate 95 percent CI on <Z^2>}
 

@@ -13,7 +13,8 @@ plotStratRCE(
   popMin = 30,
   greedy = TRUE,
   plot = TRUE,
-  nBoot = 1500,
+  nBoot = 5000,
+  parallel = FALSE,
   xlab = "Conditioning variable",
   ylim = NULL,
   title = "",
@@ -33,6 +34,8 @@ plotStratRCE(
 \item{plot}{(logical) plot the results}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{parallel}{(logical) parallelized bootstrap (default: `FALSE`)}
 
 \item{xlab}{(string) X axis label}
 

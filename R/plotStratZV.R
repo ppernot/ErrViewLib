@@ -123,6 +123,7 @@ stratAgg <- function(X, popMin = 50, greedy = TRUE) {
 #' @param method (string) method used to estimate 95 percent CI on Var(Z)
 #' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
+#' @param parallel (logical) parallelized bootstrap (default: `FALSE`)
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -150,7 +151,8 @@ plotStratZV = function(
   plot      = TRUE,
   method    = c('cho', 'bootstrap', 'chisq','auto'),
   BSmethod  = c('bca', 'perc', 'basic'),
-  nBoot     = 1500,
+  nBoot     = 5000,
+  parallel  = FALSE,
   xlab      = 'Conditioning variable',
   ylim      = NULL,
   title     = '',
@@ -176,20 +178,35 @@ plotStratZV = function(
   }
 
   # Statistics
+  cl = NULL
+  if(parallel) {
+    library(parallel)
+    cl = makeCluster(detectCores())
+  }
   mV = loV = upV  = c()
   for (i in seq_along(values)) {
     f   = values[i]
     sel = X == f
     c = ErrViewLib::varZCI(Z[sel], nBoot = nBoot,
-                           method = method, CImethod = BSmethod)
+                           method = method,
+                           CImethod = BSmethod,
+                           parallel = parallel,
+                           cl = cl)
     mV[i]  = c$mean
     loV[i] = c$ci[1]
     upV[i] = c$ci[2]
   }
-  zs = varZCI(Z, method = 'auto', nBoot = nBoot, CImethod = BSmethod)
+  zs = varZCI(Z, method = 'auto',
+              nBoot = nBoot,
+              CImethod = BSmethod,
+              parallel = parallel,
+              cl = cl)
   mV0  = zs$mean
   loV0 = zs$ci[1]
   upV0 = zs$ci[2]
+
+  if(!is.null(cl))
+    stopCluster(cl)
 
   # Colors of symbols and segments
 
@@ -521,6 +538,7 @@ plotStratZM = function(
 #' @param method (string) method used to estimate 95 percent CI on <Z^2>
 #' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
+#' @param parallel (logical) parallelized bootstrap (default: `FALSE`)
 #' @param aggregate (logical) aggregate contiguous strata smaller than popMin
 #' @param popMin (integer) minimal count in a stratum
 #' @param greedy (logical) use greedy algorithm to merge strata (default: TRUE)
@@ -548,7 +566,8 @@ plotStratZMS = function(
   aggregate = TRUE,
   popMin    = 100,
   greedy    = TRUE,
-  nBoot     = 1500,
+  nBoot     = 5000,
+  parallel  = FALSE,
   method    = c('bootstrap','stud','auto'),
   BSmethod  = c('bca','perc','basic'),
   plot      = TRUE,
@@ -578,20 +597,34 @@ plotStratZMS = function(
 
 
   # LZM values
+  cl = NULL
+  if(parallel) {
+    library(parallel)
+    cl = makeCluster(detectCores())
+  }
   mM = loM = upM = c()
   for (i in seq_along(values)) {
     sel    = X == values[i]
     zs     = ErrViewLib::ZMSCI(Z[sel], nBoot = nBoot,
-                               method = method, CImethod = BSmethod )
+                               method = method,
+                               CImethod = BSmethod,
+                               parallel = parallel,
+                               cl = cl)
     mM[i]   = zs$mean
     loM[i]  = zs$ci[1]
     upM[i]  = zs$ci[2]
   }
-  zs    = ErrViewLib::ZMSCI(Z, method = 'auto', nBoot = nBoot,
-                            CImethod = BSmethod)
+  zs    = ErrViewLib::ZMSCI(Z, method = 'auto',
+                            nBoot = nBoot,
+                            CImethod = BSmethod,
+                            parallel = parallel,
+                            cl = cl)
   mM0   = zs$mean
   loM0  = zs$ci[1]
   upM0  = zs$ci[2]
+
+  if(!is.null(cl))
+    stopCluster(cl)
 
   # Colors of symbols and segments
 
@@ -743,6 +776,7 @@ plotStratZMS = function(
 #' @param method (string) method used to estimate 95 percent CI on Var(Z)
 #' @param BSmethod (string) bootstrap variant
 #' @param nBoot (integer) number of bootstrap replicas
+#' @param parallel (logical) parallelized bootstrap (default: `FALSE`)
 #' @param ylim (vector) limits of the y axis
 #' @param title (string) a title to display above the plot
 #' @param label (integer) index of letter for subplot tag
@@ -767,7 +801,8 @@ plotStratRCE= function(
   popMin    = 30,
   greedy    = TRUE,
   plot      = TRUE,
-  nBoot     = 1500,
+  nBoot     = 5000,
+  parallel  = FALSE,
   xlab      = 'Conditioning variable',
   ylim      = NULL,
   title     = '',
@@ -788,22 +823,53 @@ plotStratRCE= function(
   }
 
   # Statistics
+  brce = function(x, data) {
+    E  = data[x,1]; uE = data[x,2]
+    RMV    = sqrt(mean(uE^2))
+    RMSE   = sqrt(mean(E^2))
+    (RMV - RMSE) / RMV
+  }
+  cl = NULL
+  if(parallel) {
+    library(parallel)
+    cl = makeCluster(detectCores())
+  }
   mV = loV = upV  = c()
   for (i in seq_along(values)) {
     sel    = X == values[i]
     uEloc  = uE[sel]
     Eloc   = E[sel]
-    bs     = boot::boot(cbind(uEloc, Eloc), ErrViewLib::rce, R = nBoot)
-    bci    = boot::boot.ci(bs, conf = 0.95, type = 'bca')
+    # bs     = boot::boot(cbind(uEloc, Eloc), ErrViewLib::rce, R = nBoot)
+    # bci    = boot::boot.ci(bs, conf = 0.95, type = 'bca')
+    # mV[i]  = bci$t0
+    # loV[i] = bci$bca[1, 4]
+    # upV[i] = bci$bca[1, 5]
+    bci = nptest::np.boot(
+      x = 1:length(Eloc), data  = cbind(Eloc,uEloc),
+      statistic = brce, R = nBoot,
+      level = 0.95, method = 'bca',
+      parallel = parallel, cl = cl)
     mV[i]  = bci$t0
-    loV[i] = bci$bca[1, 4]
-    upV[i] = bci$bca[1, 5]
+    loV[i] = bci$bca[1]
+    upV[i] = bci$bca[2]
   }
-  bs   = boot::boot(cbind(uE, E), ErrViewLib::rce, R = nBoot)
-  bci  = boot::boot.ci(bs, conf = 0.95, type = 'bca')
+  # bs   = boot::boot(cbind(uE, E), ErrViewLib::rce, R = nBoot)
+  # bci  = boot::boot.ci(bs, conf = 0.95, type = 'bca')
+  # mV0  = bci$t0
+  # loV0 = bci$bca[1, 4]
+  # upV0 = bci$bca[1, 5]
+  #
+  bci = nptest::np.boot(
+    x = 1:length(E), data  = cbind(E,uE),
+    statistic = brce, R = nBoot,
+    level = 0.95, method = 'bca',
+    parallel = parallel, cl = cl)
   mV0  = bci$t0
-  loV0 = bci$bca[1, 4]
-  upV0 = bci$bca[1, 5]
+  loV0 = bci$bca[1]
+  upV0 = bci$bca[2]
+
+  if(!is.null(cl))
+    stopCluster(cl)
 
   # Colors of symbols and segments
   if (length(gPars) == 0)
