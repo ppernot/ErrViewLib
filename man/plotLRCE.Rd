@@ -17,7 +17,8 @@ plotLRCE(
   intrv = NULL,
   plot = TRUE,
   slide = FALSE,
-  nBoot = 500,
+  nBoot = 5000,
+  parallel = FALSE,
   xlab = "Conditioning variable",
   xlim = NULL,
   ylim = NULL,
@@ -53,6 +54,8 @@ equal range intervals, or equal log-range intervals
 \item{slide}{(logical) use sliding window for subsetting (X,Z)}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{parallel}{(logical) parallelized bootstrap (default: `FALSE`)}
 
 \item{xlab}{(string) X axis label}
 

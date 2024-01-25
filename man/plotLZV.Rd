@@ -19,7 +19,8 @@ plotLZV(
   slide = FALSE,
   method = c("bootstrap", "cho", "chisq", "auto"),
   BSmethod = c("bca", "perc", "basic"),
-  nBoot = 1500,
+  parallel = FALSE,
+  nBoot = 5000,
   xlab = "Conditioning variable",
   xlim = NULL,
   ylim = NULL,
@@ -62,6 +63,8 @@ equal range intervals, or equal log-range intervals
 \item{method}{(string) method used to estimate 95 percent CI on Var(Z)}
 
 \item{BSmethod}{(string) bootstrap variant}
+
+\item{parallel}{(logical) parallelized bootstrap (default: `FALSE`)}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
 

@@ -8,9 +8,10 @@ varZCI(
   Z,
   method = c("bootstrap", "cho", "chisq", "auto"),
   CImethod = c("bca", "perc", "basic"),
-  nBoot = 1500,
+  nBoot = 5000,
   level = 0.95,
-  parallel = c("no", "multicore")
+  parallel = FALSE,
+  cl = NULL
 )
 }
 \arguments{
@@ -26,7 +27,9 @@ for the CI estimation algorithm from bootstrap sample}
 
 \item{level}{(numeric) a probability level for CI (default: 0.95)}
 
-\item{parallel}{(string) one of 'no' (default) and 'multicore'}
+\item{parallel}{(logical) use parallelized bootstrap (default: `FALSE`)}
+
+\item{cl}{(object) a cluster object for parallelized bootstrap (default: `NULL`)}
 }
 \value{
 A list containing the mean, sd and ci for the variance
