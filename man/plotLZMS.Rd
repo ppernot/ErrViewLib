@@ -17,7 +17,8 @@ plotLZMS(
   intrv = NULL,
   plot = TRUE,
   slide = FALSE,
-  nBoot = 1500,
+  nBoot = 5000,
+  parallel = FALSE,
   method = c("bootstrap", "stud", "auto"),
   BSmethod = c("bca", "perc", "basic"),
   xlab = "Conditioning variable",
@@ -61,6 +62,8 @@ equal range intervals, or equal log-range intervals
 \item{slide}{(logical) use sliding window for subsetting (X,Z)}
 
 \item{nBoot}{(integer) number of bootstrap replicas}
+
+\item{parallel}{(logical) parallelized bootstrap (default: `FALSE`)}
 
 \item{method}{(string) method used to estimate 95 percent CI on <Z^2>}
 

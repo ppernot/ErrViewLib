@@ -12,6 +12,6 @@ License: GPL (>=3) + file LICENSE
 Encoding: UTF-8
 Imports: Hmisc,boot,corrplot,distillery,fields,
          mvtnorm,rlist,moments,ineq,bde,genefilter,modeest,
-         plotly,normalp,DescTools
+         plotly,normalp,DescTools,parallel,nptest
 LazyData: true
 RoxygenNote: 7.2.0
