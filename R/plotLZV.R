@@ -30,7 +30,7 @@ varvar = function (Z) {
 varZCI = function (
   Z,
   method   = c('bootstrap','cho','chisq','auto'),
-  CImethod = c('bca','perc','basic'),
+  CImethod  = c('bca','perc','basic','stud'),
   nBoot = 5000,
   level = 0.95,
   parallel = FALSE,
@@ -115,9 +115,10 @@ varZCI = function (
 #' Estimate statistics of <Z^2>
 #'
 #' @param Z (vector) a data sample
-#' @param method (string) one of 'auto' (default), 'bootstrap' and 'stud'
-#' @param CImethod (string) one of 'bca' (default), 'perc' and 'basic'
+#' @param method (string) one of 'auto' (default), 'bootstrap', 'stud' and 'bspiv'
+#' @param CImethod (string) one of 'bca' (default), 'perc', 'basic' and 'stud'
 #'   for the CI estimation algorithm from bootstrap sample
+#' @param qType (integer) quantile type for bspiv ([4,9]; default: 7)
 #' @param nBoot (integer) number of bootstrap repeats
 #' @param level (numeric) a probability level for CI (default: 0.95)
 #' @param parallel (logical) use parallelized bootstrap (default: `FALSE`)
@@ -128,8 +129,9 @@ varZCI = function (
 #'
 ZMSCI = function (
   Z,
-  method   = c('bootstrap','stud','auto','studc'),
-  CImethod = c('bca','perc','basic'),
+  method   = c('bootstrap','stud','auto','studc','bspiv'),
+  CImethod = c('bca','perc','basic','stud'),
+  qType = 7,
   nBoot = 5000,
   level = 0.95,
   parallel = FALSE,
@@ -143,18 +145,43 @@ ZMSCI = function (
   if(method == 'auto')
     method = ifelse(length(Z) >= 400, 'stud', 'bootstrap')
 
+  probs = c( (1-level)/2, (1+level)/2)
+
   switch (
     method,
+    bspiv = {
+      # Uses intermediate pivot statistic
+      # from https://gist.github.com/mikelove/6d17eb963c7c38cb4f3858067d7cc220
+      x      = Z^2
+      mean.x = mean(x)
+      sd.x   = sd(x)
+      M      = length(x)
+      z      = numeric(nBoot)
+      for (j in 1:nBoot) {
+        boot <- sample(M,replace=TRUE)
+        z[j] <- (mean(x[boot]) - mean.x)/sd(x[boot])
+      }
+      ci = mean.x - sd.x * quantile(z, rev(probs), type = qType)
+      list(
+        mean   = mean.x,
+        sd     = sd.x / sqrt(M),
+        ci     = ci,
+        method = method,
+        level  = level
+      )
+    },
     bootstrap = {
+      sdfun <- function(x, ...){sqrt(var(x)/length(x))}
       bst = nptest::np.boot(
         x = Z^2, statistic = mean, R = nBoot,
-        level = level, method = CImethod,
+        level = level, method = CImethod, sdfun = sdfun,
         parallel = parallel, cl = cl)
       ci = switch(
         CImethod,
         bca   = bst$bca,
         perc  = bst$percent,
-        basic = bst$basic
+        basic = bst$basic,
+        stud  = bst$stud,
       )
       list(
         mean   = bst$t0,
@@ -194,8 +221,8 @@ ZMSCI = function (
         mean   = mu,
         sd     = sm,
         ci     = c(
-          mu  + sm * qt((1 - level) / 2, df = N-1) ,
-          mu  + sm * qt((1 + level) / 2, df = N-1)
+          mu  + sm * qt(probs[1], df = N-1) ,
+          mu  + sm * qt(probs[2], df = N-1)
         ),
         method = method,
         level  = level
@@ -211,8 +238,8 @@ ZMSCI = function (
         mean   = mu,
         sd     = sm,
         ci     = c(
-          mu + m3/(6*s2*N) + sm * qt((1 - level) / 2, df = N-1) ,
-          mu + m3/(6*s2*N) + sm * qt((1 + level) / 2, df = N-1)
+          mu + m3/(6*s2*N) + sm * qt(probs[1], df = N-1) ,
+          mu + m3/(6*s2*N) + sm * qt(probs[2], df = N-1)
         ),
         method = method,
         level  = level
@@ -274,7 +301,7 @@ plotLZV = function(
   plot      = TRUE,
   slide     = FALSE,
   method    = c('bootstrap','cho','chisq','auto'),
-  BSmethod  = c('bca','perc','basic'),
+  BSmethod  = c('bca','perc','basic','stud'),
   parallel =  FALSE,
   nBoot     = 5000,
   xlab      = 'Conditioning variable',
@@ -1121,7 +1148,7 @@ plotLZMS = function(
   nBoot     = 5000,
   parallel  = FALSE,
   method    = c('bootstrap','stud','auto'),
-  BSmethod  = c('bca','perc','basic'),
+  BSmethod  = c('bca','perc','basic','stud'),
   xlab      = 'Conditioning variable',
   xlim      = NULL,
   ylim      = NULL,

@@ -20,7 +20,7 @@ plotLZMS(
   nBoot = 5000,
   parallel = FALSE,
   method = c("bootstrap", "stud", "auto"),
-  BSmethod = c("bca", "perc", "basic"),
+  BSmethod = c("bca", "perc", "basic", "stud"),
   xlab = "Conditioning variable",
   xlim = NULL,
   ylim = NULL,

@@ -146,7 +146,7 @@ plotStratZV = function(
   X, Z,
   varZ      = 1,
   aggregate = TRUE,
-  popMin    = 30,
+  popMin    = 100,
   greedy    = TRUE,
   plot      = TRUE,
   method    = c('cho', 'bootstrap', 'chisq','auto'),

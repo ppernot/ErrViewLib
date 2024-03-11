@@ -7,7 +7,7 @@
 varZCI(
   Z,
   method = c("bootstrap", "cho", "chisq", "auto"),
-  CImethod = c("bca", "perc", "basic"),
+  CImethod = c("bca", "perc", "basic", "stud"),
   nBoot = 5000,
   level = 0.95,
   parallel = FALSE,

@@ -6,8 +6,9 @@
 \usage{
 ZMSCI(
   Z,
-  method = c("bootstrap", "stud", "auto", "studc"),
-  CImethod = c("bca", "perc", "basic"),
+  method = c("bootstrap", "stud", "auto", "studc", "bspiv"),
+  CImethod = c("bca", "perc", "basic", "stud"),
+  qType = 7,
   nBoot = 5000,
   level = 0.95,
   parallel = FALSE,
@@ -17,10 +18,12 @@ ZMSCI(
 \arguments{
 \item{Z}{(vector) a data sample}
 
-\item{method}{(string) one of 'auto' (default), 'bootstrap' and 'stud'}
+\item{method}{(string) one of 'auto' (default), 'bootstrap', 'stud' and 'bspiv'}
 
-\item{CImethod}{(string) one of 'bca' (default), 'perc' and 'basic'
+\item{CImethod}{(string) one of 'bca' (default), 'perc', 'basic' and 'stud'
 for the CI estimation algorithm from bootstrap sample}
+
+\item{qType}{(integer) quantile type for bspiv ([4,9]; default: 7)}
 
 \item{nBoot}{(integer) number of bootstrap repeats}
 
