@@ -22,6 +22,7 @@ plotLZMS(
   method = c("bootstrap", "stud", "auto"),
   BSmethod = c("bca", "perc", "basic", "stud"),
   xlab = "Conditioning variable",
+  skewup = 0.8,
   xlim = NULL,
   ylim = NULL,
   title = "",
@@ -70,6 +71,10 @@ equal range intervals, or equal log-range intervals
 \item{BSmethod}{(string) bootstrap variant}
 
 \item{xlab}{(string) X axis label}
+
+\item{skewup}{(numeric) upper limit for robust skewness of Z^2, used
+for reliability estimation (defaul: 0.8). The unreliable results
+are grayed out. Set to NULL to inactivate this check.}
 
 \item{xlim}{(vector) min and max values of X axis}
 

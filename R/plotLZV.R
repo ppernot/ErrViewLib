@@ -1099,6 +1099,9 @@ plotLRCE = function(
 #' @param aux (vector) auxilliary vector to resolve ties in X sorting
 #' @param varZ (numeric) target value for Var(Z) (default `1`)
 #' @param logX (logical) log-transform X
+#' @param skewup (numeric) upper limit for robust skewness of Z^2, used
+#'   for reliability estimation (defaul: 0.8). The unreliable results
+#'   are grayed out. Set to NULL to inactivate this check.
 #' @param method (string) method used to estimate 95 percent CI on <Z^2>
 #' @param parallel (logical) parallelized bootstrap (default: `FALSE`)
 #' @param BSmethod (string) bootstrap variant
@@ -1150,6 +1153,7 @@ plotLZMS = function(
   method    = c('bootstrap','stud','auto'),
   BSmethod  = c('bca','perc','basic','stud'),
   xlab      = 'Conditioning variable',
+  skewup    = 0.8,
   xlim      = NULL,
   ylim      = NULL,
   title     = '',
@@ -1197,7 +1201,7 @@ plotLZMS = function(
     library(parallel)
     cl = makeCluster(detectCores())
   }
-  mV = loV = upV = mint = c()
+  mV = loV = upV = mint = bgm = c()
   for (i in 1:nBin) {
     sel  = intrv$lwindx[i]:intrv$upindx[i]
     zs   = ErrViewLib::ZMSCI(zOrd[sel],
@@ -1210,20 +1214,24 @@ plotLZMS = function(
     loV[i]  = zs$ci[1]
     upV[i]  = zs$ci[2]
     mint[i] = mean(range(xOrd[sel])) # Center of interval
+    if(!is.null(skewup))
+      bgm[i]  = ErrViewLib::skewgm(zOrd[sel]^2)
   }
+  if(!is.null(skewup))
+    bgmt  = ErrViewLib::skewgm(zOrd^2)
 
   zs = ErrViewLib::ZMSCI(Z,
-                         method = 'auto',
+                         method = method,
                          nBoot = nBoot,
-                         CImethod = BSmethod)
+                         CImethod = BSmethod,
+                         parallel = parallel,
+                         cl = cl)
   mV0   = zs$mean
   loV0  = zs$ci[1]
   upV0  = zs$ci[2]
 
   if(!is.null(cl))
     stopCluster(cl)
-
-  colors = ifelse((loV-varZ)*(upV-varZ) <= 0, col, colInv)
 
   if(plot) {
 
@@ -1232,6 +1240,11 @@ plotLZMS = function(
 
     for (n in names(gPars))
       assign(n, rlist::list.extract(gPars, n))
+
+    colors = ifelse((loV-varZ)*(upV-varZ) <= 0, col, colInv)
+    colors = cols[colors]
+    if(!is.null(skewup))
+      colors[bgm > skewup] = cols_tr2[1]
 
     if(is.null(xlim))
       xlim = range(xOrd)
@@ -1264,7 +1277,7 @@ plotLZMS = function(
         pch  = 16,
         lwd  = lwd,
         cex  = ifelse(slide,0.5,1),
-        col  = cols[colors],
+        col  = colors,
         main = title,
         log  = ifelse(logX,'x','')
       )
@@ -1291,7 +1304,7 @@ plotLZMS = function(
         pch  = 16,
         lwd  = lwd,
         cex  = ifelse(slide,0.5,1),
-        col  = cols[colors]
+        col  = colors
       )
     }
 
@@ -1305,7 +1318,7 @@ plotLZMS = function(
       segments(
         mint[ipl], loV[ipl],
         mint[ipl], upV[ipl],
-        col  = cols[colors[ipl]],
+        col  = colors[ipl],
         lwd  = 1.5 * lwd,
         lend = 1)
 
@@ -1313,7 +1326,7 @@ plotLZMS = function(
       segments(
         mint, loV,
         mint, upV,
-        col  = cols[colors],
+        col  = colors,
         lwd  = 1.5 * lwd,
         lend = 1)
 
@@ -1324,20 +1337,24 @@ plotLZMS = function(
     ypos = par("usr")[4]
     pm   = round(mV0, digits = 2)
     colm = ifelse((loV0-varZ)*(upV0-varZ) <= 0, col, colInv)
+    colm = cols[colm]
+    if(!is.null(skewup))
+      if(bgmt > skewup)
+        colm = cols_tr2[1]
     mtext(
       text = c(
         ' Mean',
         paste0('- ', pm)),
       side = 4,
       at   = c(ypos, mV0),
-      col  = c(1,cols[colm]),
+      col  = c(1, colm),
       cex  = 0.75*cex,
       las  = 1,
       font = 2)
     segments(
       xlim[2],loV0,
       xlim[2],upV0,
-      col  = cols[colm],
+      col  = colm,
       lwd  = 6 * lwd,
       lend = 1
     )
