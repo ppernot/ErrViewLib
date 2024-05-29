@@ -1124,7 +1124,8 @@ plotLRCE = function(
 #' @param xlim (vector) min and max values of X axis
 #' @param score (logical) estimate calibration stats (default: `FALSE`)
 #' @param add (logical) add to previous graph ?
-#' @param col (integer) color index of curve to add
+#' @param col (integer) color index of bin stats
+#' @param colInv (integer) color index of invalid bin stats
 #'
 #' @return Invisibly returns a list of LZMS results. Mainly used
 #'   for its plotting side effect.
@@ -1244,7 +1245,7 @@ plotLZMS = function(
     colors = ifelse((loV-varZ)*(upV-varZ) <= 0, col, colInv)
     colors = cols[colors]
     if(!is.null(skewup))
-      colors[bgm > skewup] = cols_tr2[1]
+      colors[bgm > skewup] = cols_tr[1]
 
     if(is.null(xlim))
       xlim = range(xOrd)

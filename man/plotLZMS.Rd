@@ -86,7 +86,9 @@ are grayed out. Set to NULL to inactivate this check.}
 
 \item{add}{(logical) add to previous graph ?}
 
-\item{col}{(integer) color index of curve to add}
+\item{col}{(integer) color index of bin stats}
+
+\item{colInv}{(integer) color index of invalid bin stats}
 
 \item{label}{(integer) index of letter for subplot tag}
 
